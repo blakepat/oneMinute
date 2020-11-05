@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Activity" representedClassName=".Activity" syncable="YES">
+        <attribute name="name" attributeType="String"/>
+        <relationship name="itemInCategory" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ActivityCategory" inverseName="activity" inverseEntity="ActivityCategory"/>
+    </entity>
+    <entity name="ActivityCategory" representedClassName=".ActivityCategory" syncable="YES">
+        <attribute name="categoryName" attributeType="String"/>
+        <relationship name="activity" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Activity" inverseName="itemInCategory" inverseEntity="Activity"/>
+    </entity>
+    <elements>
+        <element name="Activity" positionX="91.44140625" positionY="-256.16796875" width="128" height="73"/>
+        <element name="ActivityCategory" positionX="-200.453125" positionY="-255.421875" width="128" height="73"/>
+    </elements>
+</model>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<array>
+		<string>Stretch</string>
+		<string>Yoga</string>
+		<string>Meditate</string>
+		<string>Weightlifting</string>
+		<string>Run</string>
+	</array>
+	<array>
+		<string>Cook New Recipe</string>
+		<string>In-Person Class</string>
+		<string>Online Class</string>
+		<string>Study</string>
+		<string>Read</string>
+		<string>Languages</string>
+	</array>
+	<array>
+		<string>Mop</string>
+		<string>Vacuum</string>
+		<string>Deep Clean</string>
+		<string>Groceries</string>
+		<string>Laundry</string>
+	</array>
+	<array>
+		<string>Side-Hustle2</string>
+		<string>Side-Hustle1</string>
+		<string>Job3</string>
+		<string>Job2</string>
+		<string>Job1</string>
+	</array>
+</array>
+</plist>
