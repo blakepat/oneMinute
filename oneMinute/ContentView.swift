@@ -11,8 +11,8 @@ import CoreData
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @FetchRequest(entity: ActivityCategory.entity(), sortDescriptors: [])
-    var allFetchedItems:FetchedResults<ActivityCategory>
+    @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
+    var allFetchedActivities:FetchedResults<Activity>
     
 
     static let dateFormatter: DateFormatter = {
@@ -82,7 +82,7 @@ struct ContentView: View {
                     self.showActivitySelector = false
                 })
         
-            AddActivityView(showActivitySelector: $showActivitySelector, categories: self.allFetchedItems)
+            AddActivityView(showActivitySelector: $showActivitySelector, selectedActivity: "   Select Activity", activities: self.allFetchedActivities)
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
                 .offset(x: 0, y: showAddActivity ? 60 : screen.height)
@@ -158,13 +158,13 @@ struct WeekToggle: View {
             
             ZStack {
                 Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1))
-                    .frame(width: .infinity, height: 2, alignment: .center)
+                    .frame(width: screen.width, height: 2, alignment: .center)
                 Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
                     .frame(width: screen.width / 2, height: 4, alignment: .leading)
                     .position(x: showLastWeek ? 0 + screen.width / 4 : screen.width / 2 + screen.width / 4)
                     .animation(.easeInOut)
             }
-            .frame(width: .infinity, height: 4, alignment: .center)
+            .frame(width: screen.width, height: 4, alignment: .center)
         }
     }
 }

@@ -3,33 +3,71 @@
 <plist version="1.0">
 <array>
 	<array>
-		<string>Stretch</string>
-		<string>Yoga</string>
-		<string>Meditate</string>
-		<string>Weightlifting</string>
-		<string>Run</string>
+		<string></string>
 	</array>
 	<array>
-		<string>Cook New Recipe</string>
-		<string>In-Person Class</string>
-		<string>Online Class</string>
-		<string>Study</string>
-		<string>Read</string>
-		<string>Languages</string>
+		<string>work</string>
+		<string>Work</string>
 	</array>
 	<array>
-		<string>Mop</string>
+		<string>chores</string>
 		<string>Vacuum</string>
-		<string>Deep Clean</string>
+	</array>
+	<array>
+		<string>chores</string>
+		<string>Mop</string>
+	</array>
+	<array>
+		<string>chores</string>
 		<string>Groceries</string>
+	</array>
+	<array>
+		<string>chores</string>
+		<string>Deep Clean</string>
+	</array>
+	<array>
+		<string>chores</string>
 		<string>Laundry</string>
 	</array>
 	<array>
-		<string>Side-Hustle2</string>
-		<string>Side-Hustle1</string>
-		<string>Job3</string>
-		<string>Job2</string>
-		<string>Job1</string>
+		<string>learning</string>
+		<string>Read</string>
+	</array>
+	<array>
+		<string>learning</string>
+		<string>In-Person Class</string>
+	</array>
+	<array>
+		<string>learning</string>
+		<string>Online Class</string>
+	</array>
+	<array>
+		<string>learning</string>
+		<string>Learn a New Language</string>
+	</array>
+	<array>
+		<string>learning</string>
+		<string>Study</string>
+	</array>
+	<array>
+		<string>fitness</string>
+		<string>Meditate</string>
+	</array>
+	<array>
+		<string>fitness</string>
+		<string>Yoga</string>
+	</array>
+	<array>
+		<string>fitness</string>
+		<string>Stretch</string>
+	</array>
+	<array>
+		<string>fitness</string>
+		<string>Weightlfiting</string>
+	</array>
+	<array>
+		<string>fitness</string>
+		<string>Run</string>
 	</array>
 </array>
 </plist>

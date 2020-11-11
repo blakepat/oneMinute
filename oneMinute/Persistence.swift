@@ -14,9 +14,9 @@ struct PersistenceController {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
         for _ in 0..<10 {
-            let newItem = ActivityCategory(context: viewContext)
+            let newItem = Activity(context: viewContext)
 //            newItem.timestamp = Date()
-            newItem.categoryName = "fitness"
+            newItem.category = "fitness"
         }
         do {
             try viewContext.save()

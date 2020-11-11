@@ -10,13 +10,20 @@ import CoreData
 
 struct AddActivityView: View {
     
-    @State var activitySelected = "fitness"
-    @State var placeHolder = "   Select Activity"
+    @State var hourPickerSelection = 0
+    @State var minutePickerSelection = 0
+    @State var categorySelected = "fitness"
     @Binding var showActivitySelector: Bool
     @State var viewState = CGSize.zero
-    var categories: FetchedResults<ActivityCategory>
+    @State var selectedActivity: String
+    var activities: FetchedResults<Activity>
+    
+    let hourArray = (0...24).map{"\($0)"}
+    let minutesArray = (0...60).map{"\($0)"}
     
     var body: some View {
+        
+        let categoryNames = ["fitness", "learning", "chores", "work"]
         
         ZStack {
         
@@ -27,32 +34,36 @@ struct AddActivityView: View {
             VStack {
                 
             //MARK: - Pull down tap
-                
-
-            //MARK: - Activity Type - (fitness, chores, learning, work)
                 HStack {
                     
-                    ForEach(categories, id: \.self) { category in
+                    Spacer()
+                    Color(.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 30))
+                        .frame(width: 50, height: 8, alignment: .center)
+                        .padding(.top, 8)
+                        .padding(.bottom, 0)
                         
-                        
-                        
+                    Spacer()
+                }
+                
+            //MARK: - Activity Type - (fitness, chores, learning, work)
+                HStack {
+                    ForEach(categoryNames, id: \.self) { category in
                         GeometryReader { geometry in
-                            
                             //Current Selected Activity Category
-                        if activitySelected == category.categoryName {
+                        if categorySelected == category {
                             
-                            ActivityTypeIcon(activityIconName: category.categoryName, isSelected: true)
+                            ActivityTypeIcon(activityIconName: category, isSelected: true)
                                 .onTapGesture(count: 1, perform: {
-                                    activitySelected = category.categoryName
-                                    
+                                    categorySelected = category
                                 })
                         
                             
                             //Other 3 categories
                             } else {
-                                ActivityTypeIcon(activityIconName: category.categoryName, isSelected: false)
+                                ActivityTypeIcon(activityIconName: category, isSelected: false)
                                     .onTapGesture(count: 1, perform: {
-                                        activitySelected = category.categoryName
+                                        categorySelected = category
 
                                     })
                             }
@@ -73,7 +84,7 @@ struct AddActivityView: View {
                     
                     ZStack(alignment: .leading) {
                         
-                        Text(placeHolder)
+                        Text(selectedActivity)
                             .frame(width: screen.width - 50, height: 40, alignment: .leading)
                             .padding(.leading, 4)
                             .background(Color(.black))
@@ -88,17 +99,63 @@ struct AddActivityView: View {
                 }
                 .padding(.vertical)
                 
-                
-                
-                
-                
-                
-                
-                
             
             //MARK: - Activity Time - 45 minutes
-            
-            
+                VStack(alignment: .leading, spacing: 0) {
+                    
+                    Text("Duration: ")
+                        .font(.system(size: 24, weight: .semibold))
+                        .padding(.vertical, 0)
+                        .padding(.leading, 8)
+                    
+                    GeometryReader { geometry in
+                        HStack {
+                            
+                            //clock image
+                            Image(systemName: "clock")
+                                .padding(.leading, 8)
+                                .font(.system(size: 24))
+                            
+                            //Hour Selection
+                            
+                            Picker(selection: self.$hourPickerSelection, label: Text("Hours")) {
+                                ForEach(0 ..< self.hourArray.count) { number in
+                                    Text(self.hourArray[number]).tag(number)
+                                }
+                            }
+                            .frame(width: 100, height: 100, alignment: .center)
+                            .clipped()
+                            
+        
+                            
+                            //hour signafier
+                            Text("hours")
+                                .font(.system(size: 16, weight: .semibold))
+                            
+                            
+                            //Spacer
+                            Spacer()
+                            
+                            
+                            
+                           //Minute Selection
+                            Picker(selection: self.$minutePickerSelection, label: Text("Hours")) {
+                                ForEach(0 ..< self.minutesArray.count) { number in
+                                    Text(self.minutesArray[number]).tag(number)
+                                }
+                            }
+                            .frame(width: 100, height: 100, alignment: .center)
+                            .clipped()
+                            
+                            //minute signafier
+                            Text("minutes")
+                                .font(.system(size: 16, weight: .semibold))
+                            
+                            Spacer()
+                        }
+                    }
+                }
+                
             //MARK: - Activity Notes - 5km run, chest workout, rosetta stone, 1 hour overtime
             
             
@@ -114,28 +171,14 @@ struct AddActivityView: View {
             
             //MARK: - ActivitySelectorView
                 
-            ActivitySelectorView(showActivitySelector: $showActivitySelector, allCategories: categories, categorySelected: activitySelected)
+            ActivitySelectorView(showActivitySelector: $showActivitySelector, selectedActivity: $selectedActivity, allActivities: activities, selectedCategoryName: categorySelected)
                     .frame(width: screen.width, height: screen.height)
                     .offset(x: showActivitySelector ? 0 : screen.width)
                     .offset(y: screen.minY)
                     .edgesIgnoringSafeArea(.all)
                     .offset(x: viewState.width)
                     .animation(.easeInOut)
-                    .gesture(
-                        DragGesture()
-                            .onChanged({ (value) in
-                                self.viewState = value.translation
-                            })
-                            .onEnded({ (value) in
-                                if self.viewState.width > 80 {
-                                    self.showActivitySelector = false
-                                }
-                                self.viewState = .zero
-                            })
-                    )
         }
-        
-        
     }
 }
 

@@ -17,7 +17,7 @@ extension Activity {
     }
 
     @NSManaged public var name: String
-    @NSManaged public var itemInCategory: ActivityCategory?
+    @NSManaged public var category: String
 
 }
 

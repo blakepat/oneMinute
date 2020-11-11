@@ -13,45 +13,36 @@ struct ActivitySelectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @Binding var showActivitySelector: Bool
+    @Binding var selectedActivity: String
     @State var showingAlert = false
-    @ObservedObject var itemList = ActivityListData()
-    var allCategories: FetchedResults<ActivityCategory>
-    var categorySelected: String
-    
-    
+    @State private var alertInput = ""
+    var allActivities: FetchedResults<Activity>
+    var selectedCategoryName: String
+ 
     var body: some View {
     
         ZStack {
             
+            
+            
             //backgroundColor
-            Color("fitnessColor")
+            Color("\(selectedCategoryName)Color")
         
             VStack {
-                TitleBar(showActivitySelector: $showActivitySelector, categoryName: categorySelected)
+                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: selectedCategoryName)
                 
                 //MARK: - LIST
-                FilteredList(filter: categorySelected)
-                    .colorMultiply(Color("fitnessColor"))                
+                FilteredList(filter: selectedCategoryName, passedActivityBinding: $selectedActivity, showActivitySelector: $showActivitySelector)
+                    .colorMultiply(Color("\(selectedCategoryName)Color"))
             }
+                
+            TextFieldAlert(isShowing: $showingAlert, text: $alertInput, category: selectedCategoryName)
+                .offset(x: 60, y: self.showingAlert ? -100 : screen.height)
         }
     }
     
     
-    private func addItem() {
-        withAnimation {
-            let newItem = Activity(context: viewContext)
-            newItem.name = "test name"
 
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
 
     private func deleteItems(offsets: IndexSet, item: Activity) {
         withAnimation {
@@ -87,9 +78,11 @@ struct ActivitySelectorView: View {
 //MARK: - Title Bar
 struct TitleBar: View {
     
-    @State var showingAlert = false
+    @Binding var showingAlert: Bool
     @Binding var showActivitySelector: Bool
+    
     var categoryName: String
+    
     
     var body: some View {
         
@@ -116,16 +109,11 @@ struct TitleBar: View {
                     .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                         self.showingAlert = true
                     })
-                    .alert(isPresented: $showingAlert, content: {
-                        
-                        return Alert(
-                            title: Text("Text Field currently empty"),
-                            message: Text("Please write the name of the item you would like to add to \(categoryName.capitalized) List in text field then press add button"),
-                            dismissButton: .cancel(Text("Okay")))
-                    })
             }
         }
-    }
+    
+}
+
 
 extension View {
     func Print(_ vars: Any...) -> some View {

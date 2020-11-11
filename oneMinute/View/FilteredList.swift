@@ -10,23 +10,51 @@ import CoreData
 
 struct FilteredList: View {
     
+    @Environment(\.managedObjectContext) private var viewContext
+    
+    @Binding var showActivitySelector: Bool
+    @Binding var selectedActivity: String
     @State private var searchText = ""
-    var fetchRequest: FetchRequest<ActivityCategory>
+    var fetchRequest: FetchRequest<Activity>
     
     var body: some View {
-        ForEach(fetchRequest.wrappedValue, id: \.self) { category in
-            List {
-                SearchBar(text: $searchText)
-                                    
-                ForEach((category.activity?.allObjects as? [Activity] ?? []).filter({ searchText.isEmpty ? true : $0.name.contains(searchText)}), id: \.self) { activity in
-                    Text(activity.name.capitalized)
-                }
-            }
+            
+        List {
+
+            ForEach(fetchRequest.wrappedValue, id: \.self) { activity in
+                Text(activity.name.capitalized)
+                    .onTapGesture {
+                        print("TAPPED!")
+                        self.showActivitySelector = false
+                        self.selectedActivity = activity.name.capitalized
+                    }
+            }.onDelete(perform: deleteActivity)
+            
+        
         }
     }
+
     
-    init(filter: String) {
-        fetchRequest = FetchRequest<ActivityCategory>(entity: ActivityCategory.entity(), sortDescriptors: [], predicate: NSPredicate(format: "categoryName CONTAINS %@", filter))
+    func deleteActivity(at offsets: IndexSet) {
+        for index in offsets {
+            let activity = fetchRequest.wrappedValue[index]
+            viewContext.delete(activity)
+        }
+        
+        do {
+            try viewContext.save()
+        } catch {
+            print(error)
+        }
+        
+    }
+        
+    
+    init(filter: String, passedActivityBinding: Binding<String>, showActivitySelector: Binding<Bool>) {
+        fetchRequest = FetchRequest<Activity>(entity: Activity.entity(), sortDescriptors: [], predicate: NSPredicate(format: "category CONTAINS %@", filter))
+        
+        self._selectedActivity = passedActivityBinding
+        self._showActivitySelector = showActivitySelector
     }
 }
 

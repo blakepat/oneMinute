@@ -48,21 +48,14 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                 if let arrayContents = NSArray(contentsOf: urlPath) as? [[String?]] {
 
                     do {
-                        let activityTypes = ["fitness", "learning", "chores", "work"]
-                        //Cycle through categories
-                        for (index, category) in arrayContents.enumerated() {
+                        //Cycle through activities and create them and assign name/category
+                        for activity in arrayContents {
 
-                            //Create Category and assign name
-                            let categoryObject = ActivityCategory(context: backgroundContext)
-                            categoryObject.categoryName = activityTypes[index]
-
-                            //Cycle through activities in each Category
-                            for activity in category {
-                                let activityObject = Activity(context: backgroundContext)
-                                activityObject.name = activity ?? "Unknown Activity"
-                                activityObject.itemInCategory = categoryObject
+                            let activityObject = Activity(context: backgroundContext)
+                            activityObject.name = activity[1] ?? "Unknown Activity"
+                            activityObject.category = activity[0] ?? "Unknown Category"
 //                                print(activity)
-                            }
+                            
                         }
 
                         //Save categories and Items and change key so preloaded data won't be loaded again
