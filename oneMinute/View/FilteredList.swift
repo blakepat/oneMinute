@@ -24,7 +24,6 @@ struct FilteredList: View {
             ForEach(fetchRequest.wrappedValue, id: \.self) { activity in
                 Text(activity.name.capitalized)
                     .onTapGesture {
-                        print("TAPPED!")
                         self.showActivitySelector = false
                         self.selectedActivity = activity.name.capitalized
                     }

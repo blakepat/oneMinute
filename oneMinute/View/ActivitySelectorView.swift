@@ -13,30 +13,28 @@ struct ActivitySelectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @Binding var showActivitySelector: Bool
-    @Binding var selectedActivity: String
+    @Binding var activityToSave: ActivityToSave
     @State var showingAlert = false
     @State private var alertInput = ""
     var allActivities: FetchedResults<Activity>
-    var selectedCategoryName: String
+
  
     var body: some View {
     
         ZStack {
             
-            
-            
             //backgroundColor
-            Color("\(selectedCategoryName)Color")
+            Color("\(activityToSave.category)Color")
         
             VStack {
-                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: selectedCategoryName)
+                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: activityToSave.category)
                 
                 //MARK: - LIST
-                FilteredList(filter: selectedCategoryName, passedActivityBinding: $selectedActivity, showActivitySelector: $showActivitySelector)
-                    .colorMultiply(Color("\(selectedCategoryName)Color"))
+                FilteredList(filter: activityToSave.category, passedActivityBinding: $activityToSave.activityName, showActivitySelector: $showActivitySelector)
+                    .colorMultiply(Color("\(activityToSave.category)Color"))
             }
                 
-            TextFieldAlert(isShowing: $showingAlert, text: $alertInput, category: selectedCategoryName)
+            TextFieldAlert(isShowing: $showingAlert, text: $alertInput, category: activityToSave.category)
                 .offset(x: 60, y: self.showingAlert ? -100 : screen.height)
         }
     }

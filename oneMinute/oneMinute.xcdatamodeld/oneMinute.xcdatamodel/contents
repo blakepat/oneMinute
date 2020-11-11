@@ -4,7 +4,15 @@
         <attribute name="category" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
     </entity>
+    <entity name="AddedActivity" representedClassName="AddedActivity" syncable="YES" codeGenerationType="class">
+        <attribute name="category" optional="YES" attributeType="String"/>
+        <attribute name="duration" optional="YES" attributeType="Float" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
     <elements>
         <element name="Activity" positionX="91.44140625" positionY="-256.16796875" width="128" height="73"/>
+        <element name="AddedActivity" positionX="90" positionY="-243" width="128" height="118"/>
     </elements>
 </model>

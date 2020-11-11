@@ -9,47 +9,43 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    
     @Environment(\.managedObjectContext) private var viewContext
 
     @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
     var allFetchedActivities:FetchedResults<Activity>
     
-
-    static let dateFormatter: DateFormatter = {
-        var df = DateFormatter()
-        df.dateFormat = "EEEE, MMM, d, yyyy"
-        return df
-    }()
+    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [])
+    var allSavedActivities:FetchedResults<AddedActivity>
     
     @State private var newActivity = ""
     @State var showLastWeek = false
     @State var showAddActivity = false
     @State var showActivitySelector = false
     @State var viewState = CGSize.zero
+    @State var activityToSave = ActivityToSave()
     
     var body: some View {
         
-    
-        //Full Screen View
+        
         ZStack {
+            //Background Color
             Color.black
                 .edgesIgnoringSafeArea(.all)
 
-            
-            
-            //Top area for current week summary
             VStack {
-                
+                //Week Toggle at top
                 WeekToggle(showLastWeek: $showLastWeek)
                 
+                //Current Date
                 DateView()
                     .padding(.bottom, 4)
                 
-//                SummaryTitleView()
-                
+                //Week Summary
                 SummaryView()
                 
-                //TO DO: Insert view of week
+                //View of days of the week
                 ScrollView(.horizontal) {
                     HStack(spacing: 4) {
                         ForEach(self.showLastWeek ? lastWeekData : thisWeekData) { item in
@@ -72,9 +68,11 @@ struct ContentView: View {
                 //MARK: - Add Activity Button
                 AddActivityButton(showAddActivity: $showAddActivity)
                 
-                    
             }
+            //**************************************
+            //End of VStack
 
+            //Background Blur view (Shown while add activity is open)
             BlurView(style: .systemThinMaterialDark).edgesIgnoringSafeArea(.all)
                 .opacity(showAddActivity ? 0.6 : 0)
                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
@@ -82,7 +80,8 @@ struct ContentView: View {
                     self.showActivitySelector = false
                 })
         
-            AddActivityView(showActivitySelector: $showActivitySelector, selectedActivity: "   Select Activity", activities: self.allFetchedActivities)
+            //Add activity view
+            AddActivityView(showActivitySelector: $showActivitySelector, activityToSave: $activityToSave, activities: self.allFetchedActivities, showAddActivity: $showAddActivity)
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
                 .offset(x: 0, y: showAddActivity ? 60 : screen.height)
@@ -91,20 +90,33 @@ struct ContentView: View {
                 .gesture(
                     DragGesture()
                         .onChanged({ (value) in
-                            self.viewState = value.translation
+                            
+                            if self.viewState.height > -1 {
+                                self.viewState = value.translation
+                            }
                         })
                         .onEnded({ (value) in
                             if self.viewState.height > 100 {
                                 self.showAddActivity = false
                                 self.showActivitySelector = false
+                                
+                                resetActivity(activityToSave)
+                                
                             }
                             self.viewState = .zero
                         })
                 )
-            
-                
         }
-        
+    }
+    
+    
+    //MARK: - Reset Activity Function
+    private func resetActivity(_ : ActivityToSave) {
+        activityToSave.activityName = "Select Activity"
+        activityToSave.category = "fitness"
+        activityToSave.hours = 0
+        activityToSave.minutes = 0
+        activityToSave.notes = ""
     }
     
 }
@@ -116,16 +128,9 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
-//    }
-//}
-//    
-    
 
 
-
+//MARK: - Last Week/Current Week Toggle
 struct WeekToggle: View {
     
     @Binding var showLastWeek: Bool
@@ -169,6 +174,32 @@ struct WeekToggle: View {
     }
 }
 
+
+//MARK: - Date
+struct DateView: View {
+    
+    let dateFormatter: DateFormatter = {
+        var df = DateFormatter()
+        df.dateFormat = "EEEE, MMM, d, yyyy"
+        return df
+    }()
+    
+    var body: some View {
+        
+        let today = Date()
+    
+        HStack {
+            Text("\(today, formatter: dateFormatter)")
+                .foregroundColor(.white)
+                .font(.system(size: 20, weight: .semibold))
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
+}
+
+
+//MARK: - Summary View
 struct SummaryView: View {
     var body: some View {
         
@@ -222,71 +253,84 @@ struct SummaryView: View {
     }
 }
 
-struct DateView: View {
+
+
+//MARK: - Day View
+struct dayView: View {
+    
+    var day: dayOfWeek
+    
     var body: some View {
-        
-        let today = Date()
-        
+        ZStack {
+            
+            Color.black
+                
+            
+            VStack {
+                Text("\(day.nameOfDay) \(day.dateOfDay)")
+                    .foregroundColor(.white)
+                    .font(.system(size: 18, weight: .semibold))
+                    .padding(.bottom, 4)
+                
+                VStack(alignment: .center) {
+                    Text("Fitness: \(day.fitness)")
+                        .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
+                        .padding(.vertical, 2)
+                    
+                    Text("Learn: \(day.learning)")
+                        .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
+                        .padding(.vertical, 2)
+                    
+                    Text("Chores: \(day.chores)")
+                        .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
+                        .padding(.vertical, 2)
+                    
+                    Text("Custom: \(day.custom)")
+                        .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
+                        .padding(.vertical, 2)
+                    
+                    Text("Total: \(day.fitness + day.learning + day.chores + day.custom)")
+                        .foregroundColor(.orange)
+                        .padding(.vertical, 2)
+                }
+                .font(.system(size: 18, weight: .semibold))
+            }
+        }
+    }
+    
+}
+
+struct AddActivityButton: View {
+    
+    @Binding var showAddActivity: Bool
+    
+    var body: some View {
         HStack {
             
-            Text("\(today, formatter: ContentView.dateFormatter)")
-                .foregroundColor(.white)
-                .font(.system(size: 20, weight: .semibold))
             Spacer()
+            
+            ZStack {
+                
+                Image(systemName: "plus.circle.fill")
+                    .foregroundColor(.yellow)
+                    //                            .frame(width: 40, height: 40, alignment: .center)
+                    .font(.system(size: 44))
+                    .padding()
+                    .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
+                        self.showAddActivity.toggle()
+                        
+                    })
+            }
+            
+            
         }
-        .padding(.horizontal)
     }
 }
 
 
-    struct dayView: View {
-        
-        var day: dayOfWeek
-        
-        var body: some View {
-            ZStack {
-                
-                Color.black
-                    
-                
-                VStack {
-                    Text("\(day.nameOfDay) \(day.dateOfDay)")
-                        .foregroundColor(.white)
-                        .font(.system(size: 18, weight: .semibold))
-                        .padding(.bottom, 4)
-                    
-                    VStack(alignment: .center) {
-                        Text("Fitness: \(day.fitness)")
-                            .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
-                            .padding(.vertical, 2)
-                        
-                        Text("Learn: \(day.learning)")
-                            .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
-                            .padding(.vertical, 2)
-                        
-                        Text("Chores: \(day.chores)")
-                            .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                            .padding(.vertical, 2)
-                        
-                        Text("Custom: \(day.custom)")
-                            .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
-                            .padding(.vertical, 2)
-                        
-                        Text("Total: \(day.fitness + day.learning + day.chores + day.custom)")
-                            .foregroundColor(.orange)
-                            .padding(.vertical, 2)
-                    }
-                    .font(.system(size: 18, weight: .semibold))
-                    
-                }
-            }
-        }
-        
-    }
-    
-    
-    
-    
+
+
+
 struct dayOfWeek: Identifiable {
     
     var id = UUID()
@@ -328,32 +372,6 @@ let lastWeekData = [
 
 
 
-struct AddActivityButton: View {
-    
-    @Binding var showAddActivity: Bool
-    
-    var body: some View {
-        HStack {
-            
-            Spacer()
-            
-            ZStack {
-                
-                Image(systemName: "plus.circle.fill")
-                    .foregroundColor(.yellow)
-                    //                            .frame(width: 40, height: 40, alignment: .center)
-                    .font(.system(size: 44))
-                    .padding()
-                    .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                        self.showAddActivity.toggle()
-                        
-                    })
-            }
-            
-            
-        }
-    }
-}
 
 
 let screen = UIScreen.main.bounds

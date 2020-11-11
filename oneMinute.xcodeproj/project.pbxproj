@@ -8,11 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		3407503025534C66004AF4E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3407502F25534C66004AF4E0 /* Assets.xcassets */; };
-		3411C70D2553860C005C53A0 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3411C70C2553860C005C53A0 /* Activity.swift */; };
 		347983B125546E9200823F39 /* PreloadedData.plist in Resources */ = {isa = PBXBuildFile; fileRef = 347983B025546E9200823F39 /* PreloadedData.plist */; };
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
 		347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */; };
 		347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */; };
+		348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89EF255C856B00385B6B /* ActivityToSave.swift */; };
+		348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */; };
 		34DF371225534A2000232BCD /* oneMinuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF371125534A2000232BCD /* oneMinuteApp.swift */; };
 		34DF371425534A2000232BCD /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF371325534A2000232BCD /* ContentView.swift */; };
 		34DF371925534A2400232BCD /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34DF371825534A2400232BCD /* Preview Assets.xcassets */; };
@@ -24,7 +25,6 @@
 		34DF374D25534A8600232BCD /* BlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF374825534A8600232BCD /* BlurView.swift */; };
 		34DF374E25534A8600232BCD /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF374925534A8600232BCD /* SearchBar.swift */; };
 		34DF374F25534A8600232BCD /* ActivitySelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF374A25534A8600232BCD /* ActivitySelectorView.swift */; };
-		34DF375925534B3900232BCD /* ActivityListData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF375825534B3900232BCD /* ActivityListData.swift */; };
 		34E1534C2555BB0F005D79D4 /* TextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34E1534B2555BB0F005D79D4 /* TextFieldAlert.swift */; };
 /* End PBXBuildFile section */
 
@@ -47,11 +47,12 @@
 
 /* Begin PBXFileReference section */
 		3407502F25534C66004AF4E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../oneWeek/oneWeek/Assets.xcassets; sourceTree = "<group>"; };
-		3411C70C2553860C005C53A0 /* Activity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 		347983B025546E9200823F39 /* PreloadedData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PreloadedData.plist; sourceTree = SOURCE_ROOT; };
 		347983B82554B32400823F39 /* FilteredList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredList.swift; sourceTree = "<group>"; };
 		347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Activity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Activity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		348F89EF255C856B00385B6B /* ActivityToSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityToSave.swift; sourceTree = "<group>"; };
+		348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDateSelector.swift; sourceTree = "<group>"; };
 		34DF370E25534A2000232BCD /* oneMinute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = oneMinute.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		34DF371125534A2000232BCD /* oneMinuteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = oneMinuteApp.swift; sourceTree = "<group>"; };
 		34DF371325534A2000232BCD /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = ../ContentView.swift; sourceTree = "<group>"; };
@@ -69,7 +70,6 @@
 		34DF374825534A8600232BCD /* BlurView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlurView.swift; sourceTree = "<group>"; };
 		34DF374925534A8600232BCD /* SearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		34DF374A25534A8600232BCD /* ActivitySelectorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivitySelectorView.swift; sourceTree = "<group>"; };
-		34DF375825534B3900232BCD /* ActivityListData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivityListData.swift; sourceTree = "<group>"; };
 		34E1534B2555BB0F005D79D4 /* TextFieldAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldAlert.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -169,6 +169,7 @@
 				34DF374A25534A8600232BCD /* ActivitySelectorView.swift */,
 				347983B82554B32400823F39 /* FilteredList.swift */,
 				34E1534B2555BB0F005D79D4 /* TextFieldAlert.swift */,
+				348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */,
 				34DF374825534A8600232BCD /* BlurView.swift */,
 				34DF374925534A8600232BCD /* SearchBar.swift */,
 			);
@@ -178,10 +179,8 @@
 		34DF374525534A4A00232BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				34DF375825534B3900232BCD /* ActivityListData.swift */,
 				347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */,
 				347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */,
-				3411C70C2553860C005C53A0 /* Activity.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -189,6 +188,7 @@
 		34DF374625534A5600232BCD /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				348F89EF255C856B00385B6B /* ActivityToSave.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -331,8 +331,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */,
 				347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */,
-				34DF375925534B3900232BCD /* ActivityListData.swift in Sources */,
+				348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */,
 				347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */,
 				34DF374E25534A8600232BCD /* SearchBar.swift in Sources */,
 				34DF371B25534A2400232BCD /* Persistence.swift in Sources */,
@@ -342,7 +343,6 @@
 				34DF374C25534A8600232BCD /* AddActivityView.swift in Sources */,
 				347983B92554B32400823F39 /* FilteredList.swift in Sources */,
 				34DF374F25534A8600232BCD /* ActivitySelectorView.swift in Sources */,
-				3411C70D2553860C005C53A0 /* Activity.swift in Sources */,
 				34DF374D25534A8600232BCD /* BlurView.swift in Sources */,
 				34E1534C2555BB0F005D79D4 /* TextFieldAlert.swift in Sources */,
 			);
