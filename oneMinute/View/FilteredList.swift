@@ -18,18 +18,16 @@ struct FilteredList: View {
     var fetchRequest: FetchRequest<Activity>
     
     var body: some View {
-            
         List {
+            SearchBar(text: $searchText)
 
-            ForEach(fetchRequest.wrappedValue, id: \.self) { activity in
+            ForEach(fetchRequest.wrappedValue.filter({ searchText.isEmpty ? true : $0.name.contains(searchText) }), id: \.self) { activity in
                 Text(activity.name.capitalized)
                     .onTapGesture {
                         self.showActivitySelector = false
                         self.selectedActivity = activity.name.capitalized
                     }
             }.onDelete(perform: deleteActivity)
-            
-        
         }
     }
 
@@ -39,13 +37,11 @@ struct FilteredList: View {
             let activity = fetchRequest.wrappedValue[index]
             viewContext.delete(activity)
         }
-        
         do {
             try viewContext.save()
         } catch {
             print(error)
         }
-        
     }
         
     

@@ -19,11 +19,14 @@ struct AddActivityView: View {
     var activities: FetchedResults<Activity>
     @Binding var showAddActivity: Bool
     
+    
     //Local Items
     @State var categorySelected = "fitness"
     @State var viewState = CGSize.zero
     @State var showingAlert = false
     @State var showCalendar = false
+    @State var selectedDate = Date()
+    
     
     let hourArray = (0...24).map{"\($0)"}
     let minutesArray = (0...60).map{"\($0)"}
@@ -74,7 +77,7 @@ struct AddActivityView: View {
                                     .onTapGesture(count: 1, perform: {
                                         activityToSave.category = category
                                         categorySelected = category
-                                        activityToSave.activityName = "Select Activity"
+                                        activityToSave.activityName = "Select Activity..."
                                     })
                             }
                         }
@@ -100,9 +103,8 @@ struct AddActivityView: View {
                             .padding(.horizontal, 6)
                             .background(Color(.black))
                             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                            
-                            .foregroundColor(.gray)
-                            .font(.system(size: 32))
+                            .foregroundColor(Color("\(categorySelected)Color"))
+                            .font(.system(size: 26))
                             .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                 self.showActivitySelector = true
                             })  
@@ -112,7 +114,7 @@ struct AddActivityView: View {
             //MARK: - Activity Date - November 10
                 VStack(alignment: .leading) {
                     
-                    Text("Date: ")
+                    Text("Time Started: ")
                         .font(.system(size: 24, weight: .semibold))
                         .padding(.vertical, 0)
                         .padding(.leading, 8)
@@ -125,38 +127,19 @@ struct AddActivityView: View {
                             .font(.system(size: 24))
                         
                         
-                        let dateFormatter: DateFormatter = {
-                            let df = DateFormatter()
-                            df.dateFormat = "EEEE, MMM, d, yyyy"
-                            return df
-                        }()
-                        
-                        let today = Date()
+                        DatePicker("", selection: $selectedDate)
+                            .datePickerStyle(CompactDatePickerStyle())
+                            .frame(width: screen.width / 2, height: 50, alignment: .leading)
+                            .colorMultiply(.black)
+                            
+                        Spacer()
                     
-                        HStack {
-                            Text("\(today, formatter: dateFormatter)")
-                                .foregroundColor(.black)
-                                .font(.system(size: 18))
-                            Spacer()
-                        }
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-                        
                     }
-                    .onTapGesture {
-                        print("date tapped")
-                        self.showCalendar.toggle()
-                    }
-                    
-                    
-                    
+                    .padding(.vertical, 8)
+                
+                
+            
                 }
-                .padding(.vertical, 8)
-                
-                
-            //MARK: - Calendar view (hidden by default, shown if date is tapped)
-                CalendarDateSelector()
-                    .frame(width: screen.width - 16, height: self.showCalendar ? 300 : 0, alignment: .center)
                 
             
             //MARK: - Activity Time - 45 minutes
@@ -179,7 +162,7 @@ struct AddActivityView: View {
                             
                             Picker(selection: $activityToSave.hours, label: Text("Hours")) {
                                 ForEach(0 ..< self.hourArray.count) { number in
-                                    Text(self.hourArray[number]).tag(number)
+                                    Text(self.hourArray[number]).tag(Float(number))
                                 }
                             }
                             .frame(width: 100, height: 100, alignment: .center)
@@ -200,7 +183,7 @@ struct AddActivityView: View {
                            //Minute Selection
                             Picker(selection: $activityToSave.minutes, label: Text("Hours")) {
                                 ForEach(0 ..< self.minutesArray.count) { number in
-                                    Text(self.minutesArray[number]).tag(number)
+                                    Text(self.minutesArray[number]).tag(Float(number))
                                 }
                             }
                             .frame(width: 100, height: 100, alignment: .center)
@@ -226,32 +209,83 @@ struct AddActivityView: View {
                     
                     
                     TextField("notes", text: $activityToSave.notes)
-                    .frame(width: screen.width - 16, height: screen.height / 5, alignment: .topLeading)
+                        .frame(width: screen.width - 16, height: screen.height / 8, alignment: .topLeading)
                     .background(Color.black)
                     .foregroundColor(.white)
                     
                     
-            }
+                }
             //MARK: - Confirm Activity - add to data set
              
                 ZStack {
                     
-                    Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
+                    Color("\(categorySelected)Color")
                     
                     Text("Add Activity")
                         .foregroundColor(.black)
+                        .font(.system(size: 18, weight: .semibold))
                     
                 }
                 .frame(width: screen.width - 16, height: 60, alignment: .center)
-                
+                .padding(.vertical, 0)
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .padding(.top, 32)
+                .padding(.top, 24)
                 .onTapGesture {
                     
+                    print(activityToSave.activityName)
+                    print(activityToSave.minutes)
+                    print(activityToSave.hours)
+                    
                     //If activity and duration has been selected save and dismiss screen
-                    if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity" {
+                    if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
                         //save activity
-                        saveActivity(activity: activityToSave)
+                        saveActivity(activity: activityToSave, date: selectedDate, favourite: false)
+                        //reset activity
+                        resetActivity(activityToSave)
+                        categorySelected = "fitness"
+                        
+                        
+                        //dismiss screen
+                        self.showAddActivity = false
+                    //if missing info show alert
+                    } else {
+                        self.showingAlert = true
+                    }
+                }.alert(isPresented: $showingAlert) {
+                    Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
+                }
+                
+                
+            //MARK: - Save and Add to Favourites
+                
+                
+                ZStack {
+                    
+                    Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
+                    
+                    Text("Add Activity & Save to Favourites")
+                        .foregroundColor(.black)
+                        .font(.system(size: 18, weight: .semibold))
+                    
+                }
+                .frame(width: screen.width - 16, height: 60, alignment: .center)
+                .padding(.vertical, 0)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .onTapGesture {
+                    
+                    
+                    print(activityToSave.activityName)
+                    
+                    
+                    //If activity and duration has been selected save and dismiss screen
+                    if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
+                        //save activity
+                        saveActivity(activity: activityToSave, date: selectedDate, favourite: true)
+                        
+                        //reset activity
+                        resetActivity(activityToSave)
+                        categorySelected = "fitness"
+                        
                         //dismiss screen
                         self.showAddActivity = false
                     //if missing info show alert
@@ -287,17 +321,27 @@ struct AddActivityView: View {
         
     }
     
+    //MARK: - Reset Activity Function
+    private func resetActivity(_ : ActivityToSave) {
+        activityToSave.activityName = "Select Activity"
+        activityToSave.category = "fitness"
+        activityToSave.hours = 0
+        activityToSave.minutes = 0
+        activityToSave.notes = ""
+    }
+    
+    
     //MARK: - Save Item
-    private func saveActivity(activity: ActivityToSave) {
+    private func saveActivity(activity: ActivityToSave, date: Date, favourite: Bool) {
         withAnimation {
             
-            let newAddedActivity = AddedActivity(context: viewContext)
-            newAddedActivity.name = activity.activityName
-            newAddedActivity.category = activity.category
-            newAddedActivity.notes = activity.notes
-            newAddedActivity.duration = activity.minutes + (activity.hours * 60)
-            newAddedActivity.timestamp = Date()
-            
+                let newAddedActivity = AddedActivity(context: viewContext)
+                newAddedActivity.name = activity.activityName
+                newAddedActivity.category = activity.category
+                newAddedActivity.notes = activity.notes
+                newAddedActivity.duration = activity.minutes + (activity.hours * 60)
+                newAddedActivity.timestamp = date
+                newAddedActivity.favourite = favourite
             do {
                 try viewContext.save()
             } catch {
@@ -340,7 +384,7 @@ struct ActivityTypeIcon: View {
             
             
             Text(activityIconName.capitalized)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundColor(.black)
             
         }

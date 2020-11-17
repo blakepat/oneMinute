@@ -39,8 +39,6 @@ struct ActivitySelectorView: View {
         }
     }
     
-    
-
 
     private func deleteItems(offsets: IndexSet, item: Activity) {
         withAnimation {
@@ -61,16 +59,6 @@ struct ActivitySelectorView: View {
 }
     
     
-    
-    
-
-//struct ActivitySelectorView_Previews: PreviewProvider {
-//    static var previews: some View {
-//
-//        ActivitySelectorView(showActivitySelector: .constant(true), backgroundColor: .constant("fitness"), itemList: ActivityListData())
-//    }
-//}
-
 
 
 //MARK: - Title Bar

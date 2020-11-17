@@ -54,7 +54,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                             let activityObject = Activity(context: backgroundContext)
                             activityObject.name = activity[1] ?? "Unknown Activity"
                             activityObject.category = activity[0] ?? "Unknown Category"
-//                                print(activity)
+                  
+                            
                             
                         }
 
