@@ -114,6 +114,12 @@ struct ContentView: View {
                 Spacer()
                 //MARK: - Buttons
                 HStack {
+                        
+                    SettingsButton()
+                        .offset(y: 36)
+                        .onTapGesture {
+                            Print("Settings Button Tapped!")
+                        }
                 
                     Spacer()
                     
@@ -309,8 +315,9 @@ struct SummaryView: View {
         VStack {
             HStack {
                 HStack {
-                    Text("Minutes Completed: \(sumOfWeeklyWorkMinutes + sumOfWeeklyChoresMinutes + sumOfWeeklyFitnessMinutes + sumOfWeeklyLearningMinutes, specifier: "%.0f")")
+                    Text("Total Weekly Minutes: \(sumOfWeeklyWorkMinutes + sumOfWeeklyChoresMinutes + sumOfWeeklyFitnessMinutes + sumOfWeeklyLearningMinutes, specifier: "%.0f")")
                         .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(Color("defaultYellow"))
                     Text("")
                         .font(.system(size: 20))
                 }
@@ -329,10 +336,10 @@ struct SummaryView: View {
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                     }
-                    .padding(.all, 6)
+                    .padding(.vertical, 6)
                     
                     HStack(alignment: .top) {
-                        Text("Chores \(useHours ? "Hours" : "Minutes"):\(sumOfWeeklyChoresMinutes, specifier: "%.0f")  ")
+                        Text("Chores \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyChoresMinutes, specifier: "%.0f")  ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
                         Text("Work \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyWorkMinutes, specifier: "%.0f") ")
@@ -375,7 +382,6 @@ struct DayScrollView: View {
         return df
     }()
     
-    
     var body: some View {
         
         ScrollView(.horizontal) {
@@ -388,27 +394,32 @@ struct DayScrollView: View {
                                 Spacer()
                                 Text("\(day, formatter: dateFormatter)")
                                     .foregroundColor(.white)
-                                    .font(.system(size: 18, weight: .semibold))
+                                    .font(.system(size: 20, weight: .semibold))
                                 Spacer()
-                            }
-                                
-                            //For each day fill in information if dates match
-                            List {
-                                
-                                Print(weeklyData)
-                                
-                                ForEach(weeklyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day) }), id: \.self) { data in
-              
-                                    Print(data)
-                                    
-                                    Text("\(data.name ?? "Unknown Activity")\n")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(.red)
+                            }.padding(.vertical, 4)
+                            ScrollView(.vertical) {
+                                //For each day fill in information if dates match
+                                ForEach(weeklyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
+                                    ActivityItem(item: data)
+                                        .padding(.bottom, 2)
+                                        .frame(width: 132)
                                 }
                             }
+                            Spacer()
+                            
+                            let dailyTotal = weeklyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}).reduce(0) {$0 + $1.duration}
+                            
+                            Text("Total: \(dailyTotal, specifier: "%.0f")")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundColor(Color("defaultYellow"))
+                                .padding(.bottom, 8)
+                        }
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            Print("DAY TAPPED *Show DetailedDayView* ")
                         }
                     }
-                    .frame(width: 140, height: 240, alignment: .center)
+                    .frame(width: 160, height: 240, alignment: .center)
                 }
             }
         }
@@ -420,6 +431,35 @@ struct DayScrollView: View {
 }
 
 
+
+struct ActivityItem: View {
+    
+    var item: FetchedResults<AddedActivity>.Element
+    
+    var body: some View {
+        
+        HStack {
+        
+            Text("\(item.name ?? "Unknown Activity")")
+                .font(.system(size: 16))
+                .foregroundColor(Color("\(item.category ?? "fitness")Color"))
+                
+            Spacer()
+            
+            Text("\(item.duration, specifier: "%.0f")")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(Color("\(item.category ?? "fitness")Color"))
+                
+        
+        }
+        
+        
+        
+    }
+    
+    
+    
+}
 
 
 
@@ -468,6 +508,22 @@ struct dayView: View {
 
     
 }
+
+struct SettingsButton: View {
+    
+    var body: some View {
+        ZStack {
+            Image(systemName: "line.horizontal.3.circle.fill")
+                .foregroundColor(.gray)
+                .font(.system(size: 44))
+                .padding()
+        }
+    }
+}
+
+
+
+
 
 struct AddActivityButton: View {
     
