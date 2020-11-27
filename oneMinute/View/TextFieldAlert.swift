@@ -24,7 +24,6 @@ struct TextFieldAlert: View {
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                         .id(self.isShowing)
-//                        .padding()
                     Divider()
                     HStack {
                         Button(action: {

@@ -13,19 +13,23 @@ struct AddActivityView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
     
+    //Fetch listed activities
+    @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
+    var activities: FetchedResults<Activity>
+    
+    
     //Passed Items
     @Binding var showActivitySelector: Bool
-    @Binding var activityToSave: ActivityToSave
-    var activities: FetchedResults<Activity>
+    @State var activityToSave: ActivityToSave
     @Binding var showAddActivity: Bool
-    
+    @State var isEditScreen: Bool
+    @Binding var selectedDate: Date
+    @Binding var itemToDelete: AddedActivity
     
     //Local Items
-    @State var categorySelected = "fitness"
     @State var viewState = CGSize.zero
     @State var showingAlert = false
     @State var showCalendar = false
-    @State var selectedDate = Date()
     
     
     let hourArray = (0...24).map{"\($0)"}
@@ -61,22 +65,17 @@ struct AddActivityView: View {
                     ForEach(categoryNames, id: \.self) { category in
                         GeometryReader { geometry in
                             //Current Selected Activity Category
-                            if categorySelected == category {
+                            if activityToSave.category == category {
                             
                             ActivityTypeIcon(activityIconName: category, isSelected: true)
                                 .onTapGesture(count: 1, perform: {
                                     activityToSave.category = category
-                                    categorySelected = category
-                                    
                                 })
-                        
-                            
                             //Other 3 categories
                             } else {
                                 ActivityTypeIcon(activityIconName: category, isSelected: false)
                                     .onTapGesture(count: 1, perform: {
                                         activityToSave.category = category
-                                        categorySelected = category
                                         activityToSave.activityName = "Select Activity..."
                                     })
                             }
@@ -103,7 +102,7 @@ struct AddActivityView: View {
                             .padding(.horizontal, 6)
                             .background(Color(.black))
                             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                            .foregroundColor(Color("\(categorySelected)Color"))
+                            .foregroundColor(Color("\(activityToSave.category)Color"))
                             .font(.system(size: 26))
                             .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                 self.showActivitySelector = true
@@ -219,9 +218,9 @@ struct AddActivityView: View {
              
                 ZStack {
                     
-                    Color("\(categorySelected)Color")
+                    Color("\(activityToSave.category)Color")
                     
-                    Text("Add Activity")
+                    Text("Save Activity")
                         .foregroundColor(.black)
                         .font(.system(size: 18, weight: .semibold))
                     
@@ -242,8 +241,8 @@ struct AddActivityView: View {
                         saveActivity(activity: activityToSave, date: selectedDate, favourite: false)
                         //reset activity
                         resetActivity(activityToSave)
-                        categorySelected = "fitness"
-                        
+                        activityToSave.category = "fitness"
+                        deleteActivity()
                         
                         //dismiss screen
                         self.showAddActivity = false
@@ -255,49 +254,43 @@ struct AddActivityView: View {
                     Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                 }
                 
-                
-            //MARK: - Save and Add to Favourites
-                
-                
+            //MARK: - Save and Add to Favourites OR DELETE BUTTON
                 ZStack {
-                    
-                    Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
-                    
-                    Text("Add Activity & Save to Favourites")
+                    isEditScreen ? Color.red : Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
+                    Text(isEditScreen ? "Delete Activity" : "Save Activity & Add to Favourites")
                         .foregroundColor(.black)
                         .font(.system(size: 18, weight: .semibold))
-                    
                 }
                 .frame(width: screen.width - 16, height: 60, alignment: .center)
                 .padding(.vertical, 0)
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .onTapGesture {
+                    if isEditScreen {
                     
-                    
-                    print(activityToSave.activityName)
-                    
-                    
-                    //If activity and duration has been selected save and dismiss screen
-                    if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
-                        //save activity
-                        saveActivity(activity: activityToSave, date: selectedDate, favourite: true)
-                        
-                        //reset activity
+                        deleteActivity()
                         resetActivity(activityToSave)
-                        categorySelected = "fitness"
-                        
-                        //dismiss screen
+                        activityToSave.category = "fitness"
                         self.showAddActivity = false
-                    //if missing info show alert
+
                     } else {
-                        self.showingAlert = true
+                        //If activity and duration has been selected save and dismiss screen
+                        if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
+                            //save activity
+                            saveActivity(activity: activityToSave, date: selectedDate, favourite: true)
+                            //reset activity
+                            resetActivity(activityToSave)
+                            activityToSave.category = "fitness"
+                            //dismiss screen
+                            self.showAddActivity = false
+                        //if missing info show alert
+                        } else {
+                            self.showingAlert = true
+                        }
                     }
+               
                 }.alert(isPresented: $showingAlert) {
                     Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                 }
-                
-                
-                
                 
             //Spacer at bottom to push button up
                Spacer()
@@ -310,7 +303,8 @@ struct AddActivityView: View {
             
             //MARK: - ActivitySelectorView
                 
-            ActivitySelectorView(showActivitySelector: $showActivitySelector, activityToSave: $activityToSave, allActivities: activities)
+            ActivitySelectorView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, allActivities: activities)
+                    .environmentObject(activityToSave)
                     .frame(width: screen.width, height: screen.height)
                     .offset(x: showActivitySelector ? 0 : screen.width)
                     .offset(y: screen.minY)
@@ -320,6 +314,22 @@ struct AddActivityView: View {
         }
         
     }
+    
+    
+    //MARK: - Delete Activity
+    private func deleteActivity() {
+        
+        self.viewContext.delete(self.itemToDelete)
+                    do {
+                        try self.viewContext.save()
+                    }catch{
+                        print(error)
+                    }
+            
+    }
+    
+    
+    
     
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {

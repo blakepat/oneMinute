@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3407503025534C66004AF4E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3407502F25534C66004AF4E0 /* Assets.xcassets */; };
+		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
 		347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */; };
 		347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */; };
@@ -48,6 +49,7 @@
 
 /* Begin PBXFileReference section */
 		3407502F25534C66004AF4E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../oneWeek/oneWeek/Assets.xcassets; sourceTree = "<group>"; };
+		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
 		347983B025546E9200823F39 /* PreloadedData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PreloadedData.plist; sourceTree = SOURCE_ROOT; };
 		347983B82554B32400823F39 /* FilteredList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredList.swift; sourceTree = "<group>"; };
 		347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Activity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
@@ -167,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				34DF371325534A2000232BCD /* ContentView.swift */,
+				3431748325649FA80075F5C9 /* DetailedDayView.swift */,
 				34DF374725534A8500232BCD /* AddActivityView.swift */,
 				34EA2CCB255DD97B00FFE7FC /* AddFavouriteView.swift */,
 				34DF374A25534A8600232BCD /* ActivitySelectorView.swift */,
@@ -339,6 +342,7 @@
 				348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */,
 				347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */,
 				34DF374E25534A8600232BCD /* SearchBar.swift in Sources */,
+				3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */,
 				34EA2CCC255DD97B00FFE7FC /* AddFavouriteView.swift in Sources */,
 				34DF371B25534A2400232BCD /* Persistence.swift in Sources */,
 				34DF371425534A2000232BCD /* ContentView.swift in Sources */,

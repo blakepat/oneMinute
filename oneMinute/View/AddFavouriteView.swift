@@ -12,7 +12,7 @@ struct AddFavouriteView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     //Passed Items
-    @Binding var activityToSave: ActivityToSave
+    @ObservedObject var activityToSave: ActivityToSave
     var activities: FetchedResults<AddedActivity>
     @Binding var showAddFavourite: Bool
     

@@ -13,7 +13,7 @@ struct ActivitySelectorView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @Binding var showActivitySelector: Bool
-    @Binding var activityToSave: ActivityToSave
+    @ObservedObject var activityToSave: ActivityToSave
     @State var showingAlert = false
     @State private var alertInput = ""
     var allActivities: FetchedResults<Activity>
