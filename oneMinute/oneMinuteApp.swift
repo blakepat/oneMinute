@@ -37,7 +37,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 
         //Check to see if preload has been run before
         if userDefaults.bool(forKey: preloadedDataKey) == false {
-            //preload
+            
+            //name catagories
+            userDefaults.setValue("Fitness", forKey: "category1Name")
+            userDefaults.setValue("Learning", forKey: "category2Name")
+            userDefaults.setValue("Chores", forKey: "category3Name")
+            userDefaults.setValue("Work", forKey: "category4Name")
+            
+            
+            //preload activity list data
             guard let urlPath = Bundle.main.url(forResource: "PreloadedData", withExtension: "plist") else {
                 return
             }

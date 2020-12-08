@@ -12,6 +12,7 @@
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
 		347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */; };
 		347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */; };
+		348027A82577FBD30083DD73 /* CategoryNameEditAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348027A72577FBD30083DD73 /* CategoryNameEditAlert.swift */; };
 		348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89EF255C856B00385B6B /* ActivityToSave.swift */; };
 		348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */; };
 		34DF371225534A2000232BCD /* oneMinuteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DF371125534A2000232BCD /* oneMinuteApp.swift */; };
@@ -54,6 +55,7 @@
 		347983B82554B32400823F39 /* FilteredList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredList.swift; sourceTree = "<group>"; };
 		347983BD2554B93800823F39 /* Activity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Activity+CoreDataClass.swift"; sourceTree = SOURCE_ROOT; };
 		347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Activity+CoreDataProperties.swift"; sourceTree = SOURCE_ROOT; };
+		348027A72577FBD30083DD73 /* CategoryNameEditAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryNameEditAlert.swift; sourceTree = "<group>"; };
 		348F89EF255C856B00385B6B /* ActivityToSave.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityToSave.swift; sourceTree = "<group>"; };
 		348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDateSelector.swift; sourceTree = "<group>"; };
 		34DF370E25534A2000232BCD /* oneMinute.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = oneMinute.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -175,6 +177,7 @@
 				34DF374A25534A8600232BCD /* ActivitySelectorView.swift */,
 				347983B82554B32400823F39 /* FilteredList.swift */,
 				34E1534B2555BB0F005D79D4 /* TextFieldAlert.swift */,
+				348027A72577FBD30083DD73 /* CategoryNameEditAlert.swift */,
 				348F89FD255C9C7D00385B6B /* CalendarDateSelector.swift */,
 				34DF374825534A8600232BCD /* BlurView.swift */,
 				34DF374925534A8600232BCD /* SearchBar.swift */,
@@ -341,6 +344,7 @@
 				347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */,
 				348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */,
 				347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */,
+				348027A82577FBD30083DD73 /* CategoryNameEditAlert.swift in Sources */,
 				34DF374E25534A8600232BCD /* SearchBar.swift in Sources */,
 				3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */,
 				34EA2CCC255DD97B00FFE7FC /* AddFavouriteView.swift in Sources */,

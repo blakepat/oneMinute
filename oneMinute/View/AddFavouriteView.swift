@@ -16,8 +16,16 @@ struct AddFavouriteView: View {
     var activities: FetchedResults<AddedActivity>
     @Binding var showAddFavourite: Bool
     
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
+    
     
     var body: some View {
+        
+        let categoryNames = [category1Name, category2Name, category3Name, category4Name]
+        let categories = ["category1", "category2", "category3", "category4"]
         
         ZStack {
             
@@ -29,7 +37,7 @@ struct AddFavouriteView: View {
                 Section(header: ListHeader()) {
                     ForEach(activities.filter({ $0.favourite == true }), id: \.self) { favourite in
                         
-                        FavouriteRow(favourite: favourite)
+                        FavouriteRow(favourite: favourite, categoryName: categoryNames[categories.firstIndex(of: favourite.category ?? "") ?? 0])
                             .listRowBackground(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
                             .onTapGesture {
                                 saveActivity(activity: favourite, notes: "", date: Date())
@@ -55,21 +63,14 @@ struct AddFavouriteView: View {
         }
         
         
-        
-        
         do {
             try viewContext.save()
         } catch {
             print(error)
         }
-        
-        
-        
-        
     }
     
-    
-    
+
     
     //MARK: - Save Item
     private func saveActivity(activity: AddedActivity, notes: String, date: Date) {
@@ -101,6 +102,7 @@ struct AddFavouriteView: View {
 struct FavouriteRow: View {
     
     var favourite: AddedActivity
+    var categoryName: String
     
     var body: some View {
         
@@ -108,7 +110,7 @@ struct FavouriteRow: View {
             VStack(alignment: .leading) {
                 Text(favourite.name ?? "Unknown Activity")
                     .foregroundColor(.white)
-                Text(favourite.category?.capitalized ?? "Unknown Category").font(.subheadline).foregroundColor(.gray)
+                Text(categoryName).font(.subheadline).foregroundColor(.gray)
             }
             Spacer()
             Text(String(format: "%.0f minutes", favourite.duration))

@@ -17,9 +17,8 @@ struct DetailedDayView: View {
     @Binding var useHours: Bool
     @Binding var date: Date
     @State var itemToDelete = AddedActivity()
+    @State var showCategoryNameEditor = false
     
-    
-    let catagories = ["fitness", "learning", "chores", "work"]
     
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
@@ -27,16 +26,26 @@ struct DetailedDayView: View {
         return df
     }()
     
-
+    //MARK: - Category Names
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
+    
+    let categories = ["category1", "category2", "category3", "category4"]
+    
     var body: some View {
         
-        let dailyFitnessTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "fitness"}).reduce(0) {$0 + $1.duration}
         
-        let dailyLearningTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "learning"}).reduce(0) {$0 + $1.duration}
+        let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
-        let dailyChoresTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "chores"}).reduce(0) {$0 + $1.duration}
+        let dailyFitnessTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category1"}).reduce(0) {$0 + $1.duration}
         
-        let dailyWorkTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "work"}).reduce(0) {$0 + $1.duration}
+        let dailyLearningTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category2"}).reduce(0) {$0 + $1.duration}
+        
+        let dailyChoresTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category3"}).reduce(0) {$0 + $1.duration}
+        
+        let dailyWorkTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category4"}).reduce(0) {$0 + $1.duration}
         
         ZStack{
             
@@ -69,24 +78,28 @@ struct DetailedDayView: View {
                     sumOfWeeklyFitnessMinutes: dailyFitnessTotal,
                     sumOfWeeklyLearningMinutes: dailyLearningTotal,
                     sumOfWeeklyChoresMinutes: dailyChoresTotal,
-                    sumOfWeeklyWorkMinutes: dailyWorkTotal
+                    sumOfWeeklyWorkMinutes: dailyWorkTotal,
+                    category1Name: $category1Name,
+                    category2Name: $category2Name,
+                    category3Name: $category3Name,
+                    category4Name: $category4Name
                 )
                 
                 
                 //List of All completed Activities sorted by catagory
                 ScrollView(.vertical) {
                     VStack {
-                        ForEach(catagories, id: \.self) { catagory in
+                        ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { catagory, index in
                             
                             Text("\(catagory.capitalized)")
                                 .frame(width: screen.width, alignment: .leading)
                                 .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(Color("\(catagory)Color"))
+                                .foregroundColor(Color("\(categories[index])Color"))
                                 .padding(.leading, 8)
                                 .padding(.top, 4)
                                 
                             
-                            ForEach(dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == catagory}), id: \.self) { data in
+                            ForEach(dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]}), id: \.self) { data in
                                 
                                 DetailedDayCatagorySectionItem(data: data, showEditScreen: $showEditScreen, activityToEdit: activityToSave, itemToDelete: $itemToDelete)
                                     .frame(width: screen.width - 28, alignment: .leading)
@@ -110,11 +123,11 @@ struct DetailedDayView: View {
         
         
         //MARK: - Add activity view
-        AddActivityView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, showAddActivity: $showEditScreen, isEditScreen: true, selectedDate: $date, itemToDelete: $itemToDelete)
+        AddActivityView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, showAddActivity: $showEditScreen, isEditScreen: true, selectedDate: $date, itemToDelete: $itemToDelete, showingNameEditor: $showCategoryNameEditor, category1Name: $category1Name, category2Name: $category2Name, category3Name: $category3Name, category4Name: $category4Name)
             .environmentObject(activityToSave)
             .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
-            .offset(x: 0, y: showEditScreen ? 30 : screen.height)
+            .frame(width: screen.width, height: screen.height, alignment: .leading)
+            .offset(x: 0, y: showEditScreen ? 0 : screen.height)
             .offset(y: activityViewState.height)
             .animation(.easeInOut)
             .gesture(
@@ -143,7 +156,7 @@ struct DetailedDayView: View {
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
         activityToSave.activityName = "Select Activity"
-        activityToSave.category = "fitness"
+        activityToSave.category = "category1"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""
@@ -167,16 +180,16 @@ struct DetailedDayCatagorySectionItem: View {
                     
                     Text("\(data.name ?? "Unknown Activity")")
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(Color("\(data.category ?? "fitness")Color"))
+                        .foregroundColor(Color("\(data.category ?? "category1")Color"))
                         .padding(.vertical, 1)
                         .padding(.top, 4)
                     Text("Duration: \(data.duration, specifier: "%.0f") minutes")
                         .font(.system(size: 16))
-                        .foregroundColor(Color("\(data.category ?? "fitness")Color"))
+                        .foregroundColor(Color("\(data.category ?? "category1")Color"))
                         .padding(.vertical, 1)
                     Text("Notes: \(data.notes ?? "")")
                         .font(.system(size: 16))
-                        .foregroundColor(Color("\(data.category ?? "fitness")Color"))
+                        .foregroundColor(Color("\(data.category ?? "category1")Color"))
                         .padding(.vertical, 1)
                         .padding(.bottom, 4)
                     
@@ -198,7 +211,7 @@ struct DetailedDayCatagorySectionItem: View {
                         itemToDelete = data as AddedActivity
                         
                         activityToEdit.activityName = data.name ?? "Unknown Activity"
-                        activityToEdit.category = data.category ?? "fitness"
+                        activityToEdit.category = data.category ?? "category1"
                         activityToEdit.hours = data.duration / 60
                         activityToEdit.minutes = data.duration.truncatingRemainder(dividingBy: 60)
                         activityToEdit.notes = data.notes ?? ""
@@ -219,6 +232,10 @@ struct DaySummaryView: View {
     var sumOfWeeklyChoresMinutes: Float
     var sumOfWeeklyWorkMinutes: Float
     
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
     
     var body: some View {
         
@@ -240,21 +257,21 @@ struct DaySummaryView: View {
             ZStack {
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
-                        Text("Fitness \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyFitnessMinutes, specifier: "%.0f") ")
+                        Text("\(category1Name.capitalized): \(sumOfWeeklyFitnessMinutes, specifier: "%.0f") ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                         
-                        Text("Learning \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyLearningMinutes, specifier: "%.0f")  ")
+                        Text("\(category2Name.capitalized): \(sumOfWeeklyLearningMinutes, specifier: "%.0f")  ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                     }
                     .padding(.vertical, 6)
                     
                     HStack(alignment: .top) {
-                        Text("Chores \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyChoresMinutes, specifier: "%.0f")  ")
+                        Text("\(category3Name.capitalized): \(sumOfWeeklyChoresMinutes, specifier: "%.0f")  ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("Work \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyWorkMinutes, specifier: "%.0f") ")
+                        Text("\(category4Name.capitalized): \(sumOfWeeklyWorkMinutes, specifier: "%.0f") ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
                     }

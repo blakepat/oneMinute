@@ -18,55 +18,44 @@ struct ContentView: View {
     @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [])
     var allSavedActivities:FetchedResults<AddedActivity>
     
-    //**************************************************************************
-    //Fetch ALL Last week and All this week
-    //Last Week
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg)]))
-//    var FetchedAllLastWeekResults : FetchedResults<AddedActivity>
-//    //This Week
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg)]))
-//    var FetchedAllThisWeekResults : FetchedResults<AddedActivity>
+//    //**************************************************************************
+//    //MARK: - FETCH CURRENT WEEK FOR EACH CATEGORY
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category1")]))
+//    var FetchedThisWeekFitnessResults : FetchedResults<AddedActivity>
 //
-    
-    
-    //**************************************************************************
-    //MARK: - FETCH CURRENT WEEK FOR EACH CATEGORY
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "fitness")]))
-    var FetchedThisWeekFitnessResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "learning")]))
-    var FetchedThisWeekLearningResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "chores")]))
-    var FetchedThisWeekChoresResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "work")]))
-    var FetchedThisWeekWorkResults : FetchedResults<AddedActivity>
-    //SUM OF DURATION
-    var thisWeekFitnessSum: Float { FetchedThisWeekFitnessResults.reduce(0) { $0 + $1.duration }}
-    var thisWeekLearningSum: Float { FetchedThisWeekLearningResults.reduce(0) { $0 + $1.duration }}
-    var thisWeekChoresSum: Float { FetchedThisWeekChoresResults.reduce(0) { $0 + $1.duration }}
-    var thisWeekWorkSum: Float { FetchedThisWeekWorkResults.reduce(0) { $0 + $1.duration }}
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category2")]))
+//    var FetchedThisWeekLearningResults : FetchedResults<AddedActivity>
+//
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category3")]))
+//    var FetchedThisWeekChoresResults : FetchedResults<AddedActivity>
+//
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category4")]))
+//    var FetchedThisWeekWorkResults : FetchedResults<AddedActivity>
+//    //SUM OF DURATION
+//    var thisWeekFitnessSum: Float { FetchedThisWeekFitnessResults.reduce(0) { $0 + $1.duration }}
+//    var thisWeekLearningSum: Float { FetchedThisWeekLearningResults.reduce(0) { $0 + $1.duration }}
+//    var thisWeekChoresSum: Float { FetchedThisWeekChoresResults.reduce(0) { $0 + $1.duration }}
+//    var thisWeekWorkSum: Float { FetchedThisWeekWorkResults.reduce(0) { $0 + $1.duration }}
     
     //**************************************************************************
-    //MARK: - FETCH LAST WEEK FOR EACH CATEGORY
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "fitness")]))
-    var FetchedLastWeekFitnessResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "learning")]))
-    var FetchedLastWeekLearningResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "chores")]))
-    var FetchedLastWeekChoresResults : FetchedResults<AddedActivity>
-    
-    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "work")]))
-    var FetchedLastWeekWorkResults : FetchedResults<AddedActivity>
-    
-    //SUM OF DURATION
-    var lastWeekFitnessSum: Float { FetchedLastWeekFitnessResults.reduce(0) { $0 + $1.duration }}
-    var lastWeekLearningSum: Float { FetchedLastWeekLearningResults.reduce(0) { $0 + $1.duration }}
-    var lastWeekChoresSum: Float { FetchedLastWeekChoresResults.reduce(0) { $0 + $1.duration }}
-    var lastWeekWorkSum: Float { FetchedLastWeekWorkResults.reduce(0) { $0 + $1.duration }}
+//    //MARK: - FETCH LAST WEEK FOR EACH CATEGORY
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category1")]))
+//    var FetchedLastWeekFitnessResults : FetchedResults<AddedActivity>
+//
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category2")]))
+//    var FetchedLastWeekLearningResults : FetchedResults<AddedActivity>
+//
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category3")]))
+//    var FetchedLastWeekChoresResults : FetchedResults<AddedActivity>
+//
+//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category4")]))
+//    var FetchedLastWeekWorkResults : FetchedResults<AddedActivity>
+//
+//    //SUM OF DURATION
+//    var lastWeekFitnessSum: Float { FetchedLastWeekFitnessResults.reduce(0) { $0 + $1.duration }}
+//    var lastWeekLearningSum: Float { FetchedLastWeekLearningResults.reduce(0) { $0 + $1.duration }}
+//    var lastWeekChoresSum: Float { FetchedLastWeekChoresResults.reduce(0) { $0 + $1.duration }}
+//    var lastWeekWorkSum: Float { FetchedLastWeekWorkResults.reduce(0) { $0 + $1.duration }}
     
     //**************************************************************************
     //MARK: - VARIABLES
@@ -77,6 +66,7 @@ struct ContentView: View {
     @State var showActivitySelector = false
     @State var showAddFavourite = false
     @State var showEditScreen = false
+    @State var showCategoryNameEditor = false
     
     @State var useHours = false
     @State var activityViewState = CGSize.zero
@@ -87,6 +77,12 @@ struct ContentView: View {
     @State var selectedDate = Date()
     @State var activityToDelete = AddedActivity()
     
+    
+    //MARK: - Category Names
+    @State var category1Name = UserDefaults.standard.string(forKey: "category1Name")!
+    @State var category2Name = UserDefaults.standard.string(forKey: "category2Name")!
+    @State var category3Name = UserDefaults.standard.string(forKey: "category3Name")!
+    @State var category4Name = UserDefaults.standard.string(forKey: "category4Name")!
     
     //MARK: - Week Date Data
     var currentWeek : [Date] {
@@ -101,6 +97,7 @@ struct ContentView: View {
     //MARK: - Body
     var body: some View {
         
+        //MARK: - SCREEN LAYOUT
         ZStack {
             //Background Color
             Color.black
@@ -110,22 +107,6 @@ struct ContentView: View {
                 //Week Toggle at top
                 WeekToggle(showLastWeek: $showLastWeek, dateSelected: $selectedDate)
                 //Current Date
-                DateView()
-                    .padding(.bottom, 4)
-                //Week Summary
-                SummaryView(
-                    useHours: useHours,
-                    sumOfWeeklyFitnessMinutes: showLastWeek ? lastWeekFitnessSum : thisWeekFitnessSum,
-                    sumOfWeeklyLearningMinutes: showLastWeek ? lastWeekLearningSum : thisWeekLearningSum,
-                    sumOfWeeklyChoresMinutes: showLastWeek ? lastWeekChoresSum : thisWeekChoresSum,
-                    sumOfWeeklyWorkMinutes: showLastWeek ? lastWeekWorkSum : thisWeekWorkSum
-                )
-                //View of days of the week
-                DayScrollView(showDetailedDayView: $showDetailedDay, detailedDayViewState: $detailedDayViewState, daySelected: $daySelected, selectedDate: $selectedDate, allData: allSavedActivities)
-                    .padding(.bottom, 0)
-                
-                
-                
                 //Week Dates Button
                 HStack() {
                     
@@ -147,28 +128,48 @@ struct ContentView: View {
                 }
                 .frame(height: 16)
                 .padding(.horizontal, 16)
-                .padding(.leading, 8)
-                .padding(.vertical, 0)
+                .padding(.leading, screen.size.width * 0.03)
+                .padding(.vertical, 8)
+                //Week Summary
+                SummaryView(
+                    useHours: useHours,
+                    selectedDate: selectedDate,
+                    allData: allSavedActivities,
+                    category1Name: $category1Name,
+                    category2Name: $category2Name,
+                    category3Name: $category3Name,
+                    category4Name: $category4Name
+                )
+                
+                //View of days of the week
+                DayScrollView(showDetailedDayView: $showDetailedDay, detailedDayViewState: $detailedDayViewState, daySelected: $daySelected, selectedDate: $selectedDate, allData: allSavedActivities)
+                    .padding(.leading, screen.size.width * 0.01)
+                    
+                
+                
                      
                 
                 //MARK: - Last 5 Weeks Chart and Buttons
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     
                     //Title
                     Text("Last 5 Weeks")
                         .font(.system(size: 20, weight: .semibold))
+                        .padding(.bottom, 4)
                         .foregroundColor(.white)
                     
                     HStack(spacing: 0) {
                     
                         //Chart
                         BarChart(data: allSavedActivities)
-                        
+
 
                         //Buttons
                         HStack {
                             Spacer()
                             VStack(spacing: 0) {
+                                
+                                
                                 //Add Activity Button
                                 AddFavouriteButton()
                                     .frame(height: 50)
@@ -182,25 +183,18 @@ struct ContentView: View {
                                     .onTapGesture {
                                         self.showAddActivity.toggle()
                                     }
-                
-                               //Settings Button
-                                SettingsButton()
-                                    .frame(height: 50)
-                                    .padding(.vertical, 8)
-                                    .onTapGesture {
-                                        print("Settings Button Tapped!")
-                                    }
                             }
                             .padding(.bottom, 16)
                         }
-                        .frame(width: 32)
+                        .frame(width: 20)
                         
                         Spacer()
                         
                     }
                 }
-                .padding(.leading, 16)
-                .padding(.vertical, 16)
+                .padding(.leading, screen.size.width * 0.03)
+                .padding(.horizontal)
+                .padding(.vertical, 2)
                 
                 
                 //Spacer
@@ -220,11 +214,24 @@ struct ContentView: View {
                     self.showActivitySelector = false
                     self.showDetailedDay = false
                     self.showEditScreen = false
+                    self.showCategoryNameEditor = false
                     resetActivity(activityToSave)
                 })
         
             //MARK: - Add activity view
-            AddActivityView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, showAddActivity: $showAddActivity, isEditScreen: false, selectedDate: $daySelected, itemToDelete: $activityToDelete)
+            AddActivityView(
+                showActivitySelector: $showActivitySelector,
+                activityToSave: activityToSave,
+                showAddActivity: $showAddActivity,
+                isEditScreen: false,
+                selectedDate: $daySelected,
+                itemToDelete: $activityToDelete,
+                showingNameEditor: $showCategoryNameEditor,
+                category1Name: $category1Name,
+                category2Name: $category2Name,
+                category3Name: $category3Name,
+                category4Name: $category4Name
+            )
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
                 .offset(x: 0, y: showAddActivity ? 60 : screen.height)
@@ -242,6 +249,7 @@ struct ContentView: View {
                             if self.activityViewState.height > 100 {
                                 self.showAddActivity = false
                                 self.showActivitySelector = false
+                                self.showCategoryNameEditor = false
                                 
                                 resetActivity(activityToSave)
                                 
@@ -253,7 +261,16 @@ struct ContentView: View {
             
             //MARK: - Add Favourite View
             //Add activity view
-            AddFavouriteView(activityToSave: activityToSave, activities: allSavedActivities, showAddFavourite: $showAddFavourite)
+            AddFavouriteView(
+                activityToSave: activityToSave,
+                activities: allSavedActivities,
+                showAddFavourite: $showAddFavourite,
+                category1Name: $category1Name,
+                category2Name: $category2Name,
+                category3Name: $category3Name,
+                category4Name: $category4Name
+            
+            )
                 .environmentObject(activityToSave)
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
@@ -281,7 +298,16 @@ struct ContentView: View {
             
             
             //MARK: - Show DetailedDayView
-            DetailedDayView(dailyData:  allSavedActivities, showEditScreen: $showEditScreen, activityToSave: activityToSave, useHours: $useHours, date: $daySelected)
+            DetailedDayView(
+                dailyData:  allSavedActivities,
+                showEditScreen: $showEditScreen,
+                activityToSave: activityToSave,
+                useHours: $useHours, date: $daySelected,
+                category1Name: $category1Name,
+                category2Name: $category2Name,
+                category3Name: $category3Name,
+                category4Name: $category4Name
+            )
                 .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
                 .environmentObject(activityToSave)
                 .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
@@ -294,6 +320,7 @@ struct ContentView: View {
                             if self.detailedDayViewState.height > -1 {
                                 self.detailedDayViewState = value.translation
                             }
+                            
                         })
                         .onEnded({ (value) in
                             if self.detailedDayViewState.height > 100 {
@@ -304,14 +331,6 @@ struct ContentView: View {
                             self.detailedDayViewState = .zero
                         })
                 )
-            
-            
-            
-            //MARK: - Show Previous Week Button
-            
-            
-
-
         }
     //end of body
     }
@@ -327,7 +346,7 @@ struct ContentView: View {
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
         activityToSave.activityName = "Select Activity"
-        activityToSave.category = "fitness"
+        activityToSave.category = "category1"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""
@@ -356,11 +375,13 @@ struct WeekToggle: View {
                 Text("Last Week")
                     .padding(.horizontal, 30)
                     .foregroundColor(showLastWeek ? Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)) : Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)))
+                    .frame(width: screen.size.width / 2 - 1)
                     .onTapGesture(count: 1, perform: {
                         showLastWeek = true
                         dateSelected = Date().startOfWeek().addingTimeInterval(-7*24*60*60)
                         
                     })
+
                 
                 Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1))
                     .frame(width: 2, height: 50, alignment: .center)
@@ -368,13 +389,13 @@ struct WeekToggle: View {
                 Text("This Week")
                     .padding(.horizontal, 30)
                     .foregroundColor(showLastWeek ? Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)) : Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)) )
+                    .frame(width: screen.size.width / 2 - 1)
                     .onTapGesture(count: 1, perform: {
                         showLastWeek = false
                         dateSelected = Date().startOfWeek()
                     })
                 
             }
-            
             .font(.system(size: 24, weight: .bold))
             
             ZStack {
@@ -421,18 +442,21 @@ struct SummaryView: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     var useHours: Bool
-    var sumOfWeeklyFitnessMinutes: Float
-    var sumOfWeeklyLearningMinutes: Float
-    var sumOfWeeklyChoresMinutes: Float
-    var sumOfWeeklyWorkMinutes: Float
+    var selectedDate: Date
+    var allData: FetchedResults<AddedActivity>
     
+    //Category Names
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
     
     var body: some View {
-        
+    
         VStack {
             HStack {
                 HStack {
-                    Text("Total Weekly Minutes: \(sumOfWeeklyWorkMinutes + sumOfWeeklyChoresMinutes + sumOfWeeklyFitnessMinutes + sumOfWeeklyLearningMinutes, specifier: "%.0f")")
+                    Text("Total Weekly Minutes: \(Int(allData.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(Color("defaultYellow"))
                     Text("")
@@ -445,33 +469,33 @@ struct SummaryView: View {
             ZStack {
                 VStack(alignment: .center) {
                     HStack(alignment: .top) {
-                        Text("Fitness \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyFitnessMinutes, specifier: "%.0f") ")
+                        Text("\(category1Name.capitalized): \(Int(allData.filter({$0.category == "category1" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                         
-                        Text("Learning \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyLearningMinutes, specifier: "%.0f")  ")
+                        Text("\(category2Name.capitalized): \(Int(allData.filter({$0.category == "category2" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))  ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                     }
                     .padding(.vertical, 6)
                     
                     HStack(alignment: .top) {
-                        Text("Chores \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyChoresMinutes, specifier: "%.0f")  ")
+                        Text("\(category3Name.capitalized): \(Int(allData.filter({$0.category == "category3" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))  ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("Work \(useHours ? "Hours" : "Minutes"): \(sumOfWeeklyWorkMinutes, specifier: "%.0f") ")
+                        Text("\(category4Name.capitalized): \(Int(allData.filter({$0.category == "category4" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration })) ")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
                     }
-                    .padding(.all, 6)
+                    .padding(.all, 4)
                     
                 }
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(.white)
                 .padding(.bottom)
             }
-            .frame(maxWidth: .infinity)
         }
+        .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.16)
         .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .padding(.horizontal)
@@ -479,6 +503,16 @@ struct SummaryView: View {
 }
 
 //MARK: - Day Scroll View
+class ScrollToModel: ObservableObject {
+    enum Action {
+        case end
+        case top
+        case point(point: Int)
+    }
+    
+    @Published var direction: Action? = nil
+}
+
 
 struct DayScrollView: View {
     
@@ -486,6 +520,8 @@ struct DayScrollView: View {
     @Binding var detailedDayViewState: CGSize
     @Binding var daySelected: Date
     @Binding var selectedDate: Date
+    
+    @StateObject var scrollObject = ScrollToModel()
     
     var allData: FetchedResults<AddedActivity>
     
@@ -500,50 +536,73 @@ struct DayScrollView: View {
         let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.startOfWeek().addingTimeInterval(60*60*25*6))
         
         ScrollView(.horizontal) {
-            HStack(spacing: 4) {
-                //Cycle through days of either last week or this week
-                ForEach((weekToDisplay), id: \.self) { day in
-                    GeometryReader { geometry in
-                        VStack{
-                            HStack {
-                                Spacer()
-                                Text("\(day, formatter: dateFormatter)")
-                                    .foregroundColor((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("defaultYellow") : .white)
-                                    .font(.system(size: 20, weight: (Calendar.current.isDate(day, inSameDayAs: Date())) ? .bold : .semibold))
-                                Spacer()
-                            }.padding(.vertical, 4)
-                            ScrollView(.vertical) {
-                                //For each day fill in information if dates match
-                                ForEach(allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
-                                    ActivityItem(item: data)
-                                        .padding(.bottom, 2)
-                                        .frame(width: 132)
+            
+            ScrollViewReader { sp in
+       
+            
+                HStack(spacing: 4) {
+                    //Cycle through days of either last week or this week
+                    ForEach((weekToDisplay), id: \.self) { day in
+                        GeometryReader { geometry in
+                            VStack{
+                                HStack {
+                                    Spacer()
+                                    Text("\(day, formatter: dateFormatter)")
+                                        .foregroundColor((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("defaultYellow") : .white)
+                                        .font(.system(size: 20, weight: (Calendar.current.isDate(day, inSameDayAs: Date())) ? .bold : .semibold))
+                                    Spacer()
+                                }.padding(.vertical, 4)
+                                ScrollView(.vertical) {
+                                    //For each day fill in information if dates match
+                                    ForEach(allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
+                                        ActivityItem(item: data)
+                                            .padding(.bottom, 2)
+                                            .frame(width: 132)
+                                    }
                                 }
+                                Spacer()
+                                
+                                let dailyTotal = allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}).reduce(0) {$0 + $1.duration}
+                                
+                                Text("Total: \(dailyTotal, specifier: "%.0f")")
+                                    .font(.system(size: 16, weight: .semibold))
+                                    .foregroundColor(Color("defaultYellow"))
+                                    .padding(.bottom, 8)
                             }
-                            Spacer()
-                            
-                            let dailyTotal = allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}).reduce(0) {$0 + $1.duration}
-                            
-                            Text("Total: \(dailyTotal, specifier: "%.0f")")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(Color("defaultYellow"))
-                                .padding(.bottom, 8)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                print("DAY TAPPED *Show DetailedDayView* ")
+                                self.daySelected = day
+                                self.showDetailedDayView = true
+                            }
                         }
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            print("DAY TAPPED *Show DetailedDayView* ")
-                            self.daySelected = day
-                            self.showDetailedDayView = true
-                        }
+                        .background((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("grayBackground") : Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                        .frame(width: 160, height: screen.size.height * 0.276, alignment: .center)
                     }
-                    .frame(width: 160, height: 240, alignment: .center)
+                }
+                .onReceive(scrollObject.$direction) { action in
+                                        guard !weekToDisplay.isEmpty else { return }
+                                        withAnimation {
+                                            switch action {
+                                                case .top:
+                                                    sp.scrollTo(weekToDisplay.first!, anchor: .leading)
+                                                case .end:
+                                                    sp.scrollTo(weekToDisplay.last!, anchor: .trailing)
+                                                case .point(let point):
+                                                    sp.scrollTo(weekToDisplay[point], anchor: .center)
+                                                default:
+                                                    return
+                                            }
+                                        }
                 }
             }
+            .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+            .padding(.leading)
+            .padding(.vertical, 6)
         }
-        .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-        .padding(.leading)
-        .padding(.vertical)
-          
+        .onAppear(perform: {
+            scrollObject.direction = .point(point: Calendar.current.dateComponents([.day], from: selectedDate.startOfWeek(), to: selectedDate).day ?? 0)
+        })
     }
 }
 
@@ -558,13 +617,13 @@ struct ActivityItem: View {
         HStack {
             Text("\(item.name ?? "Unknown Activity")")
                 .font(.system(size: 16))
-                .foregroundColor(Color("\(item.category ?? "fitness")Color"))
+                .foregroundColor(Color("\(item.category ?? "category1")Color"))
                 
             Spacer()
             
             Text("\(item.duration, specifier: "%.0f")")
                 .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(Color("\(item.category ?? "fitness")Color"))
+                .foregroundColor(Color("\(item.category ?? "category1")Color"))
                 
         }
     }
@@ -576,6 +635,10 @@ struct ActivityItem: View {
 struct dayView: View {
     
     var day: dayOfWeek
+    var category1: String
+    var category2: String
+    var category3: String
+    var category4: String
     
     var body: some View {
         ZStack {
@@ -590,23 +653,23 @@ struct dayView: View {
                     .padding(.bottom, 4)
                 
                 VStack(alignment: .center) {
-                    Text("Fitness: \(day.fitness)")
+                    Text("\(category1.capitalized): \(day.category1)")
                         .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                         .padding(.vertical, 2)
                     
-                    Text("Learn: \(day.learning)")
+                    Text("Learn: \(day.category2)")
                         .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                         .padding(.vertical, 2)
                     
-                    Text("Chores: \(day.chores)")
+                    Text("category3: \(day.category3)")
                         .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
                         .padding(.vertical, 2)
                     
-                    Text("Custom: \(day.custom)")
+                    Text("Custom: \(day.category4)")
                         .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
                         .padding(.vertical, 2)
                     
-                    Text("Total: \(day.fitness + day.learning + day.chores + day.custom)")
+                    Text("Total: \(day.category1 + day.category2 + day.category3 + day.category4)")
                         .foregroundColor(Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)))
                         .padding(.vertical, 2)
                 }
@@ -621,9 +684,11 @@ struct dayView: View {
 struct BarChart: View {
     
     var data: FetchedResults<AddedActivity>
-    let catagories = ["fitness", "learning", "chores", "work"]
-    let capsuleWidth: Float = 240
+    
+    let capsuleWidth: CGFloat = screen.size.width * 0.80 - 90
     let capsuleHeight: CGFloat = 32
+    
+    let catagories = ["category1", "category2", "category3", "category4"]
     
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
@@ -635,34 +700,36 @@ struct BarChart: View {
     
     
     
-    var week1FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "fitness"}).reduce(0) { $0 + $1.duration }}
-    var week1LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "learning" }).reduce(0) { $0 + $1.duration }}
-    var week1ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "chores" }).reduce(0) { $0 + $1.duration }}
-    var week1WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "work"  }).reduce(0) { $0 + $1.duration }}
+    var week1FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1"}).reduce(0) { $0 + $1.duration }}
+    var week1LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
+    var week1ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
+    var week1WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
     
-    var week2FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "fitness" }).reduce(0) { $0 + $1.duration }}
-    var week2LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "learning" }).reduce(0) { $0 + $1.duration }}
-    var week2ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "chores" }).reduce(0) { $0 + $1.duration }}
-    var week2WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "work"  }).reduce(0) { $0 + $1.duration }}
+    var week2FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
+    var week2LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
+    var week2ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
+    var week2WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
 
-    var week3FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "fitness" }).reduce(0) { $0 + $1.duration }}
-    var week3LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "learning" }).reduce(0) { $0 + $1.duration }}
-    var week3ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "chores" }).reduce(0) { $0 + $1.duration }}
-    var week3WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "work"  }).reduce(0) { $0 + $1.duration }}
+    var week3FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
+    var week3LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
+    var week3ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
+    var week3WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
 
-    var week4FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "fitness" }).reduce(0) { $0 + $1.duration }}
-    var week4LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "learning" }).reduce(0) { $0 + $1.duration }}
-    var week4ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "chores" }).reduce(0) { $0 + $1.duration }}
-    var week4WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "work"  }).reduce(0) { $0 + $1.duration }}
+    var week4FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
+    var week4LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
+    var week4ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
+    var week4WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
 
-    var week5FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "fitness" }).reduce(0) { $0 + $1.duration }}
-    var week5LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "learning" }).reduce(0) { $0 + $1.duration }}
-    var week5ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "chores" }).reduce(0) { $0 + $1.duration }}
-    var week5WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "work" }).reduce(0) { $0 + $1.duration }}
+    var week5FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
+    var week5LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
+    var week5ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
+    var week5WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4" }).reduce(0) { $0 + $1.duration }}
 
     
     
     var body: some View {
+        
+        
         
         //array of all the weekly sums for each category
         let categoryTotalsArray: [[Float]] =
@@ -690,16 +757,19 @@ struct BarChart: View {
     
                 HStack(alignment: .center, spacing: 0) {
                     //Date text
-                    Text("\(date.startOfWeek(), formatter: dateFormatter)-\n \(date.startOfWeek().advanced(by: 60*60*25*6), formatter: dateFormatter)")
+                    Text("\(date.startOfWeek(), formatter: dateFormatter)\n \(date.startOfWeek().advanced(by: 60*60*25*6), formatter: dateFormatter)")
                         .foregroundColor(.white)
                         .font(.system(size: 14))
-                        .frame(width: 60, height: 40, alignment: .leading)
+                        .frame(width: 56, height: 40, alignment: .center)
+                        .background(Color("charcoalColor"))
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                        .padding(.trailing, 4)
                     
                     //Bar
                     ZStack(alignment: .leading) {
                         
                         //background capsule
-                        Capsule().frame(width: CGFloat(capsuleWidth), height: capsuleHeight, alignment: .center)
+                        Capsule().frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
                             .foregroundColor(Color("charcoalColor"))
                         
                         //stack of category capsules - Cycle through categories
@@ -709,26 +779,32 @@ struct BarChart: View {
                                 //Layer number of category total over individual category capsule
                                 ZStack {
                                 
-                                    Capsule().frame(width: CGFloat(categoryTotalsArray[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((capsuleWidth / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
+                                    Capsule().frame(width: CGFloat(categoryTotalsArray[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
                                         .foregroundColor(Color("\(category)Color"))
                                     
                                     
                                     Text((categoryTotalsArray[dateIndex][index] > 0) ? "\(categoryTotalsArray[dateIndex][index], specifier: "%.0f")" : "")
-                                    
+                                        .opacity(
+                                            ((Float("\(Int(categoryTotalsArray[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+                                                >
+                                            (categoryTotalsArray[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
+                                            ? 0 : 1)
                                 }
                             }
                         }
                     }
+                    
                     .frame(height: capsuleHeight)
                     
                     //Total for the week (all categories)
                     Text("\(totalSums[dateIndex], specifier: "%.0f")")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(.yellow)
-                        .frame(width: 44, height: 40)
+                        .frame(width: 60, height: 40)
                     
                     
                 }
+                
             }
         }
     }
@@ -791,10 +867,10 @@ struct dayOfWeek: Identifiable {
     var nameOfDay: String
     var dateOfDay: Int
     var month: String
-    var fitness: Int
-    var chores: Int
-    var learning: Int
-    var custom: Int
+    var category1: Int
+    var category2: Int
+    var category3: Int
+    var category4: Int
     
 }
 
@@ -864,3 +940,10 @@ extension Date {
     }
 }
 
+extension String {
+   func widthOfString(usingFont font: UIFont) -> CGFloat {
+        let fontAttributes = [NSAttributedString.Key.font: font]
+        let size = self.size(withAttributes: fontAttributes)
+        return size.width
+    }
+}

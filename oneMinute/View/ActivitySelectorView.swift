@@ -17,7 +17,8 @@ struct ActivitySelectorView: View {
     @State var showingAlert = false
     @State private var alertInput = ""
     var allActivities: FetchedResults<Activity>
-
+    var categoryNames: [String]
+    
  
     var body: some View {
     
@@ -27,7 +28,7 @@ struct ActivitySelectorView: View {
             Color("\(activityToSave.category)Color")
         
             VStack {
-                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: activityToSave.category)
+                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: categoryNames[(Int(String(activityToSave.category.last!)) ?? 1) - 1])
                 
                 //MARK: - LIST
                 FilteredList(filter: activityToSave.category, passedActivityBinding: $activityToSave.activityName, showActivitySelector: $showActivitySelector)

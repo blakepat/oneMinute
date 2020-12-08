@@ -20,10 +20,12 @@ struct TextFieldAlert: View {
                 VStack {
                     Text("Add New Activity")
                         .font(.system(size: 22, weight: .semibold))
+                        .foregroundColor(.black)
                     TextField("New Activity", text: self.$text)
                         .multilineTextAlignment(.center)
                         .lineLimit(1)
                         .id(self.isShowing)
+                        .foregroundColor(.black)
                     Divider()
                     HStack {
                         Button(action: {

@@ -3,67 +3,67 @@
 <plist version="1.0">
 <array>
 	<array>
+		<string>category4</string>
 		<string>work</string>
-		<string>Work</string>
 	</array>
 	<array>
-		<string>chores</string>
+		<string>category3</string>
 		<string>Vacuum</string>
 	</array>
 	<array>
-		<string>chores</string>
+		<string>category3</string>
 		<string>Mop</string>
 	</array>
 	<array>
-		<string>chores</string>
+		<string>category3</string>
 		<string>Groceries</string>
 	</array>
 	<array>
-		<string>chores</string>
+		<string>category3</string>
 		<string>Deep Clean</string>
 	</array>
 	<array>
-		<string>chores</string>
+		<string>category3</string>
 		<string>Laundry</string>
 	</array>
 	<array>
-		<string>learning</string>
+		<string>category2</string>
 		<string>Read</string>
 	</array>
 	<array>
-		<string>learning</string>
+		<string>category2</string>
 		<string>In-Person Class</string>
 	</array>
 	<array>
-		<string>learning</string>
+		<string>category2</string>
 		<string>Online Class</string>
 	</array>
 	<array>
-		<string>learning</string>
+		<string>category2</string>
 		<string>Learn a New Language</string>
 	</array>
 	<array>
-		<string>learning</string>
+		<string>category2</string>
 		<string>Study</string>
 	</array>
 	<array>
-		<string>fitness</string>
+		<string>category1</string>
 		<string>Meditate</string>
 	</array>
 	<array>
-		<string>fitness</string>
+		<string>category1</string>
 		<string>Yoga</string>
 	</array>
 	<array>
-		<string>fitness</string>
+		<string>category1</string>
 		<string>Stretch</string>
 	</array>
 	<array>
-		<string>fitness</string>
+		<string>category1</string>
 		<string>Weightlifting</string>
 	</array>
 	<array>
-		<string>fitness</string>
+		<string>category1</string>
 		<string>Run</string>
 	</array>
 </array>
