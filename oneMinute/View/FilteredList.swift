@@ -19,18 +19,21 @@ struct FilteredList: View {
     
     var body: some View {
         List {
+            
             SearchBar(text: $searchText)
-
+            
             ForEach(fetchRequest.wrappedValue.filter({ searchText.isEmpty ? true : $0.name.contains(searchText) }), id: \.self) { activity in
                 Text(activity.name.capitalized)
                     .onTapGesture {
                         self.showActivitySelector = false
                         self.selectedActivity = activity.name.capitalized
                     }
+                    
             }.onDelete(perform: deleteActivity)
+            
         }
+        .resignKeyboardOnDragGesture()
     }
-
     
     func deleteActivity(at offsets: IndexSet) {
         for index in offsets {

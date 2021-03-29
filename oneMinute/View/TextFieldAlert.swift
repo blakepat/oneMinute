@@ -26,11 +26,13 @@ struct TextFieldAlert: View {
                         .lineLimit(1)
                         .id(self.isShowing)
                         .foregroundColor(.black)
+                        .ignoresSafeArea(.keyboard)
                     Divider()
                     HStack {
                         Button(action: {
                             withAnimation {
                                 self.isShowing.toggle()
+                                self.text = ""
                             }
                         }) {
                             Text("Dismiss")
@@ -47,6 +49,7 @@ struct TextFieldAlert: View {
                             withAnimation {
                                 addActivity(name: self.text, category: category)
                                 self.isShowing.toggle()
+                                self.text = ""
                                 
                             }
                         } label: {

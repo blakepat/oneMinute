@@ -32,6 +32,7 @@ struct AddActivityView: View {
     @State var showingAlert = false
     @State var showCalendar = false
     let categories = ["category1", "category2", "category3", "category4"]
+    @State var activityName = "Select Activity..."
     
     //MARK: - Category Names
     @Binding var category1Name: String
@@ -44,10 +45,7 @@ struct AddActivityView: View {
     
     var body: some View {
         
-        
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
-        
-        
         
         ZStack {
         
@@ -64,7 +62,7 @@ struct AddActivityView: View {
                     Color(.black)
                         .clipShape(RoundedRectangle(cornerRadius: 30))
                         .frame(width: 50, height: 8, alignment: .center)
-                        .padding(.top, 8)
+                        .padding(.top, 20)
                         .padding(.bottom, 0)
                         
                     Spacer()
@@ -90,26 +88,26 @@ struct AddActivityView: View {
                         }
                         
                 }
+                .padding(.bottom, 4)
                 
             //MARK: - Activity Type - (fitness, chores, learning, work)
                 HStack {
                     ForEach(Array(zip(categories, categories.indices)), id: \.0) { category, index in
-                        GeometryReader { geometry in
-                            //Current Selected Activity Category
-                            if activityToSave.category == category {
-                            
-                                ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: true)
+                        //Current Selected Activity Category
+                        if activityToSave.category == category {
+                        
+                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: true)
+                            .onTapGesture(count: 1, perform: {
+                                activityToSave.category = category
+                            })
+                        //Other 3 categories
+                        } else {
+                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false)
                                 .onTapGesture(count: 1, perform: {
                                     activityToSave.category = category
+                                    self.activityName = "Select Activity..."
+                                    self.activityToSave.activityName = "Select Activity..."
                                 })
-                            //Other 3 categories
-                            } else {
-                                ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false)
-                                    .onTapGesture(count: 1, perform: {
-                                        activityToSave.category = category
-                                        activityToSave.activityName = "Select Activity..."
-                                    })
-                            }
                         }
                     }
                 }
@@ -128,7 +126,7 @@ struct AddActivityView: View {
                     
                     ZStack(alignment: .leading) {
                         
-                        Text(activityToSave.activityName)
+                        Text(self.activityName)
                             .frame(width: screen.width - 50, height: 40, alignment: .leading)
                             .padding(.leading, 4)
                             .padding(.horizontal, 6)
@@ -138,7 +136,23 @@ struct AddActivityView: View {
                             .font(.system(size: 26))
                             .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                 self.showActivitySelector = true
-                            })  
+                            })
+                            //MARK: - ActivitySelectorView
+                            .sheet(isPresented: $showActivitySelector, onDismiss: {
+                                self.showActivitySelector = false
+                                self.activityName = self.activityToSave.activityName
+                                print(activityToSave.activityName)
+                                
+                            })
+                            {
+                                ActivitySelectorView(filter: activityToSave.category, showActivitySelector: $showActivitySelector, allActivities: activities, categoryNames: categoryNames)
+                                    .environmentObject(activityToSave)
+//                                            .frame(width: screen.width, height: screen.height)
+//                                            .offset(x: showActivitySelector ? 0 : screen.width)
+//                                            .offset(y: screen.minY)
+//                                            .offset(x: viewState.width)
+//                                            .animation(.easeInOut)
+                            }
                     }
                 }
                 
@@ -150,24 +164,26 @@ struct AddActivityView: View {
                         .padding(.top, 8)
                         .padding(.leading, 8)
                     
-                    HStack {
-                        
-                        //calendar image
-                        Image(systemName: "calendar")
-                            .padding(.leading, 8)
-                            .font(.system(size: 24))
-                        
-                        
-                        DatePicker("", selection: $selectedDate)
-                            .datePickerStyle(CompactDatePickerStyle())
-                            .frame(width: screen.width / 2, height: 50, alignment: .leading)
-                            .colorMultiply(.black)
-                            
-                        Spacer()
+                    VStack {
                     
+                        HStack {
+                            
+                            //calendar image
+                            Image(systemName: "calendar")
+                                .padding(.leading, 8)
+                                .font(.system(size: 24))
+                            
+                            
+                            DatePicker("", selection: $selectedDate)
+                                .datePickerStyle(CompactDatePickerStyle())
+                                .frame(width: screen.width / 2, height: 50, alignment: .leading)
+//                                .colorMultiply(.black)
+                                
+                            Spacer()
+                        
+                        }
+                        .padding(.vertical, 8)
                     }
-                    .padding(.vertical, 8)
-                
                 
             
                 }
@@ -334,22 +350,15 @@ struct AddActivityView: View {
             //End of VStack
             
             
-            //MARK: - ActivitySelectorView
-            ActivitySelectorView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, allActivities: activities, categoryNames: categoryNames)
-                    .environmentObject(activityToSave)
-                    .frame(width: screen.width, height: screen.height)
-                    .offset(x: showActivitySelector ? 0 : screen.width)
-                    .offset(y: screen.minY)
-                    .edgesIgnoringSafeArea(.all)
-                    .offset(x: viewState.width)
-                    .animation(.easeInOut)
             
+                    
             
             CategoryNameEditAlert(isShowing: $showingNameEditor, categoryNames: [$category1Name, $category2Name, $category3Name, $category4Name])
                 .offset(x: 0, y: self.showingNameEditor ? -100 : screen.height)
+                .animation(.easeInOut)
             
         }
-        
+//        .ignoresSafeArea(.keyboard)
     }
     
     

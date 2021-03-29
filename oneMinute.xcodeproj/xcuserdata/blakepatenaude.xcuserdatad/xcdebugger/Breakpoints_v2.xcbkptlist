@@ -3,4 +3,54 @@
    uuid = "1A6B01D0-FFC4-4AF7-84CE-B47A672DB94A"
    type = "1"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "24CDD78C-865C-41AF-B115-C3663B4885D6"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "oneMinute/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "699"
+            endingLineNumber = "699"
+            landmarkName = "monthData"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "24CDD78C-865C-41AF-B115-C3663B4885D6 - 3f2672944c19e6bf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "oneMinute.BarChart.monthData.getter : Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;"
+                  moduleName = "oneMinute"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/blakepatenaude/Desktop/SwiftUI/oneMinute/oneMinute/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "723"
+                  endingLineNumber = "723"
+                  offsetFromSymbolStart = "174">
+               </Location>
+               <Location
+                  uuid = "24CDD78C-865C-41AF-B115-C3663B4885D6 - 1c17e55f7bf7f58a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Array&lt;oneMinute.AddedActivity&gt;) -&gt; Swift.Array&lt;Swift.Float&gt; in oneMinute.BarChart.monthData.getter : Swift.Array&lt;Swift.Array&lt;Swift.Float&gt;&gt;"
+                  moduleName = "oneMinute"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/blakepatenaude/Desktop/SwiftUI/oneMinute/oneMinute/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "725"
+                  endingLineNumber = "725"
+                  offsetFromSymbolStart = "151">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

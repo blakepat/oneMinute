@@ -34,22 +34,25 @@ struct AddFavouriteView: View {
 
             //MARK: - List of all favourites
             List {
+
                 Section(header: ListHeader()) {
                     ForEach(activities.filter({ $0.favourite == true }), id: \.self) { favourite in
-                        
-                        FavouriteRow(favourite: favourite, categoryName: categoryNames[categories.firstIndex(of: favourite.category ?? "") ?? 0])
-                            .listRowBackground(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
-                            .onTapGesture {
-                                saveActivity(activity: favourite, notes: "", date: Date())
-                                showAddFavourite = false
-                            }
+                        HStack {
+                            FavouriteRow(favourite: favourite, categoryName: categoryNames[categories.firstIndex(of: favourite.category ?? "") ?? 0])
+                        }
+                        .frame(height: 30)
+                        .contentShape(Rectangle())
+                        .listRowBackground(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
+                        .onTapGesture {
+                            print("tap WORKING!")
+                            self.showAddFavourite = false
+                            self.saveActivity(activity: favourite, notes: "", date: Date())
+                        }
                     }
                     .onDelete(perform: deleteFavourite)
                 }
             }
             .listStyle(GroupedListStyle())
-            .clipped()
-            
         }
     }
     
@@ -112,10 +115,14 @@ struct FavouriteRow: View {
                     .foregroundColor(.white)
                 Text(categoryName).font(.subheadline).foregroundColor(.gray)
             }
+            .frame(height: 30)
+            .contentShape(Rectangle())
             Spacer()
             Text(String(format: "%.0f minutes", favourite.duration))
                 .foregroundColor(.white)
         }
+        .frame(height: 30)
+        .contentShape(Rectangle())
     }
 }
 

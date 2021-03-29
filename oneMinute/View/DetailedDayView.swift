@@ -9,12 +9,13 @@ import SwiftUI
 
 struct DetailedDayView: View {
     
-    var dailyData: FetchedResults<AddedActivity>
+//    var dailyData: FetchedResults<AddedActivity>
+    var dailyData: [AddedActivity]
+    
     @Binding var showEditScreen: Bool
     @State var showActivitySelector: Bool = false
     @ObservedObject var activityToSave: ActivityToSave
     @State var activityViewState = CGSize.zero
-    @Binding var useHours: Bool
     @Binding var date: Date
     @State var itemToDelete = AddedActivity()
     @State var showCategoryNameEditor = false
@@ -50,14 +51,15 @@ struct DetailedDayView: View {
         ZStack{
             
             //Background Color
-            Color.black
+            Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1))
+                .edgesIgnoringSafeArea(.all)
             VStack(alignment: .leading) {
                 
                 //MARK: - Pull down tap
                     HStack {
                         
                         Spacer()
-                        Color("charcoalColor")
+                        Color.black
                             .clipShape(RoundedRectangle(cornerRadius: 30))
                             .frame(width: 50, height: 8, alignment: .center)
                             .padding(.top, 8)
@@ -74,7 +76,6 @@ struct DetailedDayView: View {
                 
                 //Summary of day similar to summary of week on main screen
                 DaySummaryView(
-                    useHours: useHours,
                     sumOfWeeklyFitnessMinutes: dailyFitnessTotal,
                     sumOfWeeklyLearningMinutes: dailyLearningTotal,
                     sumOfWeeklyChoresMinutes: dailyChoresTotal,
@@ -101,9 +102,27 @@ struct DetailedDayView: View {
                             
                             ForEach(dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]}), id: \.self) { data in
                                 
-                                DetailedDayCatagorySectionItem(data: data, showEditScreen: $showEditScreen, activityToEdit: activityToSave, itemToDelete: $itemToDelete)
+                                DetailedDayCatagorySectionItem(
+                                    data: data,
+                                    showEditScreen: $showEditScreen,
+                                    activityToEdit: activityToSave,
+                                    itemToDelete: $itemToDelete,
+                                    showActivitySelector: $showActivitySelector,
+                                    activityToSave: activityToSave,
+                                    showCategoryNameEditor: $showCategoryNameEditor,
+                                    category1Name: $category1Name,
+                                    category2Name: $category2Name,
+                                    category3Name: $category3Name,
+                                    category4Name: $category4Name,
+                                    date: $date
+                                )
+//                                data: data,
+//                                showEditScreen: $showEditScreen,
+//                                activityToEdit: activityToSave,
+//                                itemToDelete: $itemToDelete
+                                
                                     .frame(width: screen.width - 28, alignment: .leading)
-                                    .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                                    .background(Color.black)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 2)
@@ -116,41 +135,12 @@ struct DetailedDayView: View {
                 }
                 .frame(width: screen.width, alignment: .leading)
                 .padding(.bottom, 30)
+                
                 Spacer()
+                
             }
         }
-        .frame(width: screen.width)
-        
-        
-        //MARK: - Add activity view
-        AddActivityView(showActivitySelector: $showActivitySelector, activityToSave: activityToSave, showAddActivity: $showEditScreen, isEditScreen: true, selectedDate: $date, itemToDelete: $itemToDelete, showingNameEditor: $showCategoryNameEditor, category1Name: $category1Name, category2Name: $category2Name, category3Name: $category3Name, category4Name: $category4Name)
-            .environmentObject(activityToSave)
-            .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-            .frame(width: screen.width, height: screen.height, alignment: .leading)
-            .offset(x: 0, y: showEditScreen ? 0 : screen.height)
-            .offset(y: activityViewState.height)
-            .animation(.easeInOut)
-            .gesture(
-                DragGesture()
-                    .onChanged({ (value) in
-                        
-                        if self.activityViewState.height > -1 {
-                            self.activityViewState = value.translation
-                        }
-                    })
-                    .onEnded({ (value) in
-                        if self.activityViewState.height > 100 {
-                            self.showEditScreen = false
-                            self.showActivitySelector = false
-                            
-                            resetActivity(activityToSave)
-                            
-                        }
-                        self.activityViewState = .zero
-                    })
-            )
-        
-        
+        .frame(width: screen.width, height: screen.height)
     }
     
     //MARK: - Reset Activity Function
@@ -172,6 +162,18 @@ struct DetailedDayCatagorySectionItem: View {
     @Binding var showEditScreen: Bool
     @ObservedObject var activityToEdit: ActivityToSave
     @Binding var itemToDelete: AddedActivity
+    @Binding var showActivitySelector: Bool
+    @ObservedObject var activityToSave: ActivityToSave
+    @Binding var showCategoryNameEditor: Bool
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
+    @Binding var date: Date
+    
+    
+    
+
     
         var body: some View {
             
@@ -203,7 +205,7 @@ struct DetailedDayCatagorySectionItem: View {
                     .frame(width: 70, height: 40, alignment: .center)
                     .font(.system(size: 16))
                     .foregroundColor(.white)
-                    .background(Color(.black))
+                    .background(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding()
                     .onTapGesture {
@@ -218,15 +220,45 @@ struct DetailedDayCatagorySectionItem: View {
                         
                         self.showEditScreen.toggle()
                     }
+                    .sheet(isPresented: $showEditScreen, onDismiss: {
+                        self.showEditScreen = false
+                        self.showActivitySelector = false
+                        resetActivity(activityToSave)
+                    }) {
+                        //MARK: - Add activity view
+                        AddActivityView(
+                            showActivitySelector: $showActivitySelector,
+                            activityToSave: activityToSave,
+                            showAddActivity: $showEditScreen,
+                            isEditScreen: true,
+                            selectedDate: $date,
+                            itemToDelete: $itemToDelete,
+                            showingNameEditor: $showCategoryNameEditor,
+                            category1Name: $category1Name,
+                            category2Name: $category2Name,
+                            category3Name: $category3Name,
+                            category4Name: $category4Name
+                        )
+                        .environmentObject(activityToSave)
+                    }
             }
         }
+    
+    //MARK: - Reset Activity Function
+    private func resetActivity(_ : ActivityToSave) {
+        activityToSave.activityName = "Select Activity"
+        activityToSave.category = "category1"
+        activityToSave.hours = 0
+        activityToSave.minutes = 0
+        activityToSave.notes = ""
+    }
+    
 }
 
 
 //MARK: - Summary View
 struct DaySummaryView: View {
     
-    var useHours: Bool
     var sumOfWeeklyFitnessMinutes: Float
     var sumOfWeeklyLearningMinutes: Float
     var sumOfWeeklyChoresMinutes: Float
@@ -244,7 +276,7 @@ struct DaySummaryView: View {
         VStack {
             HStack {
                 HStack {
-                    Text("Total Daily Minutes: \(totalSum, specifier: "%.0f") (\(totalSum / 60, specifier: "%.1f") hours) ")
+                    Text("Total Daily Minutes: \(totalSum, specifier: "%.0f") \n(\(totalSum / 60, specifier: "%.1f") hours) ")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(Color("defaultYellow"))
                     Text("")
@@ -284,7 +316,7 @@ struct DaySummaryView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+        .background(Color.black)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .padding(.horizontal)
     }

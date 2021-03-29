@@ -18,45 +18,6 @@ struct ContentView: View {
     @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [])
     var allSavedActivities:FetchedResults<AddedActivity>
     
-//    //**************************************************************************
-//    //MARK: - FETCH CURRENT WEEK FOR EACH CATEGORY
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category1")]))
-//    var FetchedThisWeekFitnessResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category2")]))
-//    var FetchedThisWeekLearningResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category3")]))
-//    var FetchedThisWeekChoresResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category4")]))
-//    var FetchedThisWeekWorkResults : FetchedResults<AddedActivity>
-//    //SUM OF DURATION
-//    var thisWeekFitnessSum: Float { FetchedThisWeekFitnessResults.reduce(0) { $0 + $1.duration }}
-//    var thisWeekLearningSum: Float { FetchedThisWeekLearningResults.reduce(0) { $0 + $1.duration }}
-//    var thisWeekChoresSum: Float { FetchedThisWeekChoresResults.reduce(0) { $0 + $1.duration }}
-//    var thisWeekWorkSum: Float { FetchedThisWeekWorkResults.reduce(0) { $0 + $1.duration }}
-    
-    //**************************************************************************
-//    //MARK: - FETCH LAST WEEK FOR EACH CATEGORY
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category1")]))
-//    var FetchedLastWeekFitnessResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category2")]))
-//    var FetchedLastWeekLearningResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category3")]))
-//    var FetchedLastWeekChoresResults : FetchedResults<AddedActivity>
-//
-//    @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [], predicate: NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate(format: "timestamp > %@", (Date().startOfWeek().addingTimeInterval(-7*24*60*60)) as CVarArg), NSPredicate(format: "timestamp < %@", Date().startOfWeek() as CVarArg), NSPredicate(format: "category CONTAINS %@", "category4")]))
-//    var FetchedLastWeekWorkResults : FetchedResults<AddedActivity>
-//
-//    //SUM OF DURATION
-//    var lastWeekFitnessSum: Float { FetchedLastWeekFitnessResults.reduce(0) { $0 + $1.duration }}
-//    var lastWeekLearningSum: Float { FetchedLastWeekLearningResults.reduce(0) { $0 + $1.duration }}
-//    var lastWeekChoresSum: Float { FetchedLastWeekChoresResults.reduce(0) { $0 + $1.duration }}
-//    var lastWeekWorkSum: Float { FetchedLastWeekWorkResults.reduce(0) { $0 + $1.duration }}
-    
     //**************************************************************************
     //MARK: - VARIABLES
     @State private var newActivity = ""
@@ -67,6 +28,7 @@ struct ContentView: View {
     @State var showAddFavourite = false
     @State var showEditScreen = false
     @State var showCategoryNameEditor = false
+    @State var showHistoryView = false
     
     @State var useHours = false
     @State var activityViewState = CGSize.zero
@@ -90,8 +52,10 @@ struct ContentView: View {
     }
     
     var lastWeek : [Date] {
-        Array(stride(from: Date().startOfWeek().addingTimeInterval(-7*24*60*60), to: Date().startOfWeek(), by:  60*60*24))
+        Array(stride(from: Date().startOfWeek().addingTimeInterval(-6*24*60*60), to: Date().startOfWeek(), by:  60*60*24))
     }
+    
+    let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
     
     
     //MARK: - Body
@@ -106,9 +70,10 @@ struct ContentView: View {
             VStack {
                 //Week Toggle at top
                 WeekToggle(showLastWeek: $showLastWeek, dateSelected: $selectedDate)
+                    .padding(.top, 4)
                 //Current Date
                 //Week Dates Button
-                HStack() {
+                HStack {
                     
                     Image(systemName: "calendar.circle")
                         .font(.system(size: 36))
@@ -118,16 +83,92 @@ struct ContentView: View {
                     
                     DatePicker("", selection: $selectedDate, displayedComponents: .date)
                         .datePickerStyle(CompactDatePickerStyle())
-                        .colorMultiply(.black)
-                        .frame(width: 50, height: 50, alignment: .leading)
-                        .colorInvert()
+                        .frame(width: 100, height: 50, alignment: .leading)
                         
-                    
+                        
                     Spacer()
                     
+                    //Buttons
+                    HStack(spacing: 0) {
+                        
+                        
+                        ShowHistoryViewButton()
+                            .frame(width: 40)
+                            .frame(height: 40)
+                            .padding(.vertical, 8)
+//                            .padding(.horizontal, 8)
+                            .onTapGesture {
+                                self.showHistoryView.toggle()
+                            }
+                            .sheet(isPresented: $showHistoryView, onDismiss: {
+                                self.showHistoryView = false
+                            }) {
+                                //MARK: - show history view
+                                ActivityHistory()
+                            }
+                        
+                        
+                        //Add Activity Button
+                        AddFavouriteButton()
+                            .frame(width: 40)
+                            .frame(height: 40)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 8)
+                            .onTapGesture {
+                                self.showAddFavourite.toggle()
+                            }
+                            .sheet(isPresented: $showAddFavourite, onDismiss: {
+                                self.showAddFavourite = false
+                                resetActivity(activityToSave)
+                            }) {
+                                //MARK: - Add Favourite View
+                                //Add activity view
+                                AddFavouriteView(
+                                    activityToSave: activityToSave,
+                                    activities: allSavedActivities,
+                                    showAddFavourite: $showAddFavourite,
+                                    category1Name: $category1Name,
+                                    category2Name: $category2Name,
+                                    category3Name: $category3Name,
+                                    category4Name: $category4Name
+                                
+                                )
+                                .environmentObject(activityToSave)
+                            }
+                        //Add Activity Button
+                        AddActivityButton()
+                            .frame(width: 40)
+                            .padding(.vertical, 0)
+                            .onTapGesture {
+                                self.showAddActivity.toggle()
+                            }
+                            .sheet(isPresented: $showAddActivity, onDismiss: {
+                                self.showAddActivity = false
+                                self.showActivitySelector = false
+                                self.showCategoryNameEditor = false
+                                resetActivity(activityToSave)
+                            }) {
+                                //MARK: - Add activity view
+                                AddActivityView(
+                                    showActivitySelector: $showActivitySelector,
+                                    activityToSave: activityToSave,
+                                    showAddActivity: $showAddActivity,
+                                    isEditScreen: false,
+                                    selectedDate: $daySelected,
+                                    itemToDelete: $activityToDelete,
+                                    showingNameEditor: $showCategoryNameEditor,
+                                    category1Name: $category1Name,
+                                    category2Name: $category2Name,
+                                    category3Name: $category3Name,
+                                    category4Name: $category4Name
+                                )
+//                                .offset(y: 40)
+                            }
+                    }
+                    .padding(.trailing, 16)
                 }
                 .frame(height: 16)
-                .padding(.horizontal, 16)
+                .padding(.leading, 16)
                 .padding(.leading, screen.size.width * 0.03)
                 .padding(.vertical, 8)
                 //Week Summary
@@ -142,56 +183,40 @@ struct ContentView: View {
                 )
                 
                 //View of days of the week
-                DayScrollView(showDetailedDayView: $showDetailedDay, detailedDayViewState: $detailedDayViewState, daySelected: $daySelected, selectedDate: $selectedDate, allData: allSavedActivities)
-                    .padding(.leading, screen.size.width * 0.01)
+                DayScrollView(
+                    showDetailedDayView: $showDetailedDay,
+                    detailedDayViewState: $detailedDayViewState,
+                    daySelected: $daySelected,
+                    selectedDate: $selectedDate,
+                    showEditScreen: $showEditScreen,
+                    activityToSave: activityToSave,
+                    category1Name: $category1Name,
+                    category2Name: $category2Name,
+                    category3Name: $category3Name,
+                    category4Name: $category4Name,
+                    weekOnlyData: allSavedActivities.filter({ $0.timestamp! > selectedDate.startOfWeek() && $0.timestamp! < selectedDate.startOfWeek().addingTimeInterval(60*60*24*7) })
+                )
+                .padding(.leading, screen.size.width * 0.01)
                     
-                
-                
                      
                 
                 //MARK: - Last 5 Weeks Chart and Buttons
                 VStack(alignment: .leading, spacing: 0) {
                     
-                    //Title
-                    Text("Last 5 Weeks")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(.bottom, 4)
-                        .foregroundColor(.white)
-                    
                     HStack(spacing: 0) {
                     
                         //Chart
-                        BarChart(data: allSavedActivities)
-
-
-                        //Buttons
-                        HStack {
-                            Spacer()
-                            VStack(spacing: 0) {
-                                
-                                
-                                //Add Activity Button
-                                AddFavouriteButton()
-                                    .frame(height: 50)
-                                    .padding(.vertical, 8)
-                                    .onTapGesture {
-                                        self.showAddFavourite.toggle()
-                                    }
-                                //Add Activity Button
-                                AddActivityButton()
-                                    .padding(.vertical, 0)
-                                    .onTapGesture {
-                                        self.showAddActivity.toggle()
-                                    }
-                            }
-                            .padding(.bottom, 16)
-                        }
-                        .frame(width: 20)
-                        
+                        BarChart(
+                            selectedDate: $selectedDate,
+                            weekOneData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*24*7)}),
+                            weekTwoData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*24*7)}),
+                            weekThreeData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*24*7)}),
+                            weekFourData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*24*7)})
+                        )
                         Spacer()
-                        
                     }
                 }
+                .frame(width: screen.size.width - 50)
                 .padding(.leading, screen.size.width * 0.03)
                 .padding(.horizontal)
                 .padding(.vertical, 2)
@@ -202,145 +227,9 @@ struct ContentView: View {
               
             }
             .padding(.horizontal, 16)
-            //**************************************
-            //End of VStack
-            //MARK: - Blur View
-            //Background Blur view (Shown while add activity is open)
-            BlurView(style: .systemThinMaterialDark).edgesIgnoringSafeArea(.all)
-                .opacity((showAddActivity || showAddFavourite || showDetailedDay ) ? 0.6 : 0)
-                .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                    self.showAddActivity = false
-                    self.showAddFavourite = false
-                    self.showActivitySelector = false
-                    self.showDetailedDay = false
-                    self.showEditScreen = false
-                    self.showCategoryNameEditor = false
-                    resetActivity(activityToSave)
-                })
-        
-            //MARK: - Add activity view
-            AddActivityView(
-                showActivitySelector: $showActivitySelector,
-                activityToSave: activityToSave,
-                showAddActivity: $showAddActivity,
-                isEditScreen: false,
-                selectedDate: $daySelected,
-                itemToDelete: $activityToDelete,
-                showingNameEditor: $showCategoryNameEditor,
-                category1Name: $category1Name,
-                category2Name: $category2Name,
-                category3Name: $category3Name,
-                category4Name: $category4Name
-            )
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
-                .offset(x: 0, y: showAddActivity ? 60 : screen.height)
-                .offset(y: activityViewState.height)
-                .animation(.easeInOut)
-                .gesture(
-                    DragGesture()
-                        .onChanged({ (value) in
-                            
-                            if self.activityViewState.height > -1 {
-                                self.activityViewState = value.translation
-                            }
-                        })
-                        .onEnded({ (value) in
-                            if self.activityViewState.height > 100 {
-                                self.showAddActivity = false
-                                self.showActivitySelector = false
-                                self.showCategoryNameEditor = false
-                                
-                                resetActivity(activityToSave)
-                                
-                            }
-                            self.activityViewState = .zero
-                        })
-                )
-            
-            
-            //MARK: - Add Favourite View
-            //Add activity view
-            AddFavouriteView(
-                activityToSave: activityToSave,
-                activities: allSavedActivities,
-                showAddFavourite: $showAddFavourite,
-                category1Name: $category1Name,
-                category2Name: $category2Name,
-                category3Name: $category3Name,
-                category4Name: $category4Name
-            
-            )
-                .environmentObject(activityToSave)
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
-                .offset(x: 0, y: showAddFavourite ? 60 : screen.height)
-                .offset(y: favouriteViewState.height)
-                .animation(.easeInOut)
-                .gesture(
-                    DragGesture()
-                        .onChanged({ (value) in
-                            
-                            if self.favouriteViewState.height > -1 {
-                                self.favouriteViewState = value.translation
-                            }
-                        })
-                        .onEnded({ (value) in
-                            if self.favouriteViewState.height > 100 {
-                                self.showAddFavourite = false
-
-                                resetActivity(activityToSave)
-                            }
-                            self.favouriteViewState = .zero
-                        })
-                )
-            
-            
-            
-            //MARK: - Show DetailedDayView
-            DetailedDayView(
-                dailyData:  allSavedActivities,
-                showEditScreen: $showEditScreen,
-                activityToSave: activityToSave,
-                useHours: $useHours, date: $daySelected,
-                category1Name: $category1Name,
-                category2Name: $category2Name,
-                category3Name: $category3Name,
-                category4Name: $category4Name
-            )
-                .clipShape(RoundedRectangle(cornerRadius: 30, style: .continuous))
-                .environmentObject(activityToSave)
-                .frame(width: screen.width, height: screen.height - 60, alignment: .leading)
-                .offset(x: 0, y: showDetailedDay ? 60 : screen.height)
-                .offset(y: detailedDayViewState.height)
-                .animation(.easeInOut)
-                .gesture(
-                    DragGesture()
-                        .onChanged({ (value) in
-                            if self.detailedDayViewState.height > -1 {
-                                self.detailedDayViewState = value.translation
-                            }
-                            
-                        })
-                        .onEnded({ (value) in
-                            if self.detailedDayViewState.height > 100 {
-                                resetActivity(activityToSave)
-                                self.showDetailedDay = false
-                                
-                            }
-                            self.detailedDayViewState = .zero
-                        })
-                )
         }
     //end of body
     }
-    
-    
-    
-    
-    
-    
-    //MARK: - Functions
     
     
     //MARK: - Reset Activity Function
@@ -352,14 +241,15 @@ struct ContentView: View {
         activityToSave.notes = ""
     }
     
-}
+    private let itemFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
 
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .medium
-    formatter.timeStyle = .none
-    return formatter
-}()
+    
+}
 
 
 
@@ -378,7 +268,7 @@ struct WeekToggle: View {
                     .frame(width: screen.size.width / 2 - 1)
                     .onTapGesture(count: 1, perform: {
                         showLastWeek = true
-                        dateSelected = Date().startOfWeek().addingTimeInterval(-7*24*60*60)
+                        dateSelected = Date().startOfWeek().addingTimeInterval(-6*24*60*60)
                         
                     })
 
@@ -392,7 +282,7 @@ struct WeekToggle: View {
                     .frame(width: screen.size.width / 2 - 1)
                     .onTapGesture(count: 1, perform: {
                         showLastWeek = false
-                        dateSelected = Date().startOfWeek()
+                        dateSelected = Date()
                     })
                 
             }
@@ -444,6 +334,8 @@ struct SummaryView: View {
     var useHours: Bool
     var selectedDate: Date
     var allData: FetchedResults<AddedActivity>
+    @State var summaryChanger = "weekly"
+    @State var totalSummary = ""
     
     //Category Names
     @Binding var category1Name: String
@@ -452,11 +344,11 @@ struct SummaryView: View {
     @Binding var category4Name: String
     
     var body: some View {
-    
+        
         VStack {
             HStack {
                 HStack {
-                    Text("Total Weekly Minutes: \(Int(allData.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))")
+                    Text("Total \(summaryChanger.capitalized) Minutes: \(totalSummary(summaryChanger: summaryChanger, results: allData))")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(Color("defaultYellow"))
                     Text("")
@@ -468,29 +360,65 @@ struct SummaryView: View {
             
             ZStack {
                 VStack(alignment: .center) {
+                    
+                    //Top 2 Categories
                     HStack(alignment: .top) {
-                        Text("\(category1Name.capitalized): \(Int(allData.filter({$0.category == "category1" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))")
+                        Text("\(category1Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category1"))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                         
-                        Text("\(category2Name.capitalized): \(Int(allData.filter({$0.category == "category2" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))  ")
+                        Text("\(category2Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category2"))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                     }
-                    .padding(.vertical, 6)
-                    
+                    .font(.system(size: 16, weight: .semibold))
+
+                    //Bottom 2 categories
                     HStack(alignment: .top) {
-                        Text("\(category3Name.capitalized): \(Int(allData.filter({$0.category == "category3" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))  ")
+                        Text("\(category3Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category3"))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("\(category4Name.capitalized): \(Int(allData.filter({$0.category == "category4" && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration })) ")
+                        Text("\(category4Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category4"))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
                     }
-                    .padding(.all, 4)
+                    .padding(.horizontal, 4)
+                    .padding(.vertical, 2)
+                    .font(.system(size: 16, weight: .semibold))
+                    
+                    
+                    //Summary changer
+                    HStack {
+                        
+                        Text("Weekly")
+                            .foregroundColor(summaryChanger == "weekly" ? .white : .gray)
+                            .onTapGesture {
+                                self.summaryChanger = "weekly"
+                            }
+                            
+                        Divider()
+                        
+                        Text("Monthly")
+                            .foregroundColor(summaryChanger == "monthly" ? .white : .gray)
+                            .onTapGesture {
+                                self.summaryChanger = "monthly"
+                            }
+                        
+                        Divider()
+                        
+                        Text("Yearly")
+                            .foregroundColor(summaryChanger == "yearly" ? .white : .gray)
+                            .onTapGesture {
+                                self.summaryChanger = "yearly"
+                            }
+                    }
+                    .padding(.top, 4)
+                    
+                    
+                    
                     
                 }
-                .font(.system(size: 16, weight: .semibold))
+                .font(.system(size: 14))
                 .foregroundColor(.white)
                 .padding(.bottom)
             }
@@ -500,6 +428,34 @@ struct SummaryView: View {
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .padding(.horizontal)
     }
+    
+    
+    func totalSummary(summaryChanger: String, results: FetchedResults<AddedActivity>) -> String {
+                
+        if summaryChanger == "weekly" {
+            return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+        } else if summaryChanger == "monthly" {
+            return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
+        } else {
+            return String(Int(results.reduce(0) { $0 + $1.duration }))
+        }
+    }
+    
+    
+    func categorySummary(summaryChanger: String, results: FetchedResults<AddedActivity>, category: String) -> String {
+        
+        if summaryChanger == "weekly" {
+            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+        } else if summaryChanger == "monthly" {
+            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
+        } else {
+            return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+        }
+        
+    }
+    
+    
+    
 }
 
 //MARK: - Day Scroll View
@@ -520,10 +476,16 @@ struct DayScrollView: View {
     @Binding var detailedDayViewState: CGSize
     @Binding var daySelected: Date
     @Binding var selectedDate: Date
+    @Binding var showEditScreen: Bool
+    @ObservedObject var activityToSave: ActivityToSave
+    @Binding var category1Name: String
+    @Binding var category2Name: String
+    @Binding var category3Name: String
+    @Binding var category4Name: String
     
     @StateObject var scrollObject = ScrollToModel()
     
-    var allData: FetchedResults<AddedActivity>
+    var weekOnlyData: [AddedActivity]
     
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
@@ -533,12 +495,11 @@ struct DayScrollView: View {
     
     var body: some View {
         
-        let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.startOfWeek().addingTimeInterval(60*60*25*6))
+        let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.startOfWeek().addingTimeInterval(60*60*24*6))
         
         ScrollView(.horizontal) {
             
             ScrollViewReader { sp in
-       
             
                 HStack(spacing: 4) {
                     //Cycle through days of either last week or this week
@@ -554,7 +515,10 @@ struct DayScrollView: View {
                                 }.padding(.vertical, 4)
                                 ScrollView(.vertical) {
                                     //For each day fill in information if dates match
-                                    ForEach(allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
+                                    ForEach(weekOnlyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
+                                        
+                                        Print(day)
+                                        
                                         ActivityItem(item: data)
                                             .padding(.bottom, 2)
                                             .frame(width: 132)
@@ -562,7 +526,7 @@ struct DayScrollView: View {
                                 }
                                 Spacer()
                                 
-                                let dailyTotal = allData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}).reduce(0) {$0 + $1.duration}
+                                let dailyTotal = weekOnlyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}).reduce(0) {$0 + $1.duration}
                                 
                                 Text("Total: \(dailyTotal, specifier: "%.0f")")
                                     .font(.system(size: 16, weight: .semibold))
@@ -570,14 +534,33 @@ struct DayScrollView: View {
                                     .padding(.bottom, 8)
                             }
                             .contentShape(Rectangle())
-                            .onTapGesture {
-                                print("DAY TAPPED *Show DetailedDayView* ")
-                                self.daySelected = day
-                                self.showDetailedDayView = true
-                            }
+                           
                         }
                         .background((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("grayBackground") : Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                         .frame(width: 160, height: screen.size.height * 0.276, alignment: .center)
+                        .onTapGesture {
+                            print("DAY TAPPED *Show DetailedDayView* ")
+                            self.daySelected = day
+                            self.showDetailedDayView = true
+                        }
+                        .sheet(isPresented: $showDetailedDayView, onDismiss: {
+                            resetActivity(activityToSave)
+
+                        }) {
+                            //MARK: - Show DetailedDayView
+                            DetailedDayView(
+                                dailyData:  weekOnlyData,
+                                showEditScreen: $showEditScreen,
+                                activityToSave: activityToSave,
+                                date: $daySelected,
+                                category1Name: $category1Name,
+                                category2Name: $category2Name,
+                                category3Name: $category3Name,
+                                category4Name: $category4Name
+                            )
+                            .environmentObject(activityToSave)
+                            .offset(y: 40)
+                        }
                     }
                 }
                 .onReceive(scrollObject.$direction) { action in
@@ -603,6 +586,15 @@ struct DayScrollView: View {
         .onAppear(perform: {
             scrollObject.direction = .point(point: Calendar.current.dateComponents([.day], from: selectedDate.startOfWeek(), to: selectedDate).day ?? 0)
         })
+    }
+    
+    //MARK: - Reset Activity Function
+    private func resetActivity(_ : ActivityToSave) {
+        activityToSave.activityName = "Select Activity"
+        activityToSave.category = "category1"
+        activityToSave.hours = 0
+        activityToSave.minutes = 0
+        activityToSave.notes = ""
     }
 }
 
@@ -682,69 +674,51 @@ struct dayView: View {
 
 //MARK: - Chart Structs
 struct BarChart: View {
+              
+    @Binding var selectedDate: Date
+    var weekOneData: [AddedActivity]
+    var weekTwoData: [AddedActivity]
+    var weekThreeData: [AddedActivity]
+    var weekFourData: [AddedActivity]
+                                
     
-    var data: FetchedResults<AddedActivity>
+    let capsuleWidth: CGFloat = screen.size.width * 0.80 - 60
+    let capsuleHeight: CGFloat = 40
     
-    let capsuleWidth: CGFloat = screen.size.width * 0.80 - 90
-    let capsuleHeight: CGFloat = 32
+    let categories = ["category1", "category2", "category3", "category4"]
     
-    let catagories = ["category1", "category2", "category3", "category4"]
-    
+                                
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
         df.dateFormat = "MMM d"
         return df
     }()
     
-    let dates = [Date(), Date().addingTimeInterval(-60*60*24*6), Date().addingTimeInterval(-60*60*24*13), Date().addingTimeInterval(-60*60*24*20), Date().addingTimeInterval(-60*60*24*27)]
+    let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
     
-    
-    
-    var week1FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1"}).reduce(0) { $0 + $1.duration }}
-    var week1LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
-    var week1ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
-    var week1WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
-    
-    var week2FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
-    var week2LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
-    var week2ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
-    var week2WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
-
-    var week3FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
-    var week3LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
-    var week3ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
-    var week3WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
-
-    var week4FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
-    var week4LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
-    var week4ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
-    var week4WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4"  }).reduce(0) { $0 + $1.duration }}
-
-    var week5FitnessSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6)  && $0.category == "category1" }).reduce(0) { $0 + $1.duration }}
-    var week5LearningSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category2" }).reduce(0) { $0 + $1.duration }}
-    var week5ChoresSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category3" }).reduce(0) { $0 + $1.duration }}
-    var week5WorkSum: Float { data.filter({ $0.timestamp ?? Date() > dates[4].startOfWeek() && $0.timestamp ?? Date() < dates[4].startOfWeek().advanced(by: 60*60*25*6) && $0.category == "category4" }).reduce(0) { $0 + $1.duration }}
-
-    
-    
+    var monthData: [[Float]] { [weekOneData, weekTwoData, weekThreeData, weekFourData].map { week in
+        
+        var data = [Float]()
+        
+            for categoryName in categories {
+                let total = week.filter({ $0.category == categoryName} ).reduce(0) { $0 + $1.duration }
+                
+                data.append(total)
+            }
+        
+        return data
+        }
+    }
+                     
     var body: some View {
         
-        
-        
-        //array of all the weekly sums for each category
-        let categoryTotalsArray: [[Float]] =
-            [[week1FitnessSum, week1LearningSum, week1ChoresSum, week1WorkSum],
-            [week2FitnessSum, week2LearningSum, week2ChoresSum, week2WorkSum],
-            [week3FitnessSum, week3LearningSum, week3ChoresSum, week3WorkSum],
-            [week4FitnessSum, week4LearningSum, week4ChoresSum, week4WorkSum],
-            [week5FitnessSum, week5LearningSum, week5ChoresSum, week5WorkSum]]
         //array of the totals of all categories per week
         let totalSums: [Float] = [
-            categoryTotalsArray[0].reduce(0, +),
-            categoryTotalsArray[1].reduce(0, +),
-            categoryTotalsArray[2].reduce(0, +),
-            categoryTotalsArray[3].reduce(0, +),
-            categoryTotalsArray[4].reduce(0, +)]
+            monthData[0].reduce(0, +),
+            monthData[1].reduce(0, +),
+            monthData[2].reduce(0, +),
+            monthData[3].reduce(0, +)
+        ]
         
         
         let highestTotal = totalSums.max()
@@ -755,74 +729,66 @@ struct BarChart: View {
             //Bar Stack - Cycle through dates
             ForEach(Array(zip(dates, dates.indices)), id: \.0) { date, dateIndex in
     
-                HStack(alignment: .center, spacing: 0) {
-                    //Date text
-                    Text("\(date.startOfWeek(), formatter: dateFormatter)\n \(date.startOfWeek().advanced(by: 60*60*25*6), formatter: dateFormatter)")
-                        .foregroundColor(.white)
-                        .font(.system(size: 14))
-                        .frame(width: 56, height: 40, alignment: .center)
-                        .background(Color("charcoalColor"))
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .padding(.trailing, 4)
+                ZStack {
                     
-                    //Bar
-                    ZStack(alignment: .leading) {
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .foregroundColor(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                         
-                        //background capsule
-                        Capsule().frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
-                            .foregroundColor(Color("charcoalColor"))
+                    
+                    
+                    HStack(alignment: .center, spacing: 0) {
+                        //Date text
+                        Text("\(date.startOfWeek().advanced(by: 61*60*24*6), formatter: dateFormatter) -\n\(date.startOfWeek(), formatter: dateFormatter)")
+                            .foregroundColor(.white)
+                            .font(.system(size: 13, weight: .semibold))
+                            .frame(width: 58, height: capsuleHeight + 8, alignment: .center)
+                            .padding(.trailing, 4)
+                            .padding(.horizontal, 4)
                         
-                        //stack of category capsules - Cycle through categories
-                        HStack(alignment: .center, spacing: 0) {
-                            ForEach(Array(zip(catagories, catagories.indices)), id: \.0) { category, index in
-                                
-                                //Layer number of category total over individual category capsule
-                                ZStack {
-                                
-                                    Capsule().frame(width: CGFloat(categoryTotalsArray[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
-                                        .foregroundColor(Color("\(category)Color"))
+                        //Bar
+                        ZStack(alignment: .leading) {
+                            
+                            //background capsule
+                            Capsule().frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
+                                .foregroundColor(Color("charcoalColor"))
+                            
+                            //stack of category capsules - Cycle through categories
+                            HStack(alignment: .center, spacing: 0) {
+                                ForEach(Array(zip(categories, categories.indices)), id: \.0) { category, index in
                                     
+                                    //Layer number of category total over individual category capsule
+                                    ZStack {
                                     
-                                    Text((categoryTotalsArray[dateIndex][index] > 0) ? "\(categoryTotalsArray[dateIndex][index], specifier: "%.0f")" : "")
-                                        .opacity(
-                                            ((Float("\(Int(categoryTotalsArray[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
-                                                >
-                                            (categoryTotalsArray[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
-                                            ? 0 : 1)
+                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
+                                            .foregroundColor(Color("\(category)Color"))
+                                        
+                                        
+                                        Text((monthData[dateIndex][index] > 0) ? "\(monthData[dateIndex][index], specifier: "%.0f")" : "")
+                                            .opacity(
+                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+                                                    >
+                                                (monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
+                                                ? 0 : 1)
+                                    }
                                 }
                             }
                         }
+                        
+                        .frame(height: capsuleHeight)
+                        
+                        //Total for the week (all categories)
+                        Text("\(totalSums[dateIndex], specifier: "%.0f")")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.yellow)
+                            .frame(width: 52, height: 40)
+                        
+                        
                     }
-                    
-                    .frame(height: capsuleHeight)
-                    
-                    //Total for the week (all categories)
-                    Text("\(totalSums[dateIndex], specifier: "%.0f")")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.yellow)
-                        .frame(width: 60, height: 40)
-                    
-                    
                 }
-                
+                .onTapGesture {
+                    selectedDate = date.startOfWeek()
+                }
             }
-        }
-    }
-}
-
-
-
-
-
-//MARK: - Button Structs
-struct SettingsButton: View {
-    
-    var body: some View {
-        ZStack {
-            Image(systemName: "line.horizontal.3.circle.fill")
-                .foregroundColor(.gray)
-                .font(.system(size: 44))
-                .padding()
         }
     }
 }
@@ -840,8 +806,8 @@ struct AddActivityButton: View {
             
             LinearGradient(gradient: Gradient(colors: colorArray), startPoint: .topLeading, endPoint: .bottomTrailing)
                 .mask(Image(systemName: "plus.circle.fill")
-                        .font(.system(size: 44)))
-                .frame(width: 44, height: 44, alignment: .center)
+                        .font(.system(size: 40)))
+                .frame(width: 40, height: 40, alignment: .center)
             
         }
     }
@@ -853,7 +819,20 @@ struct AddFavouriteButton: View {
         ZStack {
             Image(systemName: "bookmark.circle.fill")
                 .foregroundColor(.yellow)
-                .font(.system(size: 44))
+                .font(.system(size: 40))
+                .padding()
+        }
+    }
+}
+
+
+struct ShowHistoryViewButton: View {
+    
+    var body: some View {
+        ZStack {
+            Image(systemName: "book.circle.fill")
+                .foregroundColor(Color(#colorLiteral(red: 0.9372549057, green: 0.3490196168, blue: 0.1921568662, alpha: 1)))
+                .font(.system(size: 40))
                 .padding()
         }
     }
@@ -895,6 +874,41 @@ extension Date {
         calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
     }
 }
+
+extension Date {
+    var startOfDay: Date {
+        return Calendar.current.startOfDay(for: self)
+    }
+
+    var startOfMonth: Date {
+
+        let calendar = Calendar(identifier: .gregorian)
+        let components = calendar.dateComponents([.year, .month], from: self)
+
+        return  calendar.date(from: components)!
+    }
+
+    var endOfDay: Date {
+        var components = DateComponents()
+        components.day = 1
+        components.second = -1
+        return Calendar.current.date(byAdding: components, to: startOfDay)!
+    }
+
+    var endOfMonth: Date {
+        var components = DateComponents()
+        components.month = 1
+        components.second = -1
+        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
+    }
+
+//    func isMonday() -> Bool {
+//        let calendar = Calendar(identifier: .gregorian)
+//        let components = calendar.dateComponents([.weekday], from: self)
+//        return components.weekday == 2
+//    }
+}
+
 
 extension Date: Strideable {
     // typealias Stride = SignedInteger // doesn't work (probably because declared in extension
