@@ -96,13 +96,13 @@ struct AddActivityView: View {
                         //Current Selected Activity Category
                         if activityToSave.category == category {
                         
-                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: true)
+                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: true, font: 30, iconSizeScreenDividedBy: 5)
                             .onTapGesture(count: 1, perform: {
                                 activityToSave.category = category
                             })
                         //Other 3 categories
                         } else {
-                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false)
+                            ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false, font: 30, iconSizeScreenDividedBy: 5)
                                 .onTapGesture(count: 1, perform: {
                                     activityToSave.category = category
                                     self.activityName = "Select Activity..."
@@ -409,43 +409,3 @@ struct AddActivityView: View {
         }
     }
 }
-
-
-
-//MARK: - Activity Icon Struct
-struct ActivityTypeIcon: View {
-    
-    var activityIconName: String
-    var activityName: String
-    @State var isSelected: Bool
-    
-
-    var body: some View {
-        
-        VStack(spacing: 0) {
-            VStack {
-                
-                Image(activityIconName).renderingMode(.template)
-                    .resizable()
-                    .scaledToFit()
-                    .padding()
-                    .frame(width: screen.width / 5, height: screen.width / 5, alignment: /*@START_MENU_TOKEN@*/.center/*@END_MENU_TOKEN@*/)
-                    .foregroundColor(isSelected ? Color("\(activityIconName)Color") : .white)
-                    .background(Color(.black))
-                    .font(.system(size: 30))
-                
-            }
-            .clipShape(Circle())
-            .padding(.horizontal, 6)
-            .padding(.vertical, 4)
-            
-            
-            Text(activityName.capitalized)
-                .font(.system(size: 18))
-                .foregroundColor(.black)
-            
-        }
-        .padding(.vertical, 0)
-    }
-}
-

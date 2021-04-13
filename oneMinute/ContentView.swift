@@ -104,7 +104,13 @@ struct ContentView: View {
                                 self.showHistoryView = false
                             }) {
                                 //MARK: - show history view
-                                ActivityHistory()
+                                ActivityHistory(allData: allSavedActivities,
+                                                category1Name: $category1Name,
+                                                category2Name: $category2Name,
+                                                category3Name: $category3Name,
+                                                category4Name: $category4Name,
+                                                showActivitySelectorView: $showActivitySelector,
+                                                activityToShow: activityToSave)
                             }
                         
                         
@@ -194,7 +200,7 @@ struct ContentView: View {
                     category2Name: $category2Name,
                     category3Name: $category3Name,
                     category4Name: $category4Name,
-                    weekOnlyData: allSavedActivities.filter({ $0.timestamp! > selectedDate.startOfWeek() && $0.timestamp! < selectedDate.startOfWeek().addingTimeInterval(60*60*24*7) })
+                    weekOnlyData: allSavedActivities.filter({ $0.timestamp! > selectedDate.startOfWeek() && $0.timestamp! < selectedDate.endOfWeek })
                 )
                 .padding(.leading, screen.size.width * 0.01)
                     
@@ -208,10 +214,10 @@ struct ContentView: View {
                         //Chart
                         BarChart(
                             selectedDate: $selectedDate,
-                            weekOneData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].startOfWeek().advanced(by: 60*60*24*7)}),
-                            weekTwoData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].startOfWeek().advanced(by: 60*60*24*7)}),
-                            weekThreeData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].startOfWeek().advanced(by: 60*60*24*7)}),
-                            weekFourData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].startOfWeek().advanced(by: 60*60*24*7)})
+                            weekOneData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].endOfWeek}),
+                            weekTwoData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].endOfWeek}),
+                            weekThreeData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].endOfWeek}),
+                            weekFourData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].endOfWeek})
                         )
                         Spacer()
                     }
@@ -328,134 +334,138 @@ struct DateView: View {
 
 //MARK: - Summary View
 struct SummaryView: View {
-    
-    @Environment(\.managedObjectContext) private var viewContext
-    
-    var useHours: Bool
-    var selectedDate: Date
-    var allData: FetchedResults<AddedActivity>
-    @State var summaryChanger = "weekly"
-    @State var totalSummary = ""
-    
-    //Category Names
-    @Binding var category1Name: String
-    @Binding var category2Name: String
-    @Binding var category3Name: String
-    @Binding var category4Name: String
-    
-    var body: some View {
         
-        VStack {
-            HStack {
-                HStack {
-                    Text("Total \(summaryChanger.capitalized) Minutes: \(totalSummary(summaryChanger: summaryChanger, results: allData))")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(Color("defaultYellow"))
-                    Text("")
-                        .font(.system(size: 20))
-                }
-            }
-            .padding(.all, 6)
-            .foregroundColor(.white)
+        @Environment(\.managedObjectContext) private var viewContext
+        
+        var useHours: Bool
+        var selectedDate: Date
+        var allData: FetchedResults<AddedActivity>
+        @State var timeFrameChanger = TimeFrame.week
+        @State var totalSummary = ""
+        
+        //Category Names
+        @Binding var category1Name: String
+        @Binding var category2Name: String
+        @Binding var category3Name: String
+        @Binding var category4Name: String
+        
+        var body: some View {
             
-            ZStack {
-                VStack(alignment: .center) {
-                    
-                    //Top 2 Categories
-                    HStack(alignment: .top) {
-                        Text("\(category1Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category1"))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
-                        
-                        Text("\(category2Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category2"))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
-                    }
-                    .font(.system(size: 16, weight: .semibold))
-
-                    //Bottom 2 categories
-                    HStack(alignment: .top) {
-                        Text("\(category3Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category3"))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("\(category4Name.capitalized): \(categorySummary(summaryChanger: summaryChanger, results: allData, category: "category4"))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
-                    }
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .font(.system(size: 16, weight: .semibold))
-                    
-                    
-                    //Summary changer
+            VStack {
+                HStack {
                     HStack {
-                        
-                        Text("Weekly")
-                            .foregroundColor(summaryChanger == "weekly" ? .white : .gray)
-                            .onTapGesture {
-                                self.summaryChanger = "weekly"
-                            }
-                            
-                        Divider()
-                        
-                        Text("Monthly")
-                            .foregroundColor(summaryChanger == "monthly" ? .white : .gray)
-                            .onTapGesture {
-                                self.summaryChanger = "monthly"
-                            }
-                        
-                        Divider()
-                        
-                        Text("Yearly")
-                            .foregroundColor(summaryChanger == "yearly" ? .white : .gray)
-                            .onTapGesture {
-                                self.summaryChanger = "yearly"
-                            }
+                        Text("Total \(timeFrameStringGetter(timeFrameChanger).capitalized) Minutes: \(totalSummary(timeFrame: timeFrameChanger, results: allData))")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(Color("defaultYellow"))
+                        Text("")
+                            .font(.system(size: 20))
                     }
-                    .padding(.top, 4)
-                    
-                    
-                    
-                    
                 }
-                .font(.system(size: 14))
+                .padding(.all, 6)
                 .foregroundColor(.white)
-                .padding(.bottom)
+                
+                ZStack {
+                    VStack(alignment: .center) {
+                        
+                        //Top 2 Categories
+                        HStack(alignment: .top) {
+                            Text("\(category1Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category1)))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
+                            
+                            Text("\(category2Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category2)))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
+                        }
+                        .font(.system(size: 16, weight: .semibold))
+
+                        //Bottom 2 categories
+                        HStack(alignment: .top) {
+                            Text("\(category3Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category3)))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
+                            Text("\(category4Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category4)))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .font(.system(size: 16, weight: .semibold))
+                        
+                        
+                        //Summary changer
+                        HStack {
+                            
+                            Text("Weekly")
+                                .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.week
+                                }
+                                
+                            Divider()
+                            
+                            Text("Monthly")
+                                .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.month
+                                }
+                            
+                            Divider()
+                            
+                            Text("Total")
+                                .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.allTime
+                                }
+                        }
+                        .padding(.top, 4)
+                        
+                        
+                        
+                        
+                    }
+                    .font(.system(size: 14))
+                    .foregroundColor(.white)
+                    .padding(.bottom)
+                }
+            }
+            .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.16)
+            .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal)
+        }
+        
+        
+        func totalSummary(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>) -> String {
+            
+            if timeFrame == TimeFrame.week {
+                return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+            } else if timeFrame == TimeFrame.month {
+                return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
+            } else if timeFrame == TimeFrame.allTime {
+                return String(Int(results.reduce(0) { $0 + $1.duration }))
+            } else {
+                return String(Int(results.reduce(0) { $0 + $1.duration }))
             }
         }
-        .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.16)
-        .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        .padding(.horizontal)
-    }
-    
-    
-    func totalSummary(summaryChanger: String, results: FetchedResults<AddedActivity>) -> String {
-                
-        if summaryChanger == "weekly" {
-            return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
-        } else if summaryChanger == "monthly" {
-            return String(Int(results.filter({$0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
-        } else {
-            return String(Int(results.reduce(0) { $0 + $1.duration }))
-        }
-    }
-    
-    
-    func categorySummary(summaryChanger: String, results: FetchedResults<AddedActivity>, category: String) -> String {
         
-        if summaryChanger == "weekly" {
-            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
-        } else if summaryChanger == "monthly" {
-            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
-        } else {
-            return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+        
+        func categorySummary(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, category: String) -> String {
+            
+            if timeFrame == TimeFrame.week {
+                return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+            } else if timeFrame == TimeFrame.month {
+                return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }))
+            } else if timeFrame == TimeFrame.allTime {
+                return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+            } else {
+                return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+            }
+            
         }
         
-    }
-    
-    
-    
+        
+        
 }
 
 //MARK: - Day Scroll View
@@ -495,7 +505,7 @@ struct DayScrollView: View {
     
     var body: some View {
         
-        let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.startOfWeek().addingTimeInterval(60*60*24*6))
+        let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.endOfWeek)
         
         ScrollView(.horizontal) {
             
@@ -738,7 +748,7 @@ struct BarChart: View {
                     
                     HStack(alignment: .center, spacing: 0) {
                         //Date text
-                        Text("\(date.startOfWeek().advanced(by: 61*60*24*6), formatter: dateFormatter) -\n\(date.startOfWeek(), formatter: dateFormatter)")
+                        Text("\(date.endOfWeek, formatter: dateFormatter) -\n\(date.startOfWeek(), formatter: dateFormatter)")
                             .foregroundColor(.white)
                             .font(.system(size: 13, weight: .semibold))
                             .frame(width: 58, height: capsuleHeight + 8, alignment: .center)
@@ -855,109 +865,3 @@ struct dayOfWeek: Identifiable {
 
 
 
-extension Calendar {
-    func isDayInCurrentWeek(date: Date) -> Bool? {
-        let currentComponents = Calendar.current.dateComponents([.weekOfYear], from: Date())
-        let dateComponents = Calendar.current.dateComponents([.weekOfYear], from: date)
-        guard let currentWeekOfYear = currentComponents.weekOfYear, let dateWeekOfYear = dateComponents.weekOfYear else { return nil }
-        return currentWeekOfYear == dateWeekOfYear
-    }
-}
-
-extension Calendar {
-    static let gregorian = Calendar(identifier: .gregorian)
-}
-
-
-extension Date {
-    func startOfWeek(using calendar: Calendar = .gregorian) -> Date {
-        calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
-    }
-}
-
-extension Date {
-    var startOfDay: Date {
-        return Calendar.current.startOfDay(for: self)
-    }
-
-    var startOfMonth: Date {
-
-        let calendar = Calendar(identifier: .gregorian)
-        let components = calendar.dateComponents([.year, .month], from: self)
-
-        return  calendar.date(from: components)!
-    }
-
-    var endOfDay: Date {
-        var components = DateComponents()
-        components.day = 1
-        components.second = -1
-        return Calendar.current.date(byAdding: components, to: startOfDay)!
-    }
-
-    var endOfMonth: Date {
-        var components = DateComponents()
-        components.month = 1
-        components.second = -1
-        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
-    }
-
-//    func isMonday() -> Bool {
-//        let calendar = Calendar(identifier: .gregorian)
-//        let components = calendar.dateComponents([.weekday], from: self)
-//        return components.weekday == 2
-//    }
-}
-
-
-extension Date: Strideable {
-    // typealias Stride = SignedInteger // doesn't work (probably because declared in extension
-    public func advanced(by n: Int) -> Date {
-        self.addingTimeInterval(TimeInterval(n))
-    }
-
-    public func distance(to other: Date) -> Int {
-        return Int(self.distance(to: other))
-    }
-}
-
-let screen = UIScreen.main.bounds
-
-extension Date {
-    func generateDates(startDate :Date?, addbyUnit:Calendar.Component, value : Int) -> [Date]
-{
-    let calendar = Calendar.current
-    var datesArray: [Date] =  [Date] ()
-
-    for i in 0 ... value {
-        if let newDate = calendar.date(byAdding: addbyUnit, value: i + 1, to: startDate!) {
-            datesArray.append(newDate)
-        }
-    }
-
-    return datesArray
-}
-}
-
-
-extension Date {
-    static func dates(from fromDate: Date, to toDate: Date) -> [Date] {
-        var dates: [Date] = []
-        var date = fromDate
-
-        while date <= toDate {
-            dates.append(date)
-            guard let newDate = Calendar.current.date(byAdding: .day, value: 1, to: date) else { break }
-            date = newDate
-        }
-        return dates
-    }
-}
-
-extension String {
-   func widthOfString(usingFont font: UIFont) -> CGFloat {
-        let fontAttributes = [NSAttributedString.Key.font: font]
-        let size = self.size(withAttributes: fontAttributes)
-        return size.width
-    }
-}

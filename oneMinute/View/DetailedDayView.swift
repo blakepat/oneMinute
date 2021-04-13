@@ -53,7 +53,7 @@ struct DetailedDayView: View {
             //Background Color
             Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1))
                 .edgesIgnoringSafeArea(.all)
-            VStack(alignment: .leading) {
+            VStack {
                 
                 //MARK: - Pull down tap
                     HStack {
@@ -70,9 +70,9 @@ struct DetailedDayView: View {
                 
                 //Date
                 Text("\(date, formatter: dateFormatter)")
-                    .font(.system(size: 22, weight: .semibold))
+                    .font(.system(size: 24, weight: .semibold))
                     .foregroundColor(.white)
-                    .padding()
+                    .padding(4)
                 
                 //Summary of day similar to summary of week on main screen
                 DaySummaryView(
@@ -92,15 +92,21 @@ struct DetailedDayView: View {
                     VStack {
                         ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { catagory, index in
                             
-                            Text("\(catagory.capitalized)")
-                                .frame(width: screen.width, alignment: .leading)
-                                .font(.system(size: 20, weight: .bold))
-                                .foregroundColor(Color("\(categories[index])Color"))
-                                .padding(.leading, 8)
-                                .padding(.top, 4)
-                                
+                            let dailyCategoryData = dailyData.filter {
+                                    Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]
+                            }
                             
-                            ForEach(dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]}), id: \.self) { data in
+                            HStack {
+                                Text(dailyCategoryData.isEmpty ? "\(catagory.capitalized) - no activities logged" : "\(catagory.capitalized)")
+                                    .frame(width: screen.width - 56, alignment: .leading)
+                                    .font(.system(size: 20, weight: .bold))
+                                    .foregroundColor(Color("\(categories[index])Color"))
+                                    .padding(.leading, 16)
+                                    .padding(.top, 4)
+                                
+                                Spacer()
+                            }
+                            ForEach(dailyCategoryData, id: \.self) { data in
                                 
                                 DetailedDayCatagorySectionItem(
                                     data: data,
@@ -121,19 +127,21 @@ struct DetailedDayView: View {
 //                                activityToEdit: activityToSave,
 //                                itemToDelete: $itemToDelete
                                 
-                                    .frame(width: screen.width - 28, alignment: .leading)
+                                    .frame(width: screen.width - 56, alignment: .leading)
                                     .background(Color.black)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
-                                    .padding(.horizontal, 8)
+//                                    .padding(.horizontal, 20)
                                     .padding(.vertical, 2)
                             }
-                            .frame(width: screen.width, alignment: .leading)
+                            .frame(width: screen.width - 56, alignment: .leading)
                             
-                            Divider().background(Color.white).frame(height: 2)
+//                            Divider().background(Color.white).frame(height: 2)
                         }
                     }
                 }
-                .frame(width: screen.width, alignment: .leading)
+                .frame(width: screen.width - 32, alignment: .leading)
+                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.bottom, 30)
                 
                 Spacer()
@@ -178,21 +186,21 @@ struct DetailedDayCatagorySectionItem: View {
         var body: some View {
             
             HStack {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     
                     Text("\(data.name ?? "Unknown Activity")")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-                        .padding(.vertical, 1)
+//                        .padding(.vertical, 1)
                         .padding(.top, 4)
-                    Text("Duration: \(data.duration, specifier: "%.0f") minutes")
+                    Text("Minutes: \(data.duration, specifier: "%.0f")")
                         .font(.system(size: 16))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-                        .padding(.vertical, 1)
+//                        .padding(.vertical, 1)
                     Text("Notes: \(data.notes ?? "")")
                         .font(.system(size: 16))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-                        .padding(.vertical, 1)
+//                        .padding(.vertical, 1)
                         .padding(.bottom, 4)
                     
                 }
@@ -273,14 +281,16 @@ struct DaySummaryView: View {
         
         let totalSum : Float = { sumOfWeeklyWorkMinutes + sumOfWeeklyChoresMinutes + sumOfWeeklyFitnessMinutes + sumOfWeeklyLearningMinutes }()
         
-        VStack {
+        VStack(alignment: .center) {
             HStack {
-                HStack {
-                    Text("Total Daily Minutes: \(totalSum, specifier: "%.0f") \n(\(totalSum / 60, specifier: "%.1f") hours) ")
+                VStack {
+                    Text("Total Daily Minutes: \(totalSum, specifier: "%.0f")")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(Color("defaultYellow"))
-                    Text("")
-                        .font(.system(size: 20))
+                    
+                    Text("(\(totalSum / 60, specifier: "%.1f") hours) ")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(Color("defaultYellow"))
                 }
             }
             .padding(.all, 6)
@@ -316,7 +326,7 @@ struct DaySummaryView: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .background(Color.black)
+        .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .padding(.horizontal)
     }
