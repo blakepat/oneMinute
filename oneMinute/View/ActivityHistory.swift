@@ -25,11 +25,12 @@ struct ActivityHistory: View {
     @Binding var category4Name: String
     
     //local variables
-    @State var activityName = "Select Activity..."
+    @State var activityName = "Select Category..."
     @Binding var showActivitySelectorView: Bool
     @State var activityToShow: ActivityToSave
     let categories = ["category1", "category2", "category3", "category4"]
     @State var showingAllActivities = true
+    @State var nameIndex = 0
     
    
     
@@ -38,18 +39,12 @@ struct ActivityHistory: View {
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
         ZStack {
-        
             //Background
             Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1))
                 .edgesIgnoringSafeArea(.all)
         
-    
             //VStack of different areas of Activity History Screen
             VStack {
-                
-                    
-            
-        
                 //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
                 ActivitySummaryView(useHours: false,
                                     allData: allData,
@@ -58,8 +53,6 @@ struct ActivityHistory: View {
                                     category2Name: $category2Name,
                                     category3Name: $category3Name,
                                     category4Name: $category4Name)
-        
-        
         
         
                 //MARK: - Activity Summary (total times logged, total minutes, days since last, last dates completed (with notes)
@@ -74,43 +67,21 @@ struct ActivityHistory: View {
                             
                                 ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: true, font: 24, iconSizeScreenDividedBy: 6)
                                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                                    self.showActivitySelectorView = true
-                                    activityToShow.category = category
-                                })
-                                //MARK: - ActivitySelectorView
-                                .sheet(isPresented: $showActivitySelectorView, onDismiss: {
-                                    self.showActivitySelectorView = false
-                                    self.activityName = self.activityToShow.activityName
-                                    print(activityToShow.activityName)
+                                    self.activityToShow.category = category
+                                    self.activityName = "Select Activity..."
                                     self.showingAllActivities = false
-                                    
+                                    self.nameIndex = index
                                 })
-                                {
-                                    ActivitySelectorView(filter: activityToShow.category, showActivitySelector: $showActivitySelectorView, allActivities: activities, categoryNames: categoryNames)
-                                        .environmentObject(activityToShow)
-                                }
                             //Other 3 categories
                             } else {
                                 ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false, font: 24, iconSizeScreenDividedBy: 6)
                                     .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                                        self.showActivitySelectorView = true
                                         activityToShow.category = category
                                         self.activityName = "Select Activity..."
                                         self.activityToShow.activityName = "Select Activity..."
-                                    })
-                                    //MARK: - ActivitySelectorView
-                                    .sheet(isPresented: $showActivitySelectorView, onDismiss: {
-                                        self.showActivitySelectorView = false
-                                        self.activityName = self.activityToShow.activityName
                                         self.showingAllActivities = false
-                                        print(activityToShow.activityName)
-                                        
+                                        self.nameIndex = index
                                     })
-                                    {
-                                        ActivitySelectorView(filter: activityToShow.category, showActivitySelector: $showActivitySelectorView, allActivities: activities, categoryNames: categoryNames)
-                                            .environmentObject(activityToShow)
-                                    }
-                                
                             }
                         }
                     }
@@ -132,7 +103,7 @@ struct ActivityHistory: View {
                                 .foregroundColor(Color("\(activityToShow.category)Color"))
                                 .font(.system(size: 22))
                                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                                    self.showActivitySelectorView = true
+                                    if !showingAllActivities { self.showActivitySelectorView = true }
                                 })
                                 //MARK: - ActivitySelectorView
                                 .sheet(isPresented: $showActivitySelectorView, onDismiss: {
@@ -153,9 +124,13 @@ struct ActivityHistory: View {
                                     .font(.system(size: 12))
                                     .foregroundColor(.gray)
                                     .padding(.trailing, 16)
+                                    .padding(.leading, 4)
+                                    .padding(.vertical, 4)
+                                    .contentShape(Rectangle())
                                     .onTapGesture {
                                         activityToShow.activityName = "Select Activity..."
-                                        activityName = "Select Activity..."
+                                        activityToShow.category = "category0"
+                                        self.activityName = "Select Category..."
                                         self.showingAllActivities = true
                                     }
                             }
@@ -164,10 +139,24 @@ struct ActivityHistory: View {
                     .padding(.horizontal, 20)
                     .padding(.trailing, 4)
               
-            
+
+                    
                     //Title
                     HStack {
-                        Text(showingAllActivities ? "All Activties Summary" : "Activity Summary")
+                        
+                        let titleText : String = {
+                            if showingAllActivities {
+                                return "All Activities Summary"
+                            } else if activityToShow.activityName == "Select Activity..." {
+                                return "\(categoryNames[nameIndex]) Summary"
+                            } else {
+                                return "Activity Summary"
+                            }
+                        }()
+
+                        
+                        
+                        Text(titleText)
                             .font(.system(size: 24, weight: .semibold))
                             .foregroundColor(showingAllActivities ? Color("defaultYellow") : Color("\(activityToShow.category)Color"))
                         
@@ -177,7 +166,7 @@ struct ActivityHistory: View {
                     .padding(.horizontal, 10)
                     
                     
-                    let activityAllTime = allData.filter({ showingAllActivities ? $0.timestamp! < Date().addingTimeInterval(999999999) : $0.name == activityToShow.activityName })
+                    let activityAllTime = allData.filter({ showingAllActivities ? $0.timestamp! < Date().addingTimeInterval(999999999) : activityName == "Select Activity..." ? $0.category == activityToShow.category : $0.name == activityToShow.activityName })
                      
             
                     //Minutes in time period
@@ -194,9 +183,7 @@ struct ActivityHistory: View {
                             Text("\(Int(activityMinutesThisWeek)) mins (\(activitySessionsThisWeek) sessions x \(Int(dividBy(lhs:Float(activityMinutesThisWeek), rhs:Float(activitySessionsThisWeek)))))")
                             Spacer()
                         }
-                        Divider()
-                            .foregroundColor(.white)
-                        
+                    
                         HStack {
                             Text("This Month:")
                                 .fontWeight(.bold)
@@ -208,9 +195,7 @@ struct ActivityHistory: View {
                             Text("\(Int(activityMinutesThisMonth)) mins (\(activitySessionsThisMonth) sessions x \(Int(dividBy(lhs:Float(activityMinutesThisMonth), rhs:Float(activitySessionsThisMonth)))))")
                             Spacer()
                         }
-                        Divider()
-                            .foregroundColor(.white)
-                        
+            
                         HStack {
                             Text("All-Time:")
                                 .fontWeight(.bold)
@@ -222,7 +207,6 @@ struct ActivityHistory: View {
                     }
                     .font(.system(size: 16))
                     .foregroundColor(.white)
-                    .padding(.bottom, 8)
                     .padding(.horizontal, 10)
         
                     
@@ -234,43 +218,56 @@ struct ActivityHistory: View {
                             .padding(.leading, 8)
                         Spacer()
                     }
-                    .padding(.bottom, 0)
+                    .padding(.vertical, 0)
+                    
+                    
                     
                     //Most recent recorded activity of selected type
-                    List {
+                    ScrollView(.vertical) {
                         
-                        let activityTimeSeperator = Date()
-                        
-                        ForEach(activityAllTime.sorted { $0.timestamp ?? Date() > $1.timestamp ?? Date() }.prefix(8)) { activity in
+                        let sortedActivities = activityAllTime.sorted {
+                            $0.timestamp ?? Date() > $1.timestamp ?? Date()
+                            
+                        }.prefix(7)
+                    
+                        ForEach(0..<sortedActivities.count, id: \.self) { index in
                         
                             //Days since activity below/since previous activity in list
-
-                            let timeBetweenActivities = Calendar.current.numberOfDaysBetween(from: activity.timestamp ?? Date(), to: activityTimeSeperator)
-                            
-                            Text("\(timeBetweenActivities) days since logged")
-                                .foregroundColor(.white)
-                                .font(.system(size: 20))
-                            
-//                            activityTimeSeperator = activity.timestamp ?? Date()
-                            
+                            if !sortedActivities.isEmpty {
+                                let timeBetweenActivities = Calendar.current.numberOfDaysBetween(from: sortedActivities[index].timestamp ?? Date(), to: (index == 0) ? Date() : sortedActivities[index-1].timestamp ?? Date())
+                                //Days since or between activties
+                                HStack {
+                                    Spacer()
+                                    Text((index == 0) ? "· \(timeBetweenActivities) day(s) since ·" : "· \(timeBetweenActivities) day(s) between ·")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 14))
+                                        .padding(0)
+                                    Spacer()
+                                }
                             //Logged Activity
-                            RecentActivityLog(activity: activity)
+                                RecentActivityLog(activity: sortedActivities[index])
+                                    .padding(.horizontal, 16)
+                            }
                         }
                         .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                     }
+                    .edgesIgnoringSafeArea(.bottom)
                     .padding(.top, 0)
                 }
                 .frame(width: screen.width - 24)
                 .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal, 16)
+                .edgesIgnoringSafeArea(.bottom)
                 
                 
         
         Spacer()
             }
+            .edgesIgnoringSafeArea(.bottom)
             .padding(.top, 12)
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
@@ -305,12 +302,13 @@ struct ActivitySummaryView: View {
         
         VStack {
             HStack {
-                HStack {
-                    Text("Top \(timeFrameStringGetter(timeFrameChanger).capitalized) Activity: \(kingActivity.0), \(kingActivity.1)")
+                VStack(alignment: .center) {
+                    Text("Top \(timeFrameStringGetter(timeFrameChanger).capitalized) Activity:")
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundColor(Color("defaultYellow"))
-                    Text("")
-                        .font(.system(size: 20))
+                    Text("\(kingActivity.0) - \(kingActivity.1)mins")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(Color("defaultYellow"))
                 }
             }
             .padding(.all, 6)
@@ -399,8 +397,11 @@ struct ActivitySummaryView: View {
             for activity in fetchRequest.wrappedValue {
 
                 //Get the total duration for each that activity type
-                let activityTotalAmount = Int(results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration })
+                let activityTotalAmount = Int(results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration})
                 
+//                Print("Activity Name: \(activity.name) has total of \(activityTotalAmount)")
+//                Print("Activity with most so far \(activityWithMost) with \(largestActivityAmountSoFar)")
+//
                 if activityTotalAmount > largestActivityAmountSoFar {
                     largestActivityAmountSoFar = activityTotalAmount
                     activityWithMost = activity.name
@@ -416,6 +417,7 @@ struct ActivitySummaryView: View {
 
                     //Get the total duration for each that activity type
                     let activityTotalAmount = Int(results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name }).reduce(0) { $0 + $1.duration })
+          
                     
                     if activityTotalAmount > largestActivityAmountSoFar {
                         largestActivityAmountSoFar = activityTotalAmount

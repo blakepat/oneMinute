@@ -32,7 +32,7 @@ struct AddActivityView: View {
     @State var showingAlert = false
     @State var showCalendar = false
     let categories = ["category1", "category2", "category3", "category4"]
-    @State var activityName = "Select Activity..."
+    @State var activityName = "Select Category..."
     
     //MARK: - Category Names
     @Binding var category1Name: String
@@ -42,6 +42,7 @@ struct AddActivityView: View {
     
     let hourArray = (0...24).map{"\($0)"}
     let minutesArray = (0...60).map{"\($0)"}
+    @State var categorySelected = false
     
     var body: some View {
         
@@ -105,6 +106,7 @@ struct AddActivityView: View {
                             ActivityTypeIcon(activityIconName: category, activityName: categoryNames[index], isSelected: false, font: 30, iconSizeScreenDividedBy: 5)
                                 .onTapGesture(count: 1, perform: {
                                     activityToSave.category = category
+                                    self.categorySelected = true
                                     self.activityName = "Select Activity..."
                                     self.activityToSave.activityName = "Select Activity..."
                                 })
@@ -135,7 +137,7 @@ struct AddActivityView: View {
                             .foregroundColor(Color("\(activityToSave.category)Color"))
                             .font(.system(size: 26))
                             .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                                self.showActivitySelector = true
+                                if categorySelected { self.showActivitySelector = true }
                             })
                             //MARK: - ActivitySelectorView
                             .sheet(isPresented: $showActivitySelector, onDismiss: {

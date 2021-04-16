@@ -16,10 +16,13 @@ struct ActivitySelectorView: View {
     @EnvironmentObject var activityToSave: ActivityToSave
     @State var showingAlert = false
     @State private var alertInput = ""
+    @State var editActive = false
     var allActivities: FetchedResults<Activity>
     var categoryNames: [String]
     @State private var searchText = ""
     var fetchRequest: FetchRequest<Activity>
+    @State var activityToEdit = ""
+    
  
     var body: some View {
     
@@ -30,7 +33,7 @@ struct ActivitySelectorView: View {
             VStack {
                 
                 //Title Bar
-                TitleBar(showingAlert: $showingAlert, showActivitySelector: $showActivitySelector, categoryName: categoryNames[(Int(String(activityToSave.category.last!)) ?? 1) - 1])
+                TitleBar(showingAlert: $showingAlert, editActive: $editActive, categoryName: categoryNames[(Int(String(activityToSave.category.last!)) ?? 1) - 1])
                 
                 //List
                 List {
@@ -44,12 +47,23 @@ struct ActivitySelectorView: View {
                             Text(activity.name.capitalized)
                                 
                             Spacer()
+                            
+                            
                         }
                         .frame(height: 30)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            self.showActivitySelector = false
-                            self.activityToSave.activityName = activity.name.capitalized
+                            
+                            if editActive {
+                                self.activityToEdit = activity.name
+                                self.showingAlert.toggle()
+                                self.alertInput = activity.name
+                            } else {
+                                self.showActivitySelector = false
+                                self.activityToSave.activityName = activity.name
+                            }
+                            
+                            
                         }
                             
                     }
@@ -60,7 +74,7 @@ struct ActivitySelectorView: View {
             }
             
             
-            TextFieldAlert(isShowing: $showingAlert, text: $alertInput, category: activityToSave.category)
+            TextFieldAlert(isShowing: $showingAlert, text: $alertInput, activityToEdit: activityToEdit, editActive: editActive, category: activityToSave.category)
                 .offset(x: 60, y: self.showingAlert ? 0 : screen.height)
                 .animation(.easeInOut)
         }
@@ -99,7 +113,7 @@ struct ActivitySelectorView: View {
 struct TitleBar: View {
     
     @Binding var showingAlert: Bool
-    @Binding var showActivitySelector: Bool
+    @Binding var editActive: Bool
     
     var categoryName: String
     
@@ -108,11 +122,11 @@ struct TitleBar: View {
         
             HStack {
                 //back button
-                Image(systemName: "arrow.left")
+                Text("Edit")
                     .padding()
                     .font(.system(size: 22))
                     .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
-                        self.showActivitySelector = false
+                        self.editActive.toggle()
                     })
                 
                 Spacer()

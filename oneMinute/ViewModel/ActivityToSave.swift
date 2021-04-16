@@ -15,7 +15,7 @@ class ActivityToSave: ObservableObject {
     var activityName = "Select Activity..." { didSet { didChange.send() } }
     var hours: Float = 0 { didSet { didChange.send() } }
     var minutes: Float = 0 { didSet { didChange.send() } }
-    @Published var category = "category1" { didSet { didChange.send() } }
+    @Published var category = "category0" { didSet { didChange.send() } }
     var notes = "" { didSet { didChange.send() } }
 }
 

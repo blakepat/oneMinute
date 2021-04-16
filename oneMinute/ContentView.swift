@@ -241,7 +241,7 @@ struct ContentView: View {
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
         activityToSave.activityName = "Select Activity"
-        activityToSave.category = "category1"
+        activityToSave.category = "category0"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""
@@ -527,7 +527,7 @@ struct DayScrollView: View {
                                     //For each day fill in information if dates match
                                     ForEach(weekOnlyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
                                         
-                                        Print(day)
+//                                        Print(day)
                                         
                                         ActivityItem(item: data)
                                             .padding(.bottom, 2)
@@ -549,7 +549,7 @@ struct DayScrollView: View {
                         .background((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("grayBackground") : Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                         .frame(width: 160, height: screen.size.height * 0.276, alignment: .center)
                         .onTapGesture {
-                            print("DAY TAPPED *Show DetailedDayView* ")
+//                            print("DAY TAPPED *Show DetailedDayView* ")
                             self.daySelected = day
                             self.showDetailedDayView = true
                         }

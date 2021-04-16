@@ -6,19 +6,22 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct TextFieldAlert: View {
 
     @Environment(\.managedObjectContext) private var viewContext
     @Binding var isShowing: Bool
     @Binding var text: String
+    var activityToEdit: String
+    var editActive: Bool
     var category: String
 
     var body: some View {
         GeometryReader { (deviceSize: GeometryProxy) in
             ZStack {
                 VStack {
-                    Text("Add New Activity")
+                    Text(editActive ? "Change Activity Name" : "Add New Activity")
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundColor(.black)
                     TextField("New Activity", text: self.$text)
@@ -47,10 +50,14 @@ struct TextFieldAlert: View {
                         
                         Button {
                             withAnimation {
-                                addActivity(name: self.text, category: category)
+                                
+                                if editActive {
+                                    updateActivityName(oldName: activityToEdit, newName: text)
+                                } else {
+                                    addActivity(name: self.text, category: category)
+                                }
                                 self.isShowing.toggle()
                                 self.text = ""
-                                
                             }
                         } label: {
                             Text("Add")
@@ -91,5 +98,59 @@ struct TextFieldAlert: View {
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
         }
+    }
+    
+    
+    //Edit Item
+    func updateActivityName(oldName: String, newName: String) {
+            
+//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+//            return
+//        }
+        
+        let managedContext = PersistenceController.shared.container.viewContext
+        
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest.init(entityName: "Activity")
+        fetchRequest.predicate = NSPredicate(format: "name = %@", oldName)
+        
+        do {
+            let fetchReturn = try managedContext.fetch(fetchRequest)
+            
+            let objectUpdate = fetchReturn[0] as! NSManagedObject
+            objectUpdate.setValue(newName, forKey: "name")
+            do {
+                try managedContext.save()
+                print("updated Activity name successfully!!!!!")
+            } catch let error as NSError {
+                print("Could not save Activity!! \(error), \(error.userInfo)")
+            }
+        } catch let error as NSError {
+            print("Could not Fetch Activities. \(error), \(error.userInfo)")
+        }
+        
+        
+        //Go through and change all AddedActivities
+        let addedFetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest.init(entityName: "AddedActivity")
+        addedFetchRequest.predicate = NSPredicate(format: "name = %@", oldName)
+        
+        do {
+            let addedfetchReturn = try managedContext.fetch(addedFetchRequest)
+            
+            for index in 0..<addedfetchReturn.count {
+                
+                let objectUpdate = addedfetchReturn[index] as! NSManagedObject
+                objectUpdate.setValue(newName, forKey: "name")
+                do {
+                    try managedContext.save()
+                    print("updated name successfully!!!!!")
+                } catch let error as NSError {
+                    print("Could not save!! \(error), \(error.userInfo)")
+                }
+            }
+        
+        } catch let error as NSError {
+            print("Could not Fetch. \(error), \(error.userInfo)")
+        }
+      
     }
 }
