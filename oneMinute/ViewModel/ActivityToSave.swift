@@ -12,7 +12,7 @@ class ActivityToSave: ObservableObject {
     
     var didChange = PassthroughSubject<Void, Never>()
     
-    var activityName = "Select Activity..." { didSet { didChange.send() } }
+    @Published var activityName = "Select Activity..." { didSet { didChange.send() } }
     var hours: Float = 0 { didSet { didChange.send() } }
     var minutes: Float = 0 { didSet { didChange.send() } }
     @Published var category = "category0" { didSet { didChange.send() } }

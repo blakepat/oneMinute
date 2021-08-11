@@ -10,40 +10,40 @@ import CoreData
 
 struct AddActivityView: View {
     
-    
-    @Environment(\.managedObjectContext) private var viewContext
-    
     //Fetch listed activities
+    @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
     var activities: FetchedResults<Activity>
     
     
+    
     //Passed Items
     @Binding var showActivitySelector: Bool
-    @State var activityToSave: ActivityToSave
     @Binding var showAddActivity: Bool
-    @State var isEditScreen: Bool
     @Binding var selectedDate: Date
     @Binding var itemToDelete: AddedActivity
     @Binding var showingNameEditor: Bool
+//    @State var activityToSave: ActivityToSave
+    @EnvironmentObject var activityToSave: ActivityToSave
     
-    //Local Items
-    @State var viewState = CGSize.zero
-    @State var showingAlert = false
-    @State var showCalendar = false
-    let categories = ["category1", "category2", "category3", "category4"]
-    @State var activityName = "Select Category..."
+    @State var isEditScreen: Bool
+    @State var categorySelected: Bool
     
-    //MARK: - Category Names
+    //Category Names
     @Binding var category1Name: String
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
     
+    //Local Items
+    @State var activityName = "Select Category..."
+    @State var viewState = CGSize.zero
+    @State var showingAlert = false
+    @State var showCalendar = false
     let hourArray = (0...24).map{"\($0)"}
     let minutesArray = (0...60).map{"\($0)"}
-    @State var categorySelected = false
-    
+
+    @Binding var activeSheet: ActiveSheet?
     var body: some View {
         
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
@@ -58,8 +58,9 @@ struct AddActivityView: View {
                 
             //MARK: - Pull down tap
                 HStack {
-                    
+        
                     Spacer()
+                    
                     Color(.black)
                         .clipShape(RoundedRectangle(cornerRadius: 30))
                         .frame(width: 50, height: 8, alignment: .center)
@@ -70,7 +71,6 @@ struct AddActivityView: View {
                 }
                 
             //MARK: - Category Name Edit Button
-                
                 HStack {
                     
                     Spacer()
@@ -117,8 +117,6 @@ struct AddActivityView: View {
                 .padding(.bottom, 16)
                 
             //MARK: - Activity Name - IE: run, laundry, learn french, Work
-            //Create text field with a auto complete from list (if item is not on list pop up to assign point value per hour
-                
                 HStack(spacing: 4) {
                     
                     Image(systemName: "list.bullet")
@@ -128,7 +126,7 @@ struct AddActivityView: View {
                     
                     ZStack(alignment: .leading) {
                         
-                        Text(self.activityName)
+                        Text(self.activityToSave.activityName)
                             .frame(width: screen.width - 50, height: 40, alignment: .leading)
                             .padding(.leading, 4)
                             .padding(.horizontal, 6)
@@ -149,11 +147,6 @@ struct AddActivityView: View {
                             {
                                 ActivitySelectorView(filter: activityToSave.category, showActivitySelector: $showActivitySelector, allActivities: activities, categoryNames: categoryNames)
                                     .environmentObject(activityToSave)
-//                                            .frame(width: screen.width, height: screen.height)
-//                                            .offset(x: showActivitySelector ? 0 : screen.width)
-//                                            .offset(y: screen.minY)
-//                                            .offset(x: viewState.width)
-//                                            .animation(.easeInOut)
                             }
                     }
                 }
@@ -167,20 +160,15 @@ struct AddActivityView: View {
                         .padding(.leading, 8)
                     
                     VStack {
-                    
                         HStack {
-                            
-                            //calendar image
                             Image(systemName: "calendar")
                                 .padding(.leading, 8)
                                 .font(.system(size: 24))
                             
-                            
                             DatePicker("", selection: $selectedDate)
                                 .datePickerStyle(CompactDatePickerStyle())
                                 .frame(width: screen.width / 2, height: 50, alignment: .leading)
-//                                .colorMultiply(.black)
-                                
+
                             Spacer()
                         
                         }
@@ -249,23 +237,20 @@ struct AddActivityView: View {
                 }
                 
             //MARK: - Activity Notes - 5km run, chest workout, rosetta stone, 1 hour overtime
-                
                 VStack(alignment: .leading, spacing: 0) {
                 
-                Text("Notes: ")
-                    .font(.system(size: 24, weight: .semibold))
-                    .padding(.vertical, 0)
+                    Text("Notes: ")
+                        .font(.system(size: 24, weight: .semibold))
+                        .padding(.vertical, 0)
                     
-                    
-                    TextField("notes", text: $activityToSave.notes)
+                    TextField("notes...", text: $activityToSave.notes)
                         .frame(width: screen.width - 16, height: screen.height / 7, alignment: .topLeading)
+                        .contentShape(Rectangle())
                         .background(Color.black)
                         .foregroundColor(.white)
-                    
-                    
                 }
+                
             //MARK: - Confirm Activity - add to data set
-             
                 ZStack {
                     
                     Color("\(activityToSave.category)Color")
@@ -281,22 +266,19 @@ struct AddActivityView: View {
                 .padding(.top, 16)
                 .padding(.bottom, 8)
                 .onTapGesture {
-                    
-                    print(activityToSave.activityName)
-                    print(activityToSave.minutes)
-                    print(activityToSave.hours)
-                    
                     //If activity and duration has been selected save and dismiss screen
                     if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
                         //save activity
                         saveActivity(activity: activityToSave, date: selectedDate, favourite: false)
                         //reset activity
                         resetActivity(activityToSave)
-                        activityToSave.category = "category1"
+//                        activityToSave.category = "category0"
                         deleteActivity()
                         
                         //dismiss screen
+                        self.activeSheet = nil
                         self.showAddActivity = false
+                        
                     //if missing info show alert
                     } else {
                         self.showingAlert = true
@@ -305,7 +287,7 @@ struct AddActivityView: View {
                     Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                 }
                 
-            //MARK: - Save and Add to Favourites OR DELETE BUTTON
+            //MARK: - Save and Add to Favourites or delete button
                 ZStack {
                     isEditScreen ? Color.red : Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1))
                     Text(isEditScreen ? "Delete Activity" : "Save Activity & Add to Favourites")
@@ -320,12 +302,12 @@ struct AddActivityView: View {
                     
                         deleteActivity()
                         resetActivity(activityToSave)
-                        activityToSave.category = "category1"
+//                        activityToSave.category = "category1"
                         self.showAddActivity = false
 
                     } else {
                         //If activity and duration has been selected save and dismiss screen
-                        if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
+                        if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category"  {
                             //save activity
                             saveActivity(activity: activityToSave, date: selectedDate, favourite: true)
                             //reset activity
@@ -333,6 +315,7 @@ struct AddActivityView: View {
                             activityToSave.category = "category1"
                             //dismiss screen
                             self.showAddActivity = false
+                            self.activeSheet = nil
                         //if missing info show alert
                         } else {
                             self.showingAlert = true
@@ -343,24 +326,20 @@ struct AddActivityView: View {
                     Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                 }
                 
-            //Spacer at bottom to push button up
                Spacer()
                 
             }
-            
-            //*******************************************
-            //End of VStack
-            
-            
-            
-                    
+
+            //Mark: - Hidden Views
+            BlurView(style: .systemUltraThinMaterialDark)
+                .offset(y: self.showingNameEditor ? 0 : screen.height)
+                .edgesIgnoringSafeArea(.all)
             
             CategoryNameEditAlert(isShowing: $showingNameEditor, categoryNames: [$category1Name, $category2Name, $category3Name, $category4Name])
-                .offset(x: 0, y: self.showingNameEditor ? -100 : screen.height)
+                
+                .offset(x: 0, y: self.showingNameEditor ? -50 : screen.height)
                 .animation(.easeInOut)
-            
         }
-//        .ignoresSafeArea(.keyboard)
     }
     
     
@@ -381,8 +360,8 @@ struct AddActivityView: View {
     
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
-        activityToSave.activityName = "Select Activity"
-        activityToSave.category = "category1"
+        activityToSave.activityName = "Select Category"
+        activityToSave.category = "category0"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""

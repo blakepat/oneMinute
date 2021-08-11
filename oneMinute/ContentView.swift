@@ -9,18 +9,13 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    
-    
-    @Environment(\.managedObjectContext) private var viewContext
-    
-    //MARK: - FETCH ALL ACTIVITIES    
+     
     //Fetch saved activities
+    @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [])
     var allSavedActivities:FetchedResults<AddedActivity>
     
-    //**************************************************************************
-    //MARK: - VARIABLES
-    @State private var newActivity = ""
+    //@States for showing views
     @State var showLastWeek = false
     @State var showDetailedDay = false
     @State var showAddActivity = false
@@ -29,15 +24,19 @@ struct ContentView: View {
     @State var showEditScreen = false
     @State var showCategoryNameEditor = false
     @State var showHistoryView = false
+    @State var showStatsView = false
     
-    @State var useHours = false
-    @State var activityViewState = CGSize.zero
-    @State var detailedDayViewState = CGSize.zero
-    @State var favouriteViewState = CGSize.zero
-    @ObservedObject var activityToSave = ActivityToSave()
-    @State var daySelected = Date()
+    //Variables
     @State var selectedDate = Date()
     @State var activityToDelete = AddedActivity()
+    @ObservedObject var activityToSave = ActivityToSave()
+    
+    
+    //Tab bar variables
+    @State var selectedIndex = 0
+    @State var shouldShowModal = false
+    let tabBarImageNames = ["chart.bar.doc.horizontal", "book.circle.fill", "plus.app.fill", "bookmark.circle.fill", "gear"]
+    @State var activeSheet: ActiveSheet?
     
     
     //MARK: - Category Names
@@ -46,22 +45,17 @@ struct ContentView: View {
     @State var category3Name = UserDefaults.standard.string(forKey: "category3Name")!
     @State var category4Name = UserDefaults.standard.string(forKey: "category4Name")!
     
-    //MARK: - Week Date Data
+    //Week Date Data
     var currentWeek : [Date] {
         Array(stride(from: Date().startOfWeek(), through: Date().startOfWeek().addingTimeInterval(6*60*60*24), by:  60*60*24))
     }
-    
     var lastWeek : [Date] {
         Array(stride(from: Date().startOfWeek().addingTimeInterval(-6*24*60*60), to: Date().startOfWeek(), by:  60*60*24))
     }
-    
     let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
     
-    
-    //MARK: - Body
     var body: some View {
-        
-        //MARK: - SCREEN LAYOUT
+
         ZStack {
             //Background Color
             Color.black
@@ -74,112 +68,26 @@ struct ContentView: View {
                 //Current Date
                 //Week Dates Button
                 HStack {
-                    
                     Image(systemName: "calendar.circle")
                         .font(.system(size: 36))
                         .foregroundColor(.white)
                         .frame(width: 24)
                 
-                    
                     DatePicker("", selection: $selectedDate, displayedComponents: .date)
                         .datePickerStyle(CompactDatePickerStyle())
                         .frame(width: 100, height: 50, alignment: .leading)
                         
-                        
                     Spacer()
-                    
-                    //Buttons
-                    HStack(spacing: 0) {
-                        
-                        
-                        ShowHistoryViewButton()
-                            .frame(width: 40)
-                            .frame(height: 40)
-                            .padding(.vertical, 8)
-//                            .padding(.horizontal, 8)
-                            .onTapGesture {
-                                self.showHistoryView.toggle()
-                            }
-                            .sheet(isPresented: $showHistoryView, onDismiss: {
-                                self.showHistoryView = false
-                            }) {
-                                //MARK: - show history view
-                                ActivityHistory(allData: allSavedActivities,
-                                                category1Name: $category1Name,
-                                                category2Name: $category2Name,
-                                                category3Name: $category3Name,
-                                                category4Name: $category4Name,
-                                                showActivitySelectorView: $showActivitySelector,
-                                                activityToShow: activityToSave)
-                            }
-                        
-                        
-                        //Add Activity Button
-                        AddFavouriteButton()
-                            .frame(width: 40)
-                            .frame(height: 40)
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 8)
-                            .onTapGesture {
-                                self.showAddFavourite.toggle()
-                            }
-                            .sheet(isPresented: $showAddFavourite, onDismiss: {
-                                self.showAddFavourite = false
-                                resetActivity(activityToSave)
-                            }) {
-                                //MARK: - Add Favourite View
-                                //Add activity view
-                                AddFavouriteView(
-                                    activityToSave: activityToSave,
-                                    activities: allSavedActivities,
-                                    showAddFavourite: $showAddFavourite,
-                                    category1Name: $category1Name,
-                                    category2Name: $category2Name,
-                                    category3Name: $category3Name,
-                                    category4Name: $category4Name
-                                
-                                )
-                                .environmentObject(activityToSave)
-                            }
-                        //Add Activity Button
-                        AddActivityButton()
-                            .frame(width: 40)
-                            .padding(.vertical, 0)
-                            .onTapGesture {
-                                self.showAddActivity.toggle()
-                            }
-                            .sheet(isPresented: $showAddActivity, onDismiss: {
-                                self.showAddActivity = false
-                                self.showActivitySelector = false
-                                self.showCategoryNameEditor = false
-                                resetActivity(activityToSave)
-                            }) {
-                                //MARK: - Add activity view
-                                AddActivityView(
-                                    showActivitySelector: $showActivitySelector,
-                                    activityToSave: activityToSave,
-                                    showAddActivity: $showAddActivity,
-                                    isEditScreen: false,
-                                    selectedDate: $daySelected,
-                                    itemToDelete: $activityToDelete,
-                                    showingNameEditor: $showCategoryNameEditor,
-                                    category1Name: $category1Name,
-                                    category2Name: $category2Name,
-                                    category3Name: $category3Name,
-                                    category4Name: $category4Name
-                                )
-//                                .offset(y: 40)
-                            }
-                    }
-                    .padding(.trailing, 16)
+
                 }
                 .frame(height: 16)
                 .padding(.leading, 16)
                 .padding(.leading, screen.size.width * 0.03)
                 .padding(.vertical, 8)
-                //Week Summary
+                
+            
+                //Mark: - Week Summary and day scroll view
                 SummaryView(
-                    useHours: useHours,
                     selectedDate: selectedDate,
                     allData: allSavedActivities,
                     category1Name: $category1Name,
@@ -191,8 +99,6 @@ struct ContentView: View {
                 //View of days of the week
                 DayScrollView(
                     showDetailedDayView: $showDetailedDay,
-                    detailedDayViewState: $detailedDayViewState,
-                    daySelected: $daySelected,
                     selectedDate: $selectedDate,
                     showEditScreen: $showEditScreen,
                     activityToSave: activityToSave,
@@ -200,17 +106,15 @@ struct ContentView: View {
                     category2Name: $category2Name,
                     category3Name: $category3Name,
                     category4Name: $category4Name,
-                    weekOnlyData: allSavedActivities.filter({ $0.timestamp! > selectedDate.startOfWeek() && $0.timestamp! < selectedDate.endOfWeek })
+                    weekOnlyData: allSavedActivities.filter({ $0.timestamp! > selectedDate.startOfWeek() && $0.timestamp! < selectedDate.endOfWeek }
+                                                        
+                    ), activeSheet: $activeSheet
                 )
                 .padding(.leading, screen.size.width * 0.01)
                     
-                     
-                
                 //MARK: - Last 5 Weeks Chart and Buttons
                 VStack(alignment: .leading, spacing: 0) {
-                    
                     HStack(spacing: 0) {
-                    
                         //Chart
                         BarChart(
                             selectedDate: $selectedDate,
@@ -226,17 +130,196 @@ struct ContentView: View {
                 .padding(.leading, screen.size.width * 0.03)
                 .padding(.horizontal)
                 .padding(.vertical, 2)
-                
-                
-                //Spacer
+
                 Spacer()
-              
+            
+                Divider()
+                    .frame(height: 6)
+                    .foregroundColor(.init(white: 0.8))
+            
+                
+                //MARK: - Tab Bar
+                HStack{
+                    ForEach(0..<5) { num in
+                        Button(action: {
+                            //Button Fuctions:
+                            selectedIndex = num
+                            
+                            //Show Stats View Button
+                            if num == 0 {
+                                shouldShowModal.toggle()
+                                activeSheet = .first
+                                self.showStatsView.toggle()
+                            }
+                            
+                            //History Button
+                            if num == 1 {
+                                shouldShowModal.toggle()
+                                activeSheet = .second
+                                self.showHistoryView.toggle()
+                                return
+                            }
+
+                            //Add Activity Button
+                            if num == 2 {
+                                shouldShowModal.toggle()
+                                activeSheet = .third
+                                self.showAddActivity.toggle()
+                                return
+                            }
+                            //Add Favourite Button
+                            if num == 3 {
+                                shouldShowModal.toggle()
+                                activeSheet = .fourth
+                                self.showAddFavourite.toggle()
+                                return
+                            }
+                            
+                        }
+                        , label: {
+                            
+                            //Button Images:
+                            Spacer()
+                            
+                            //Add Activity Button
+                            if num == 2 {
+                                ZStack {
+                                    let colorArray: [Color] = [Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)), Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)), Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))]
+                                    
+                                    LinearGradient(gradient: Gradient(colors: colorArray), startPoint: .topLeading, endPoint: .bottomTrailing)
+                                        .mask(Image(systemName: "plus.circle.fill")
+                                                .font(.system(size: 36)))
+                                        .frame(width: 36, height: 36, alignment: .center)
+                                    
+                                }
+//                                .sheet(isPresented: $showAddActivity, onDismiss: {
+//                                    self.showAddActivity = false
+//                                    self.showActivitySelector = false
+//                                    self.showCategoryNameEditor = false
+//                                    resetActivity(activityToSave)
+//                                }) {
+//                                    //MARK: - Add activity view
+//                                    AddActivityView(showActivitySelector: $showActivitySelector,
+//                                                    showAddActivity: $showAddActivity,
+//                                                    selectedDate: $selectedDate,
+//                                                    itemToDelete: $activityToDelete,
+//                                                    showingNameEditor: $showCategoryNameEditor,
+//                                                    activityToSave: activityToSave,
+//                                                    isEditScreen: false,
+//                                                    categorySelected: false,
+//                                                    category1Name: $category1Name,
+//                                                    category2Name: $category2Name,
+//                                                    category3Name: $category3Name,
+//                                                    category4Name: $category4Name)
+//                                }
+
+
+                                
+                                Spacer()
+                            //All other button images
+                            } else {
+                                Image(systemName: tabBarImageNames[num])
+                                    .font(.system(size: 24, weight: .bold))
+                                    .foregroundColor(selectedIndex == num && shouldShowModal ? .yellow : .init(white: 0.8))
+//                                    .sheet(isPresented: $showHistoryView, onDismiss: {
+//                                        self.showHistoryView = false
+//                                    }) {
+//                                        //MARK: - show history view
+//                                        ActivityHistory(allData: allSavedActivities,
+//                                                        category1Name: $category1Name,
+//                                                        category2Name: $category2Name,
+//                                                        category3Name: $category3Name,
+//                                                        category4Name: $category4Name,
+//                                                        showActivitySelectorView: $showActivitySelector,
+//                                                        activityToShow: activityToSave)
+//                                    }
+                                Spacer()
+                                
+                            }
+                        })
+                    }
+                    Spacer()
+                }
+                .padding(.bottom)
+                .padding(.vertical, 4)
+                .edgesIgnoringSafeArea(.bottom)
+                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                .sheet(item: $activeSheet,
+                       onDismiss: {
+                        self.showStatsView = false
+                        self.showAddFavourite = false
+                        self.showHistoryView = false
+                        self.showAddActivity = false
+                        self.showActivitySelector = false
+                        self.showCategoryNameEditor = false
+                        self.shouldShowModal = false
+                        self.activeSheet = nil
+                        resetActivity(activityToSave)
+                        
+                       } , content: { item in
+//                    //Switch between views
+                    switch item {
+                    case .first:
+                        StatsView(allData: allSavedActivities,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        showActivitySelectorView: $showActivitySelector,
+                                        activityToShow: activityToSave)
+                    case .second:
+                        ActivityHistory(allData: allSavedActivities,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        showActivitySelectorView: $showActivitySelector,
+                                        activityToShow: activityToSave)
+                    case .third:
+                        AddActivityView(showActivitySelector: $showActivitySelector,
+                                        showAddActivity: $showAddActivity,
+                                        selectedDate: $selectedDate,
+                                        itemToDelete: $activityToDelete,
+                                        showingNameEditor: $showCategoryNameEditor,
+//                                        activityToSave: activityToSave,
+                                        isEditScreen: false,
+                                        categorySelected: false,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        activeSheet: $activeSheet)
+                            .environmentObject(activityToSave)
+                            
+                    case .fourth:
+                        AddFavouriteView(
+                            activityToSave: activityToSave,
+                            activities: allSavedActivities,
+                            showAddFavourite: $showAddFavourite,
+                            category1Name: $category1Name,
+                            category2Name: $category2Name,
+                            category3Name: $category3Name,
+                            category4Name: $category4Name,
+                            activeSheet: $activeSheet)
+                        .environmentObject(activityToSave)
+                    case .fifth:
+                        AddFavouriteView(
+                        activityToSave: activityToSave,
+                        activities: allSavedActivities,
+                        showAddFavourite: $showAddFavourite,
+                        category1Name: $category1Name,
+                        category2Name: $category2Name,
+                        category3Name: $category3Name,
+                        category4Name: $category4Name,
+                            activeSheet: $activeSheet)
+                    .environmentObject(activityToSave)
+                    }
+                })
             }
             .padding(.horizontal, 16)
+            .edgesIgnoringSafeArea(.bottom)
         }
-    //end of body
     }
-    
     
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
@@ -253,8 +336,6 @@ struct ContentView: View {
         formatter.timeStyle = .none
         return formatter
     }()
-
-    
 }
 
 
@@ -318,11 +399,8 @@ struct DateView: View {
     }()
     
     var body: some View {
-        
-        let today = Date()
-    
         HStack {
-            Text("\(today, formatter: dateFormatter)")
+            Text("\(Date(), formatter: dateFormatter)")
                 .foregroundColor(.white)
                 .font(.system(size: 20, weight: .semibold))
             Spacer()
@@ -337,7 +415,6 @@ struct SummaryView: View {
         
         @Environment(\.managedObjectContext) private var viewContext
         
-        var useHours: Bool
         var selectedDate: Date
         var allData: FetchedResults<AddedActivity>
         @State var timeFrameChanger = TimeFrame.week
@@ -419,10 +496,6 @@ struct SummaryView: View {
                                 }
                         }
                         .padding(.top, 4)
-                        
-                        
-                        
-                        
                     }
                     .font(.system(size: 14))
                     .foregroundColor(.white)
@@ -463,9 +536,6 @@ struct SummaryView: View {
             }
             
         }
-        
-        
-        
 }
 
 //MARK: - Day Scroll View
@@ -475,7 +545,6 @@ class ScrollToModel: ObservableObject {
         case top
         case point(point: Int)
     }
-    
     @Published var direction: Action? = nil
 }
 
@@ -483,8 +552,6 @@ class ScrollToModel: ObservableObject {
 struct DayScrollView: View {
     
     @Binding var showDetailedDayView: Bool
-    @Binding var detailedDayViewState: CGSize
-    @Binding var daySelected: Date
     @Binding var selectedDate: Date
     @Binding var showEditScreen: Bool
     @ObservedObject var activityToSave: ActivityToSave
@@ -492,6 +559,7 @@ struct DayScrollView: View {
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    
     
     @StateObject var scrollObject = ScrollToModel()
     
@@ -503,14 +571,14 @@ struct DayScrollView: View {
         return df
     }()
     
+    @Binding var activeSheet: ActiveSheet?
+    
     var body: some View {
         
         let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.endOfWeek)
         
         ScrollView(.horizontal) {
-            
             ScrollViewReader { sp in
-            
                 HStack(spacing: 4) {
                     //Cycle through days of either last week or this week
                     ForEach((weekToDisplay), id: \.self) { day in
@@ -549,8 +617,7 @@ struct DayScrollView: View {
                         .background((Calendar.current.isDate(day, inSameDayAs: Date())) ? Color("grayBackground") : Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                         .frame(width: 160, height: screen.size.height * 0.276, alignment: .center)
                         .onTapGesture {
-//                            print("DAY TAPPED *Show DetailedDayView* ")
-                            self.daySelected = day
+                            self.selectedDate = day
                             self.showDetailedDayView = true
                         }
                         .sheet(isPresented: $showDetailedDayView, onDismiss: {
@@ -562,11 +629,12 @@ struct DayScrollView: View {
                                 dailyData:  weekOnlyData,
                                 showEditScreen: $showEditScreen,
                                 activityToSave: activityToSave,
-                                date: $daySelected,
+                                date: $selectedDate,
                                 category1Name: $category1Name,
                                 category2Name: $category2Name,
                                 category3Name: $category3Name,
-                                category4Name: $category4Name
+                                category4Name: $category4Name,
+                                activeSheet: $activeSheet
                             )
                             .environmentObject(activityToSave)
                             .offset(y: 40)
@@ -609,7 +677,7 @@ struct DayScrollView: View {
 }
 
 
-//Activity Item (Displayed in Day by Day Scroll
+//Activity Item (Displayed in Day by Day Scroll)
 struct ActivityItem: View {
     
     var item: FetchedResults<AddedActivity>.Element
@@ -626,57 +694,6 @@ struct ActivityItem: View {
             Text("\(item.duration, specifier: "%.0f")")
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundColor(Color("\(item.category ?? "category1")Color"))
-                
-        }
-    }
-}
-
-
-
-//MARK: - Day View
-struct dayView: View {
-    
-    var day: dayOfWeek
-    var category1: String
-    var category2: String
-    var category3: String
-    var category4: String
-    
-    var body: some View {
-        ZStack {
-            
-            Color.black
-                
-            
-            VStack {
-                Text("\(day.nameOfDay) \(day.dateOfDay)")
-                    .foregroundColor(.white)
-                    .font(.system(size: 18, weight: .semibold))
-                    .padding(.bottom, 4)
-                
-                VStack(alignment: .center) {
-                    Text("\(category1.capitalized): \(day.category1)")
-                        .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
-                        .padding(.vertical, 2)
-                    
-                    Text("Learn: \(day.category2)")
-                        .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
-                        .padding(.vertical, 2)
-                    
-                    Text("category3: \(day.category3)")
-                        .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        .padding(.vertical, 2)
-                    
-                    Text("Custom: \(day.category4)")
-                        .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
-                        .padding(.vertical, 2)
-                    
-                    Text("Total: \(day.category1 + day.category2 + day.category3 + day.category4)")
-                        .foregroundColor(Color(#colorLiteral(red: 0.9529411793, green: 0.6862745285, blue: 0.1333333403, alpha: 1)))
-                        .padding(.vertical, 2)
-                }
-                .font(.system(size: 18, weight: .semibold))
-            }
         }
     }
 }
@@ -690,14 +707,9 @@ struct BarChart: View {
     var weekTwoData: [AddedActivity]
     var weekThreeData: [AddedActivity]
     var weekFourData: [AddedActivity]
-                                
-    
     let capsuleWidth: CGFloat = screen.size.width * 0.80 - 60
     let capsuleHeight: CGFloat = 40
-    
-    let categories = ["category1", "category2", "category3", "category4"]
-    
-                                
+
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
         df.dateFormat = "MMM d"
@@ -707,15 +719,12 @@ struct BarChart: View {
     let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
     
     var monthData: [[Float]] { [weekOneData, weekTwoData, weekThreeData, weekFourData].map { week in
-        
         var data = [Float]()
-        
             for categoryName in categories {
                 let total = week.filter({ $0.category == categoryName} ).reduce(0) { $0 + $1.duration }
-                
+            
                 data.append(total)
             }
-        
         return data
         }
     }
@@ -744,8 +753,6 @@ struct BarChart: View {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .foregroundColor(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                         
-                    
-                    
                     HStack(alignment: .center, spacing: 0) {
                         //Date text
                         Text("\(date.endOfWeek, formatter: dateFormatter) -\n\(date.startOfWeek(), formatter: dateFormatter)")
@@ -783,7 +790,6 @@ struct BarChart: View {
                                 }
                             }
                         }
-                        
                         .frame(height: capsuleHeight)
                         
                         //Total for the week (all categories)
@@ -791,8 +797,6 @@ struct BarChart: View {
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.yellow)
                             .frame(width: 52, height: 40)
-                        
-                        
                     }
                 }
                 .onTapGesture {
@@ -865,3 +869,87 @@ struct dayOfWeek: Identifiable {
 
 
 
+
+
+//OLD BUTTONS
+
+//                    //Mark: - Buttons
+//                    HStack(spacing: 0) {
+//
+//                        ShowHistoryViewButton()
+//                            .frame(width: 40)
+//                            .frame(height: 40)
+//                            .padding(.vertical, 8)
+//                            .onTapGesture {
+//                                self.showHistoryView.toggle()
+//                            }
+//                            .sheet(isPresented: $showHistoryView, onDismiss: {
+//                                self.showHistoryView = false
+//                            }) {
+//                                //MARK: - show history view
+//                                ActivityHistory(allData: allSavedActivities,
+//                                                category1Name: $category1Name,
+//                                                category2Name: $category2Name,
+//                                                category3Name: $category3Name,
+//                                                category4Name: $category4Name,
+//                                                showActivitySelectorView: $showActivitySelector,
+//                                                activityToShow: activityToSave)
+//                            }
+//
+//                        //Add Activity Button
+//                        AddFavouriteButton()
+//                            .frame(width: 40)
+//                            .frame(height: 40)
+//                            .padding(.vertical, 8)
+//                            .padding(.horizontal, 8)
+//                            .onTapGesture {
+//                                self.showAddFavourite.toggle()
+//                            }
+//                            .sheet(isPresented: $showAddFavourite, onDismiss: {
+//                                self.showAddFavourite = false
+//                                resetActivity(activityToSave)
+//                            }) {
+//                                //MARK: - Add Favourite View
+//                                //Add activity view
+//                                AddFavouriteView(
+//                                    activityToSave: activityToSave,
+//                                    activities: allSavedActivities,
+//                                    showAddFavourite: $showAddFavourite,
+//                                    category1Name: $category1Name,
+//                                    category2Name: $category2Name,
+//                                    category3Name: $category3Name,
+//                                    category4Name: $category4Name
+//
+//                                )
+//                                .environmentObject(activityToSave)
+//                            }
+//
+//                        //Add Activity Button
+//                        AddActivityButton()
+//                            .frame(width: 40)
+//                            .padding(.vertical, 0)
+//                            .onTapGesture {
+//                                self.showAddActivity.toggle()
+//                            }
+//                            .sheet(isPresented: $showAddActivity, onDismiss: {
+//                                self.showAddActivity = false
+//                                self.showActivitySelector = false
+//                                self.showCategoryNameEditor = false
+//                                resetActivity(activityToSave)
+//                            }) {
+//                                //MARK: - Add activity view
+//                                AddActivityView(showActivitySelector: $showActivitySelector,
+//                                                showAddActivity: $showAddActivity,
+//                                                selectedDate: $selectedDate,
+//                                                itemToDelete: $activityToDelete,
+//                                                showingNameEditor: $showCategoryNameEditor,
+//                                                activityToSave: activityToSave,
+//                                                isEditScreen: false,
+//                                                categorySelected: false,
+//                                                category1Name: $category1Name,
+//                                                category2Name: $category2Name,
+//                                                category3Name: $category3Name,
+//                                                category4Name: $category4Name)
+//                            }
+//                    }
+//                    .padding(.trailing, 16)

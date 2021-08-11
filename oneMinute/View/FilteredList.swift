@@ -23,16 +23,16 @@ struct FilteredList: View {
             SearchBar(text: $searchText)
             
             ForEach(fetchRequest.wrappedValue.filter({ searchText.isEmpty ? true : $0.name.contains(searchText) }), id: \.self) { activity in
-                Text(activity.name.capitalized)
+                Text(activity.name)
                     .onTapGesture {
                         self.showActivitySelector = false
-                        self.selectedActivity = activity.name.capitalized
+                        self.selectedActivity = activity.name
                     }
                     
             }.onDelete(perform: deleteActivity)
             
         }
-        .resignKeyboardOnDragGesture()
+//        .resignKeyboardOnDragGesture()
     }
     
     func deleteActivity(at offsets: IndexSet) {

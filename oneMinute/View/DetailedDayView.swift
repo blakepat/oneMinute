@@ -15,10 +15,11 @@ struct DetailedDayView: View {
     @Binding var showEditScreen: Bool
     @State var showActivitySelector: Bool = false
     @ObservedObject var activityToSave: ActivityToSave
-    @State var activityViewState = CGSize.zero
+//    @State var activityViewState = CGSize.zero
     @Binding var date: Date
     @State var itemToDelete = AddedActivity()
     @State var showCategoryNameEditor = false
+    
     
     
     let dateFormatter: DateFormatter = {
@@ -32,6 +33,9 @@ struct DetailedDayView: View {
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    
+    
+    @Binding var activeSheet: ActiveSheet?
     
     let categories = ["category1", "category2", "category3", "category4"]
     
@@ -96,15 +100,19 @@ struct DetailedDayView: View {
                                     Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]
                             }
                             
-                            HStack {
-                                Text(dailyCategoryData.isEmpty ? "\(catagory.capitalized) - no activities logged" : "\(catagory.capitalized)")
-                                    .frame(width: screen.width - 56, alignment: .leading)
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(Color("\(categories[index])Color"))
-                                    .padding(.leading, 16)
-                                    .padding(.top, 4)
+                            if !dailyCategoryData.isEmpty {
                                 
-                                Spacer()
+                                HStack {
+                                    
+                                    Text("\(catagory.capitalized)")
+                                        .frame(width: screen.width - 56, alignment: .leading)
+                                        .font(.system(size: 20, weight: .bold))
+                                        .foregroundColor(Color("\(categories[index])Color"))
+                                        .padding(.leading, 16)
+                                        .padding(.top, 4)
+                                        
+                                     Spacer()
+                                }
                             }
                             ForEach(dailyCategoryData, id: \.self) { data in
                                 
@@ -120,22 +128,16 @@ struct DetailedDayView: View {
                                     category2Name: $category2Name,
                                     category3Name: $category3Name,
                                     category4Name: $category4Name,
-                                    date: $date
+                                    date: $date,
+                                    activeSheet: $activeSheet
                                 )
-//                                data: data,
-//                                showEditScreen: $showEditScreen,
-//                                activityToEdit: activityToSave,
-//                                itemToDelete: $itemToDelete
-                                
                                     .frame(width: screen.width - 56, alignment: .leading)
                                     .background(Color.black)
                                     .clipShape(RoundedRectangle(cornerRadius: 10))
-//                                    .padding(.horizontal, 20)
+
                                     .padding(.vertical, 2)
                             }
                             .frame(width: screen.width - 56, alignment: .leading)
-                            
-//                            Divider().background(Color.white).frame(height: 2)
                         }
                     }
                 }
@@ -153,8 +155,8 @@ struct DetailedDayView: View {
     
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
-        activityToSave.activityName = "Select Activity"
-        activityToSave.category = "category1"
+        activityToSave.activityName = "Select Category..."
+        activityToSave.category = "category0"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""
@@ -179,10 +181,8 @@ struct DetailedDayCatagorySectionItem: View {
     @Binding var category4Name: String
     @Binding var date: Date
     
-    
-    
+    @Binding var activeSheet: ActiveSheet?
 
-    
         var body: some View {
             
             HStack {
@@ -191,21 +191,17 @@ struct DetailedDayCatagorySectionItem: View {
                     Text("\(data.name ?? "Unknown Activity")")
                         .font(.system(size: 16, weight: .semibold))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-//                        .padding(.vertical, 1)
                         .padding(.top, 4)
                     Text("Minutes: \(data.duration, specifier: "%.0f")")
                         .font(.system(size: 16))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-//                        .padding(.vertical, 1)
                     Text("Notes: \(data.notes ?? "")")
                         .font(.system(size: 16))
                         .foregroundColor(Color("\(data.category ?? "category1")Color"))
-//                        .padding(.vertical, 1)
                         .padding(.bottom, 4)
                     
                 }
                 .padding(.horizontal)
-                
                 
                 Spacer()
                 
@@ -218,11 +214,13 @@ struct DetailedDayCatagorySectionItem: View {
                     .padding()
                     .onTapGesture {
                         
+                        
+                        
                         itemToDelete = data as AddedActivity
                         
                         activityToEdit.activityName = data.name ?? "Unknown Activity"
-                        activityToEdit.category = data.category ?? "category1"
-                        activityToEdit.hours = data.duration / 60
+                        activityToEdit.category = data.category ?? "category0"
+                        activityToEdit.hours = (data.duration / 60).rounded(.down)
                         activityToEdit.minutes = data.duration.truncatingRemainder(dividingBy: 60)
                         activityToEdit.notes = data.notes ?? ""
                         
@@ -234,28 +232,28 @@ struct DetailedDayCatagorySectionItem: View {
                         resetActivity(activityToSave)
                     }) {
                         //MARK: - Add activity view
-                        AddActivityView(
-                            showActivitySelector: $showActivitySelector,
-                            activityToSave: activityToSave,
-                            showAddActivity: $showEditScreen,
-                            isEditScreen: true,
-                            selectedDate: $date,
-                            itemToDelete: $itemToDelete,
-                            showingNameEditor: $showCategoryNameEditor,
-                            category1Name: $category1Name,
-                            category2Name: $category2Name,
-                            category3Name: $category3Name,
-                            category4Name: $category4Name
-                        )
-                        .environmentObject(activityToSave)
+                        AddActivityView(showActivitySelector: $showActivitySelector,
+                                        showAddActivity: $showEditScreen,
+                                        selectedDate: $date,
+                                        itemToDelete: $itemToDelete,
+                                        showingNameEditor: $showCategoryNameEditor,
+//                                        activityToSave: activityToEdit,
+                                        isEditScreen: true,
+                                        categorySelected: true,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        activeSheet: $activeSheet)
+                        .environmentObject(activityToEdit)
                     }
             }
         }
     
     //MARK: - Reset Activity Function
     private func resetActivity(_ : ActivityToSave) {
-        activityToSave.activityName = "Select Activity"
-        activityToSave.category = "category1"
+        activityToSave.activityName = "Select Category..."
+        activityToSave.category = "category0"
         activityToSave.hours = 0
         activityToSave.minutes = 0
         activityToSave.notes = ""

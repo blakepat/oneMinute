@@ -44,7 +44,11 @@ struct ActivitySelectorView: View {
                         
                         HStack {
                         
-                            Text(activity.name.capitalized)
+                            if editActive {
+                                Image(systemName: "arrow.turn.down.right")
+                            }
+                            
+                            Text(activity.name)
                                 
                             Spacer()
                             
@@ -70,13 +74,18 @@ struct ActivitySelectorView: View {
                     .onDelete(perform: deleteActivity)
                 }
                 
-                .resignKeyboardOnDragGesture()
+//                .resignKeyboardOnDragGesture()
             }
             
+            
+            BlurView(style: .systemUltraThinMaterial)
+                .offset(y: self.showingAlert ? 0 : screen.height)
+                .edgesIgnoringSafeArea(.all)
             
             TextFieldAlert(isShowing: $showingAlert, text: $alertInput, activityToEdit: activityToEdit, editActive: editActive, category: activityToSave.category)
                 .offset(x: 60, y: self.showingAlert ? 0 : screen.height)
                 .animation(.easeInOut)
+
         }
     }
     
@@ -97,11 +106,8 @@ struct ActivitySelectorView: View {
         fetchRequest = FetchRequest<Activity>(entity: Activity.entity(), sortDescriptors: [], predicate: NSPredicate(format: "category CONTAINS %@", filter))
         
         self._showActivitySelector = showActivitySelector
-//        self.activityToSave = activityToSave
         self.allActivities = allActivities
         self.categoryNames = categoryNames
-        
-
     }
 }
     
@@ -123,7 +129,10 @@ struct TitleBar: View {
             HStack {
                 //back button
                 Text("Edit")
-                    .padding()
+                    .padding(3)
+                    .background(editActive ? Color.secondary : .clear)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(6)
                     .font(.system(size: 22))
                     .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                         self.editActive.toggle()
@@ -131,7 +140,7 @@ struct TitleBar: View {
                 
                 Spacer()
                 
-                Text("\(categoryName.capitalized)")
+                Text("\(categoryName)")
                     .font(.system(size: 24, weight: .semibold))
                 
                 Spacer()
@@ -149,41 +158,28 @@ struct TitleBar: View {
 }
 
 
-extension View {
-    func Print(_ vars: Any...) -> some View {
-        for v in vars { print(v) }
-        return EmptyView()
-    }
-}
 
-
-extension UIApplication {
-    func endEditing(_ force: Bool) {
-        self.windows
-            .filter{$0.isKeyWindow}
-            .first?
-            .endEditing(force)
-    }
-}
-
-struct ResignKeyboardOnDragGesture: ViewModifier {
-    var gesture = DragGesture().onChanged{_ in
-        UIApplication.shared.endEditing(true)
-    }
-    func body(content: Content) -> some View {
-        content.gesture(gesture)
-    }
-}
-
-extension View {
-    func resignKeyboardOnDragGesture() -> some View {
-        return modifier(ResignKeyboardOnDragGesture())
-    }
-}
-
-
-
-//LIST
-
-//                FilteredList(filter: activityToSave.category, passedActivityBinding: $activityToSave.activityName, showActivitySelector: $showActivitySelector)
-//                    .colorMultiply(Color("\(activityToSave.category)Color"))
+//
+//extension UIApplication {
+//    func endEditing(_ force: Bool) {
+//        self.windows
+//            .filter{$0.isKeyWindow}
+//            .first?
+//            .endEditing(force)
+//    }
+//}
+//
+//struct ResignKeyboardOnDragGesture: ViewModifier {
+//    var gesture = DragGesture().onChanged{_ in
+//        UIApplication.shared.endEditing(true)
+//    }
+//    func body(content: Content) -> some View {
+//        content.gesture(gesture)
+//    }
+//}
+//
+//extension View {
+//    func resignKeyboardOnDragGesture() -> some View {
+//        return modifier(ResignKeyboardOnDragGesture())
+//    }
+//}

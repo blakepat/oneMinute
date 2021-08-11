@@ -8,6 +8,26 @@
 import Foundation
 import SwiftUI
 
+//Mark: - Universal Variables
+let categories = ["category1", "category2", "category3", "category4"]
+
+enum ActiveSheet: Identifiable {
+    case first, second, third, fourth, fifth
+    
+    var id: Int {
+        hashValue
+    }
+}
+
+
+//Mark: - Extensions
+extension View {
+    func Print(_ vars: Any...) -> some View {
+        for v in vars { print(v) }
+        return EmptyView()
+    }
+}
+
 
 extension Calendar {
     func numberOfDaysBetween(from: Date, to: Date) -> Int {
@@ -81,13 +101,6 @@ extension Date {
         
         
     }
-    
-
-//    func isMonday() -> Bool {
-//        let calendar = Calendar(identifier: .gregorian)
-//        let components = calendar.dateComponents([.weekday], from: self)
-//        return components.weekday == 2
-//    }
 }
 
 
@@ -145,29 +158,12 @@ extension String {
 }
 
 
+
+//Mark: - Data Types/Functions
 enum TimeFrame {
     case week, month, year, allTime
 }
 
-
-
-//
-//func timeFrameFilterer(timeFrame: TimeFrame) -> {} {
-//
-//    if timeFrame == TimeFrame.week {
-//        return "weekly"
-//    } else if timeFrame == TimeFrame.month {
-//        return "monthly"
-//    } else if timeFrame == TimeFrame.year {
-//        return "yearly"
-//    } else if timeFrame == TimeFrame.total {
-//        return "Total"
-//    } else {
-//        return "unidentified"
-//    }
-//
-//
-//}
 
 func timeFrameStringGetter(_ timeFrame: TimeFrame) -> String {
     

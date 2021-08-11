@@ -139,8 +139,12 @@ struct TextFieldAlert: View {
             for index in 0..<addedfetchReturn.count {
                 
                 let objectUpdate = addedfetchReturn[index] as! NSManagedObject
+//                Print(objectUpdate.value(forKey: "name"))
                 objectUpdate.setValue(newName, forKey: "name")
+                
                 do {
+//                    Print(objectUpdate.value(forKey: "name"))
+                    
                     try managedContext.save()
                     print("updated name successfully!!!!!")
                 } catch let error as NSError {

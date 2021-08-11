@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		34031962261D8EFC0047CBAD /* SupportItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34031961261D8EFC0047CBAD /* SupportItems.swift */; };
 		3407503025534C66004AF4E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3407502F25534C66004AF4E0 /* Assets.xcassets */; };
+		34137D5E26B2096600B6298C /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34137D5D26B2096600B6298C /* StatsView.swift */; };
+		34137D6326B210BB00B6298C /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34137D6226B210BB00B6298C /* SettingsView.swift */; };
+		342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */; };
+		342A2DA826B9ECBF00F7FBD5 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */; };
+		342A2DAD26B9F10C00F7FBD5 /* PieChartRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DAC26B9F10C00F7FBD5 /* PieChartRows.swift */; };
 		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
 		344F061A260C2B6200BFAECE /* ActivityHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F0619260C2B6200BFAECE /* ActivityHistory.swift */; };
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
@@ -54,6 +59,11 @@
 /* Begin PBXFileReference section */
 		34031961261D8EFC0047CBAD /* SupportItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportItems.swift; sourceTree = "<group>"; };
 		3407502F25534C66004AF4E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = ../../../oneWeek/oneWeek/Assets.xcassets; sourceTree = "<group>"; };
+		34137D5D26B2096600B6298C /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		34137D6226B210BB00B6298C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieSliceView.swift; sourceTree = "<group>"; };
+		342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
+		342A2DAC26B9F10C00F7FBD5 /* PieChartRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartRows.swift; sourceTree = "<group>"; };
 		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
 		344F0619260C2B6200BFAECE /* ActivityHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistory.swift; sourceTree = "<group>"; };
 		347983B025546E9200823F39 /* PreloadedData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PreloadedData.plist; sourceTree = SOURCE_ROOT; };
@@ -189,6 +199,11 @@
 				34DF374825534A8600232BCD /* BlurView.swift */,
 				34DF374925534A8600232BCD /* SearchBar.swift */,
 				344F0619260C2B6200BFAECE /* ActivityHistory.swift */,
+				34137D5D26B2096600B6298C /* StatsView.swift */,
+				342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */,
+				342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */,
+				342A2DAC26B9F10C00F7FBD5 /* PieChartRows.swift */,
+				34137D6226B210BB00B6298C /* SettingsView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -349,11 +364,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				342A2DA826B9ECBF00F7FBD5 /* PieChartView.swift in Sources */,
 				348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */,
+				342A2DAD26B9F10C00F7FBD5 /* PieChartRows.swift in Sources */,
 				347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */,
 				348F89FE255C9C7D00385B6B /* CalendarDateSelector.swift in Sources */,
 				344F061A260C2B6200BFAECE /* ActivityHistory.swift in Sources */,
 				34031962261D8EFC0047CBAD /* SupportItems.swift in Sources */,
+				342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */,
+				34137D5E26B2096600B6298C /* StatsView.swift in Sources */,
 				347983C12554B93800823F39 /* Activity+CoreDataClass.swift in Sources */,
 				348027A82577FBD30083DD73 /* CategoryNameEditAlert.swift in Sources */,
 				34DF374E25534A8600232BCD /* SearchBar.swift in Sources */,
@@ -369,6 +388,7 @@
 				34DF374F25534A8600232BCD /* ActivitySelectorView.swift in Sources */,
 				34DF374D25534A8600232BCD /* BlurView.swift in Sources */,
 				34E1534C2555BB0F005D79D4 /* TextFieldAlert.swift in Sources */,
+				34137D6326B210BB00B6298C /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

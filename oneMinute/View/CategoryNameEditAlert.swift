@@ -22,6 +22,7 @@ struct CategoryNameEditAlert: View {
             
             //Background Color
             Color.black.edgesIgnoringSafeArea(.all)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
             
             //Stack of Category Names
             VStack {
@@ -42,6 +43,7 @@ struct CategoryNameEditAlert: View {
                 
                 Divider()
                     .background(Color(.gray))
+
                 HStack {
                     Button(action: {
                         withAnimation {
@@ -54,6 +56,8 @@ struct CategoryNameEditAlert: View {
                     }) {
                         Text("Dismiss")
                             .foregroundColor(.white)
+                            .padding(.leading, 8)
+                            .padding(.bottom, 4)
                     }
                     .frame(width: screen.size.width*0.3)
                     
@@ -74,11 +78,12 @@ struct CategoryNameEditAlert: View {
                     } label: {
                         Text("Add")
                             .foregroundColor(.white)
+                            .padding(.trailing, 8)
+                            .padding(.bottom, 4)
                     }
                     .frame(width: screen.size.width*0.3)
 
                 }
-                
                 
             }
         }
