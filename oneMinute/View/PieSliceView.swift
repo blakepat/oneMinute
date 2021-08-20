@@ -15,6 +15,7 @@ struct PieSliceView: View {
         return Double.pi / 2.0 - (pieSliceData.startingAngle + pieSliceData.endAngle).radians / 2.0
     }
     
+    
     var body: some View {
        
         GeometryReader { geometry in
@@ -37,11 +38,15 @@ struct PieSliceView: View {
                 }
                 .fill(pieSliceData.color)
                 
-                Text(pieSliceData.text)
-                    .position(x: geometry.size.width * 0.5 * CGFloat(1.0 + 0.78 * cos(self.minRadians)),
-                              y: geometry.size.height * 0.5 * CGFloat(1.0 - 0.78 * sin(self.minRadians))
-                    )
-                    .foregroundColor(.white)
+                if pieSliceData.text != "0%" {
+                
+                    Text(pieSliceData.text)
+                        .position(x: geometry.size.width * 0.5 * CGFloat(1.0 + 0.78 * cos(self.minRadians)),
+                                  y: geometry.size.height * 0.5 * CGFloat(1.0 - 0.78 * sin(self.minRadians))
+                        )
+                        .foregroundColor(.white)
+                        .font(.title3)
+                }
             }
         }
         .aspectRatio(1, contentMode: .fit)
@@ -59,8 +64,8 @@ struct PieSliceData {
 }
 
 
-struct PieSliceView_Previews: PreviewProvider {
-    static var previews: some View {
-        PieSliceView(pieSliceData: PieSliceData(startingAngle: Angle(degrees: 0), endAngle: Angle(degrees: 220), color: Color.black, text: "65%"))
-    }
-}
+//struct PieSliceView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        PieSliceView(pieSliceData: PieSliceData(startingAngle: Angle(degrees: 0), endAngle: Angle(degrees: 220), color: Color.black, text: "65%"), categorySelected: CategorySelected.none)
+//    }
+//}

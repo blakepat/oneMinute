@@ -27,7 +27,7 @@ struct SettingsView: View {
                 
                 
                 
-                //Donate button?
+                //Donate button
                 
                 
                 

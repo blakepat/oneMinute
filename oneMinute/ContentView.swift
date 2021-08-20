@@ -266,7 +266,7 @@ struct ContentView: View {
                                         category3Name: $category3Name,
                                         category4Name: $category4Name,
                                         showActivitySelectorView: $showActivitySelector,
-                                        activityToShow: activityToSave)
+                                        activityToShow: _activityToSave)
                     case .second:
                         ActivityHistory(allData: allSavedActivities,
                                         category1Name: $category1Name,

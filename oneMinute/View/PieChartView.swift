@@ -18,8 +18,7 @@ struct PieChartView: View {
 //    public var widthFraction: CGFloat = 1
     public var innerRadiusFraction: CGFloat
     
-    @State private var activeIndex = -1
-    
+    @Binding var activeIndex: Int    
     
     var slices: [PieSliceData] {
         let sum = values.reduce(0, +)

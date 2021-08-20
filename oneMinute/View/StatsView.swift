@@ -9,6 +9,20 @@ import SwiftUI
 
 struct StatsView: View {
     
+    
+    init (allData: FetchedResults<AddedActivity>, category1Name: Binding<String>, category2Name: Binding<String>, category3Name: Binding<String>, category4Name: Binding<String>, showActivitySelectorView: Binding<Bool>, activityToShow: ObservedObject<ActivityToSave>) {
+        
+        self.allData = allData
+        self._category1Name = category1Name
+        self._category2Name = category2Name
+        self._category3Name = category3Name
+        self._category4Name = category4Name
+        self._showActivitySelectorView = showActivitySelectorView
+        self._activityToShow = activityToShow
+        
+        UITableView.appearance().backgroundColor = UIColor(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
+    }
+    
     @Environment(\.managedObjectContext) private var viewContext
     
     //Fetch listed activities
@@ -18,20 +32,22 @@ struct StatsView: View {
     //data
     var allData: FetchedResults<AddedActivity>
     var fetchRequest = FetchRequest<Activity>(entity: Activity.entity(), sortDescriptors: [])
+    
     //Category Names
     @Binding var category1Name: String
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    @Binding var showActivitySelectorView: Bool
+    @ObservedObject var activityToShow: ActivityToSave
     
     //local variables
     @State var activityName = "Select Category..."
-    @Binding var showActivitySelectorView: Bool
-    @State var activityToShow: ActivityToSave
     let categories = ["category1", "category2", "category3", "category4"]
     @State var showingAllActivities = true
     @State var nameIndex = 0
     @State var timeFrame = TimeFrame.week
+    @State var activeIndex = -1
     
     
     
@@ -57,6 +73,13 @@ struct StatsView: View {
                     .padding(.top)
                 
                 
+                
+                //MARK: - Date title
+                
+                DateTitleView(timeFrame: timeFrame)
+                
+                
+                
                 //MARK: - Pie Chart View
                 
                 if eachCategoryTotalDuration(timeFrame: timeFrame, results: allData).reduce(0) { $0 + $1 } > 0 {
@@ -65,9 +88,30 @@ struct StatsView: View {
                                  colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
                                  names: [category1Name, category2Name, category3Name, category4Name],
                                  backgroundColor: Color("charcoalColor"),
-                                 innerRadiusFraction: 0.6)
+                                 innerRadiusFraction: 0.6,
+                                 activeIndex: $activeIndex)
                         .padding(.horizontal, 16)
                         .frame(width: 360, height: 300)
+                    
+                    
+                    //List of top activities
+                    
+                    List {
+                        
+                        ForEach(Array(zip(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).indices, mostActivityLoggedDuring(timeFrame: timeFrame, results: allData))), id: \.0) { index, topItem in
+                            
+    //                        Print(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).count)
+                            
+                            Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: "%0.f", topItem.1)) minutes")
+                            
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .listRowBackground(Color("charcoalColor"))
+                        .padding(.vertical, 0)
+                    }
+                    .environment(\.defaultMinListRowHeight, 10)
+                    
                         
                 } else {
                     
@@ -75,23 +119,13 @@ struct StatsView: View {
                         .foregroundColor(.white)
                         .font(.title)
                         .multilineTextAlignment(.center)
+                        .padding(.top)
                     
                 }
                     
-                //List of top activities
+
+
                 
-                List {
-                    
-                    ForEach(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData), id: \.0) { topItem in
-                        
-                        Print(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).count)
-                        
-                        Text("\(topItem.0) \(String(format: "%0.f", topItem.1))")
-                            .foregroundColor(.white)
-                            .listRowBackground(Color("charcoalColor"))
-                        
-                    }
-                }
                 
                 
                 
@@ -109,8 +143,11 @@ struct StatsView: View {
                 Spacer()
         
             }
+
         }
+
     }
+    
     
     //Get totals for each category and put in Array
     func eachCategoryTotalDuration(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>) -> [Double] {
@@ -144,12 +181,20 @@ struct StatsView: View {
         if timeFrame == TimeFrame.week {
             
             var topActivtiesArray = [(String, Float)]()
+            var activityTotalAmount: Float = 0
             
             //Cycle through all activity types
             for activity in fetchRequest.wrappedValue {
 
                 //Get the total duration for each that activity type
-                let activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration}
+                
+                if activeIndex == -1 {
+                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration}
+                } else {
+                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration}
+                }
+                
+
                 
                 //CHANGE IT TO CHECK IF IT IS LOWER THAN 5th item in array
                 if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
@@ -169,12 +214,18 @@ struct StatsView: View {
         } else if timeFrame == TimeFrame.month {
             
             var topActivtiesArray = [(String, Float)]()
+            var activityTotalAmount: Float = 0
             
                 //Cycle through all activity types
                 for activity in fetchRequest.wrappedValue {
 
                     //Get the total duration for each that activity type
-                    let activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name }).reduce(0) { $0 + $1.duration }
+                    if activeIndex == -1 {
+                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name }).reduce(0) { $0 + $1.duration }
+                    } else {
+                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration }
+                    }
+                    
           
                     
                     if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
@@ -194,11 +245,18 @@ struct StatsView: View {
         } else if timeFrame == TimeFrame.allTime {
             
             var topActivtiesArray = [(String, Float)]()
+            var activityTotalAmount: Float = 0
+            
             //Cycle through all activity types
             for activity in fetchRequest.wrappedValue {
 
                 //Get the total duration for each that activity type
-                let activityTotalAmount = results.filter({$0.name == activity.name }).reduce(0) { $0 + $1.duration }
+                if activeIndex == -1 {
+                    activityTotalAmount = results.filter({$0.name == activity.name }).reduce(0) { $0 + $1.duration }
+                } else {
+                    activityTotalAmount = results.filter({$0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration }
+                }
+                
                 
                 if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
                     
@@ -307,7 +365,7 @@ struct ActivitySummaryView: View {
                     //Summary changer
                     HStack {
                         
-                        Text("Weekly")
+                        Text("Week")
                             .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
                             .onTapGesture {
                                 self.timeFrameChanger = TimeFrame.week
@@ -315,7 +373,7 @@ struct ActivitySummaryView: View {
                             
                         Divider()
                         
-                        Text("Monthly")
+                        Text("Month")
                             .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
                             .onTapGesture {
                                 self.timeFrameChanger = TimeFrame.month
@@ -365,3 +423,44 @@ struct ActivitySummaryView: View {
     
     
 }
+
+
+
+struct DateTitleView: View {
+    
+    var timeFrame: TimeFrame
+    
+    let dateFormatter: DateFormatter = {
+        var df = DateFormatter()
+        df.dateFormat = "MMM d"
+        return df
+    }()
+    
+    
+    var body: some View {
+        
+        if timeFrame == TimeFrame.week {
+            
+            Text("\(Date().startOfWeek(), formatter: dateFormatter) - \(Date().endOfWeek, formatter: dateFormatter)")
+                .font(.title)
+                .foregroundColor(Color("category0Color"))
+            
+        } else if timeFrame == TimeFrame.month {
+            
+            Text("\(Date().startOfMonth, formatter: dateFormatter) - \(Date().endOfMonth, formatter: dateFormatter)")
+                .font(.title)
+                .foregroundColor(Color("category0Color"))
+            
+        } else {
+            
+            Text("All Activities Recorded")
+                .font(.title)
+                .foregroundColor(Color("category0Color"))
+            
+        }
+        
+    }
+    
+    
+}
+

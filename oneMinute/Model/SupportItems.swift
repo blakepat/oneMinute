@@ -165,6 +165,7 @@ enum TimeFrame {
 }
 
 
+
 func timeFrameStringGetter(_ timeFrame: TimeFrame) -> String {
     
     if timeFrame == TimeFrame.week {

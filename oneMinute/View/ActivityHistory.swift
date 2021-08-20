@@ -191,11 +191,11 @@ struct ActivityHistory: View {
                                 .fontWeight(.bold)
                             let activityMinutesAllTime = activityAllTime.reduce(0) { $0 + $1.duration }
                             let activitySessionsAllTime = activityAllTime.count
-                            Text("\(Int(activityMinutesAllTime)) mins (\(activitySessionsAllTime) sessions x \(Int(dividBy(lhs:Float(activityMinutesAllTime), rhs:Float(activitySessionsAllTime)))))")
+                            Text("\(Int(activityMinutesAllTime))mins (\(activitySessionsAllTime) sessions x \(Int(dividBy(lhs:Float(activityMinutesAllTime), rhs:Float(activitySessionsAllTime))))avg)")
                             Spacer()
                         }
                     }
-                    .font(.system(size: 16))
+                    .font(.system(size: 14))
                     .foregroundColor(.white)
                     .padding(.horizontal, 10)
         
