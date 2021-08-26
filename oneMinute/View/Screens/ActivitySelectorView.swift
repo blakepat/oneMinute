@@ -11,17 +11,17 @@ import CoreData
 struct ActivitySelectorView: View {
     
     @Environment(\.managedObjectContext) private var viewContext
+    var allActivities: FetchedResults<Activity>
+    var fetchRequest: FetchRequest<Activity>
     
     @Binding var showActivitySelector: Bool
-    @EnvironmentObject var activityToSave: ActivityToSave
-    @State var showingAlert = false
+    @ObservedObject var activityToSave: ActivityToSave
+    @State private var showingAlert = false
     @State private var alertInput = ""
-    @State var editActive = false
-    var allActivities: FetchedResults<Activity>
+    @State private var editActive = false
     var categoryNames: [String]
     @State private var searchText = ""
-    var fetchRequest: FetchRequest<Activity>
-    @State var activityToEdit = ""
+    @State private var activityToEdit = ""
     
  
     var body: some View {
@@ -41,23 +41,18 @@ struct ActivitySelectorView: View {
                     SearchBar(text: $searchText)
                     
                     ForEach(fetchRequest.wrappedValue.filter({ searchText.isEmpty ? true : $0.name.contains(searchText) }), id: \.self) { activity in
-                        
                         HStack {
-                        
                             if editActive {
                                 Image(systemName: "arrow.turn.down.right")
                             }
-                            
+
                             Text(activity.name)
                                 
                             Spacer()
-                            
-                            
                         }
                         .frame(height: 30)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            
                             if editActive {
                                 self.activityToEdit = activity.name
                                 self.showingAlert.toggle()
@@ -66,15 +61,10 @@ struct ActivitySelectorView: View {
                                 self.showActivitySelector = false
                                 self.activityToSave.activityName = activity.name
                             }
-                            
-                            
                         }
-                            
                     }
                     .onDelete(perform: deleteActivity)
                 }
-                
-//                .resignKeyboardOnDragGesture()
             }
             
             
@@ -101,19 +91,17 @@ struct ActivitySelectorView: View {
         }
     }
         
-    init(filter: String, showActivitySelector: Binding<Bool>, allActivities: FetchedResults<Activity>, categoryNames: [String]) {
+    init(filter: String, showActivitySelector: Binding<Bool>, activityToSave: ActivityToSave, allActivities: FetchedResults<Activity>, categoryNames: [String]) {
         
         fetchRequest = FetchRequest<Activity>(entity: Activity.entity(), sortDescriptors: [], predicate: NSPredicate(format: "category CONTAINS %@", filter))
         
         self._showActivitySelector = showActivitySelector
+        self.activityToSave = activityToSave
         self.allActivities = allActivities
         self.categoryNames = categoryNames
     }
 }
     
-
-    
-
 
 //MARK: - Title Bar
 struct TitleBar: View {
@@ -156,30 +144,3 @@ struct TitleBar: View {
         }
     
 }
-
-
-
-//
-//extension UIApplication {
-//    func endEditing(_ force: Bool) {
-//        self.windows
-//            .filter{$0.isKeyWindow}
-//            .first?
-//            .endEditing(force)
-//    }
-//}
-//
-//struct ResignKeyboardOnDragGesture: ViewModifier {
-//    var gesture = DragGesture().onChanged{_ in
-//        UIApplication.shared.endEditing(true)
-//    }
-//    func body(content: Content) -> some View {
-//        content.gesture(gesture)
-//    }
-//}
-//
-//extension View {
-//    func resignKeyboardOnDragGesture() -> some View {
-//        return modifier(ResignKeyboardOnDragGesture())
-//    }
-//}

@@ -28,7 +28,6 @@ struct AddFavouriteView: View {
     var body: some View {
         
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
-//        let categories = ["category1", "category2", "category3", "category4"]
         
         ZStack {
             

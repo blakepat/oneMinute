@@ -32,7 +32,6 @@ struct FilteredList: View {
             }.onDelete(perform: deleteActivity)
             
         }
-//        .resignKeyboardOnDragGesture()
     }
     
     func deleteActivity(at offsets: IndexSet) {

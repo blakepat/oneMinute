@@ -104,10 +104,6 @@ struct TextFieldAlert: View {
     //Edit Item
     func updateActivityName(oldName: String, newName: String) {
             
-//        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
-//            return
-//        }
-        
         let managedContext = PersistenceController.shared.container.viewContext
         
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest.init(entityName: "Activity")
@@ -139,12 +135,9 @@ struct TextFieldAlert: View {
             for index in 0..<addedfetchReturn.count {
                 
                 let objectUpdate = addedfetchReturn[index] as! NSManagedObject
-//                Print(objectUpdate.value(forKey: "name"))
                 objectUpdate.setValue(newName, forKey: "name")
                 
-                do {
-//                    Print(objectUpdate.value(forKey: "name"))
-                    
+                do {   
                     try managedContext.save()
                     print("updated name successfully!!!!!")
                 } catch let error as NSError {

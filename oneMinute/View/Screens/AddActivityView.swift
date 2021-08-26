@@ -13,9 +13,7 @@ struct AddActivityView: View {
     //Fetch listed activities
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
-    var activities: FetchedResults<Activity>
-    
-    
+    private var activities: FetchedResults<Activity>
     
     //Passed Items
     @Binding var showActivitySelector: Bool
@@ -23,9 +21,7 @@ struct AddActivityView: View {
     @Binding var selectedDate: Date
     @Binding var itemToDelete: AddedActivity
     @Binding var showingNameEditor: Bool
-//    @State var activityToSave: ActivityToSave
-    @EnvironmentObject var activityToSave: ActivityToSave
-    
+    @ObservedObject var activityToSave: ActivityToSave
     @State var isEditScreen: Bool
     @State var categorySelected: Bool
     
@@ -36,12 +32,12 @@ struct AddActivityView: View {
     @Binding var category4Name: String
     
     //Local Items
-    @State var activityName = "Select Category..."
-    @State var viewState = CGSize.zero
-    @State var showingAlert = false
-    @State var showCalendar = false
-    let hourArray = (0...24).map{"\($0)"}
-    let minutesArray = (0...60).map{"\($0)"}
+    @State private var activityName = "Select Category..."
+    @State private var viewState = CGSize.zero
+    @State private var showingAlert = false
+    @State private var showCalendar = false
+    private let hourArray = (0...24).map{"\($0)"}
+    private let minutesArray = (0...60).map{"\($0)"}
 
     @Binding var activeSheet: ActiveSheet?
     var body: some View {
@@ -57,18 +53,7 @@ struct AddActivityView: View {
             VStack(spacing: 0) {
                 
             //MARK: - Pull down tap
-                HStack {
-        
-                    Spacer()
-                    
-                    Color(.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 30))
-                        .frame(width: 50, height: 8, alignment: .center)
-                        .padding(.top, 20)
-                        .padding(.bottom, 0)
-                        
-                    Spacer()
-                }
+                PullDownTab()
                 
             //MARK: - Category Name Edit Button
                 HStack {
@@ -145,8 +130,12 @@ struct AddActivityView: View {
                                 
                             })
                             {
-                                ActivitySelectorView(filter: activityToSave.category, showActivitySelector: $showActivitySelector, allActivities: activities, categoryNames: categoryNames)
-                                    .environmentObject(activityToSave)
+                                ActivitySelectorView(filter: activityToSave.category,
+                                                     showActivitySelector: $showActivitySelector,
+                                                     activityToSave: activityToSave,
+                                                     allActivities: activities,
+                                                     categoryNames: categoryNames
+                                ).environment(\.managedObjectContext, self.viewContext)
                             }
                     }
                 }
@@ -387,6 +376,23 @@ struct AddActivityView: View {
                 let nsError = error as NSError
                 fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
             }
+        }
+    }
+}
+
+struct PullDownTab: View {
+    var body: some View {
+        HStack {
+            
+            Spacer()
+            
+            Color(.black)
+                .clipShape(RoundedRectangle(cornerRadius: 30))
+                .frame(width: 50, height: 8, alignment: .center)
+                .padding(.top, 20)
+                .padding(.bottom, 0)
+            
+            Spacer()
         }
     }
 }

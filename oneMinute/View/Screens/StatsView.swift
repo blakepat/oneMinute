@@ -10,17 +10,21 @@ import SwiftUI
 struct StatsView: View {
     
     
-    init (allData: FetchedResults<AddedActivity>, category1Name: Binding<String>, category2Name: Binding<String>, category3Name: Binding<String>, category4Name: Binding<String>, showActivitySelectorView: Binding<Bool>, activityToShow: ObservedObject<ActivityToSave>) {
+    init (allData: FetchedResults<AddedActivity>, category1Name: Binding<String>, category2Name: Binding<String>, category3Name: Binding<String>, category4Name: Binding<String>, isHours: Binding<Bool>, date: Binding<Date>, showActivitySelectorView: Binding<Bool>, activityToShow: ObservedObject<ActivityToSave>) {
         
         self.allData = allData
         self._category1Name = category1Name
         self._category2Name = category2Name
         self._category3Name = category3Name
         self._category4Name = category4Name
+        self._isHours = isHours
+        self._date = date
         self._showActivitySelectorView = showActivitySelectorView
         self._activityToShow = activityToShow
         
-        UITableView.appearance().backgroundColor = UIColor(Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1)))
+        
+        UITableView.appearance().backgroundColor = UIColor(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+        UITableView.appearance().separatorColor = .clear
     }
     
     @Environment(\.managedObjectContext) private var viewContext
@@ -38,20 +42,22 @@ struct StatsView: View {
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    @Binding var isHours: Bool
+    @Binding var date: Date
     @Binding var showActivitySelectorView: Bool
     @ObservedObject var activityToShow: ActivityToSave
     
     //local variables
-    @State var activityName = "Select Category..."
+    @State private var activityName = "Select Category..."
     let categories = ["category1", "category2", "category3", "category4"]
-    @State var showingAllActivities = true
-    @State var nameIndex = 0
-    @State var timeFrame = TimeFrame.week
-    @State var activeIndex = -1
-    
-    
+    @State private var showingAllActivities = true
+    @State private var nameIndex = 0
+    @State private var timeFrame = TimeFrame.week
+    @State private var activeIndex = -1
     
     var body: some View {
+        
+        let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
         ZStack {
             
@@ -69,78 +75,107 @@ struct StatsView: View {
                                     category2Name: $category2Name,
                                     category3Name: $category3Name,
                                     category4Name: $category4Name,
+                                    isHours: $isHours,
+                                    date: date,
                                     timeFrameChanger: $timeFrame)
                     .padding(.top)
                 
                 
-                
                 //MARK: - Date title
-                
-                DateTitleView(timeFrame: timeFrame)
-                
-                
-                
-                //MARK: - Pie Chart View
-                
-                if eachCategoryTotalDuration(timeFrame: timeFrame, results: allData).reduce(0) { $0 + $1 } > 0 {
+                VStack(spacing: 0) {
                     
-                    PieChartView(values: eachCategoryTotalDuration(timeFrame: timeFrame, results: allData),
-                                 colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
-                                 names: [category1Name, category2Name, category3Name, category4Name],
-                                 backgroundColor: Color("charcoalColor"),
-                                 innerRadiusFraction: 0.6,
-                                 activeIndex: $activeIndex)
-                        .padding(.horizontal, 16)
-                        .frame(width: 360, height: 300)
+                    DateTitleView(timeFrame: timeFrame, date: date)
+                        .padding(.vertical, 2)
                     
-                    
-                    //List of top activities
-                    
-                    List {
+                    let activitiesThisTimeFrame = allData.filter({
                         
-                        ForEach(Array(zip(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).indices, mostActivityLoggedDuring(timeFrame: timeFrame, results: allData))), id: \.0) { index, topItem in
+                        if activeIndex == -1 {
+                            if timeFrame == TimeFrame.week {
+                                return $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.startOfWeek().addingTimeInterval(7*24*60*60)
+                            } else if timeFrame == TimeFrame.month {
+                                return $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth
+                            } else {
+                                return true
+                            }
+                        } else {
                             
-    //                        Print(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).count)
-                            
-                            Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: "%0.f", topItem.1)) minutes")
+                            if timeFrame == TimeFrame.week {
+                                return $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.startOfWeek().addingTimeInterval(7*24*60*60) && $0.category == categories[activeIndex]
+                            } else if timeFrame == TimeFrame.month {
+                                return $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth  && $0.category == categories[activeIndex]
+                            } else {
+                                return  $0.category == categories[activeIndex]
+                            }
+
                             
                         }
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .listRowBackground(Color("charcoalColor"))
-                        .padding(.vertical, 0)
-                    }
-                    .environment(\.defaultMinListRowHeight, 10)
+                    }).count
                     
+                    
+                    Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions") Completed")
+                        .foregroundColor(.gray)
+                    
+                    //MARK: - Pie Chart View
+                    
+                    if eachCategoryTotalDuration(timeFrame: timeFrame, results: allData).reduce(0) { $0 + $1 } > 0 {
                         
-                } else {
+                        PieChartView(values: eachCategoryTotalDuration(timeFrame: timeFrame, results: allData),
+                                     colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
+                                     names: [category1Name, category2Name, category3Name, category4Name],
+                                     isHours: $isHours,
+                                     backgroundColor: Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)),
+                                     innerRadiusFraction: 0.6,
+                                     activeIndex: $activeIndex)
+                            .padding(.horizontal, 16)
+                            .frame(width: 360, height: 280)
                     
-                    Text("No data to show for \nthis timeframe.")
-                        .foregroundColor(.white)
-                        .font(.title)
-                        .multilineTextAlignment(.center)
-                        .padding(.top)
+                            List {
+                                
+                                //List of top activities
+                                Text("Top Activities:")
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                    .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                                
+                                ForEach(Array(zip(mostActivityLoggedDuring(timeFrame: timeFrame, results: allData).indices, mostActivityLoggedDuring(timeFrame: timeFrame, results: allData))), id: \.0) { index, topItem in
+                                    
+                                    Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
+                                    
+                                }
+                                .foregroundColor(.white)
+                                .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                                .padding(.vertical, 0)
+                        
+                            }
+                            .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                            .environment(\.defaultMinListRowHeight, 10)
+                            
+                                
+                        } else {
+                            
+                            Text("No data to show for \nthis timeframe.")
+                                .foregroundColor(.white)
+                                .font(.title)
+                                .multilineTextAlignment(.center)
+                                .padding(.top)
+                            
+                        }
+                            
+                    Spacer()
                     
                 }
-                    
-
-
-                
-                
+                .frame(width: screen.size.width * 0.94)
+                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                .padding(.horizontal)
                 
                 
                 //Most productive day - maybe add this feature in version 2.0?
-                
-                
-                
+                            
 
                 //Add Other Stats here
                 
-                
-                
-                
-                
-                Spacer()
         
             }
 
@@ -156,10 +191,10 @@ struct StatsView: View {
         
         for category in categories {
             if timeFrame == TimeFrame.week {
-                totals.append(Double(results.filter({$0.category == category && $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+                totals.append(Double(results.filter({$0.category == category && $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
             } else if timeFrame == TimeFrame.month {
                 
-                totals.append(Double(results.filter({$0.category == category && $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth }).reduce(0) { $0 + $1.duration }))
+                totals.append(Double(results.filter({$0.category == category && $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth }).reduce(0) { $0 + $1.duration }))
                 
             } else if timeFrame == TimeFrame.allTime {
                 totals.append(Double(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
@@ -187,11 +222,10 @@ struct StatsView: View {
             for activity in fetchRequest.wrappedValue {
 
                 //Get the total duration for each that activity type
-                
                 if activeIndex == -1 {
-                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration}
+                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.endOfWeek && $0.name == activity.name }).reduce(0) { $0 + $1.duration}
                 } else {
-                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration}
+                    activityTotalAmount = results.filter({$0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.endOfWeek && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration}
                 }
                 
 
@@ -221,9 +255,9 @@ struct StatsView: View {
 
                     //Get the total duration for each that activity type
                     if activeIndex == -1 {
-                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name }).reduce(0) { $0 + $1.duration }
+                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth && $0.name == activity.name }).reduce(0) { $0 + $1.duration }
                     } else {
-                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration }
+                        activityTotalAmount = results.filter({$0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth && $0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration }
                     }
                     
           
@@ -303,46 +337,33 @@ struct ActivitySummaryView: View {
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    @Binding var isHours: Bool
+    var date: Date
     
     @Binding var timeFrameChanger: TimeFrame
     
     var body: some View {
-        
-//        let kingActivity: (String, String) = mostActivityLoggedDuring(timeFrame: timeFrameChanger, results: allData)
-        
-        
+
         VStack {
             
             
-            Text("Productivity Stats")
-                .font(.title)
+            Text("Productive Time Breakdown")
+                .font(.title2)
                 .foregroundColor(Color("defaultYellow"))
                 .padding(.vertical, 4)
+                .padding(.bottom, 4)
             
-            
-//            HStack {
-//                VStack(alignment: .center) {
-//                    Text("Top \(timeFrameStringGetter(timeFrameChanger).capitalized) Activity:")
-//                        .font(.system(size: 18, weight: .semibold))
-//                        .foregroundColor(Color("defaultYellow"))
-//                    Text("\(kingActivity.0) - \(kingActivity.1)mins")
-//                        .font(.system(size: 18, weight: .semibold))
-//                        .foregroundColor(Color("defaultYellow"))
-//                }
-//            }
-//            .padding(.all, 6)
-//            .foregroundColor(.white)
             
             ZStack {
                 VStack(alignment: .center) {
                     
                     //Top 2 Categories
                     HStack(alignment: .top) {
-                        Text("\(category1Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category1)))")
+                        Text("\(category1Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category1)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                         
-                        Text("\(category2Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category2)))")
+                        Text("\(category2Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category2)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                     }
@@ -350,17 +371,16 @@ struct ActivitySummaryView: View {
 
                     //Bottom 2 categories
                     HStack(alignment: .top) {
-                        Text("\(category3Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category3)))")
+                        Text("\(category3Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category3)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("\(category4Name.capitalized): \(categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category4)))")
+                        Text("\(category4Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category4)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
                             .padding(.horizontal, 10)
                             .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
                     }
                     .padding(.horizontal, 4)
                     .padding(.vertical, 2)
                     .font(.system(size: 16, weight: .semibold))
-                    
                     
                     //Summary changer
                     HStack {
@@ -381,17 +401,13 @@ struct ActivitySummaryView: View {
                         
                         Divider()
                         
-                        Text("All-Time")
+                        Text("Total")
                             .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
                             .onTapGesture {
                                 self.timeFrameChanger = TimeFrame.allTime
                             }
                     }
                     .padding(.top, 4)
-                    
-                    
-                    
-                    
                 }
                 .font(.system(size: 14))
                 .foregroundColor(.white)
@@ -406,16 +422,16 @@ struct ActivitySummaryView: View {
     
 
     
-    func categorySummary(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, category: String) -> String {
+    func categorySummary(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, category: String) -> Float {
         
         if timeFrame == TimeFrame.week {
-            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }))
+            return results.filter({$0.category == category && $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }
         } else if timeFrame == TimeFrame.month {
-            return String(Int(results.filter({$0.category == category && $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth }).reduce(0) { $0 + $1.duration }))
+            return results.filter({$0.category == category && $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth }).reduce(0) { $0 + $1.duration }
         } else if timeFrame == TimeFrame.allTime {
-            return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+            return results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }
         } else {
-            return String(Int(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+            return results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }
         }
         
     }
@@ -429,10 +445,11 @@ struct ActivitySummaryView: View {
 struct DateTitleView: View {
     
     var timeFrame: TimeFrame
+    var date: Date
     
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
-        df.dateFormat = "MMM d"
+        df.dateFormat = "EEE, MMM d"
         return df
     }()
     
@@ -441,20 +458,20 @@ struct DateTitleView: View {
         
         if timeFrame == TimeFrame.week {
             
-            Text("\(Date().startOfWeek(), formatter: dateFormatter) - \(Date().endOfWeek, formatter: dateFormatter)")
-                .font(.title)
+            Text("\(date.startOfWeek(), formatter: dateFormatter) - \(date.endOfWeek, formatter: dateFormatter)")
+                .font(.title2)
                 .foregroundColor(Color("category0Color"))
             
         } else if timeFrame == TimeFrame.month {
             
-            Text("\(Date().startOfMonth, formatter: dateFormatter) - \(Date().endOfMonth, formatter: dateFormatter)")
-                .font(.title)
+            Text("\(date.startOfMonth, formatter: dateFormatter) - \(date.endOfMonth, formatter: dateFormatter)")
+                .font(.title2)
                 .foregroundColor(Color("category0Color"))
             
         } else {
             
             Text("All Activities Recorded")
-                .font(.title)
+                .font(.title2)
                 .foregroundColor(Color("category0Color"))
             
         }

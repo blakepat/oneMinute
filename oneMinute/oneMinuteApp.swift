@@ -43,7 +43,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             userDefaults.setValue("Learning", forKey: "category2Name")
             userDefaults.setValue("Chores", forKey: "category3Name")
             userDefaults.setValue("Work", forKey: "category4Name")
-            
+            userDefaults.setValue(false, forKey: "isHours")
             
             //preload activity list data
             guard let urlPath = Bundle.main.url(forResource: "PreloadedData", withExtension: "plist") else {

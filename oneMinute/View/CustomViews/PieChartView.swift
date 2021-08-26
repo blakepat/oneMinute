@@ -12,10 +12,8 @@ struct PieChartView: View {
     public let values: [Double]
     public let colors: [Color]
     public let names: [String]
-    
+    @Binding var isHours: Bool
     public var backgroundColor: Color
-    
-//    public var widthFraction: CGFloat = 1
     public var innerRadiusFraction: CGFloat
     
     @Binding var activeIndex: Int    
@@ -45,6 +43,7 @@ struct PieChartView: View {
             
             GeometryReader { geometry in
                 VStack {
+                    
                     ZStack{
                                             
                         ForEach(0..<self.values.count) { i in
@@ -75,9 +74,6 @@ struct PieChartView: View {
                                         }
                                     }
                                 }
-    //                            .onEnded { value in
-    //                                self.activeIndex = -1
-    //                            }
                         )
                             Circle()
                             .fill(self.backgroundColor)
@@ -90,11 +86,13 @@ struct PieChartView: View {
                             Text(self.activeIndex == -1 ? "Total" : names[self.activeIndex])
                                 .font(.title)
                                 .foregroundColor(Color.gray)
-                            Text(String(format: "%0.f", self.activeIndex == -1 ? values.reduce(0, +) : values[self.activeIndex]))
+                            Text(String(format: decimalsToShow(isHours: isHours), timeConverter(time: Float((self.activeIndex == -1 ? values.reduce(0, +) : values[self.activeIndex])), timeUnitIsHours: isHours)))
+                                .font(.title)
+                            Text("\(timeUnitName(isHours: isHours))")
+                                .foregroundColor(.gray)
                                 .font(.title)
                         }
                     }
-    //                PieChartRows(colors: self.colors, names: self.names, values: self.values.map { String(format: "%0.f", $0) }, percents: self.values.map { String(format: "%0.f%%", $0 * 100 / self.values.reduce(0, +)) })
                 }
                 
                 .foregroundColor(.white)

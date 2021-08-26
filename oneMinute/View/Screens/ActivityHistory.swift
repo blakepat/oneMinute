@@ -23,14 +23,15 @@ struct ActivityHistory: View {
     @Binding var category2Name: String
     @Binding var category3Name: String
     @Binding var category4Name: String
+    @Binding var isHours: Bool
     
     //local variables
-    @State var activityName = "Select Category..."
+    @State private var activityName = "Select Category..."
     @Binding var showActivitySelectorView: Bool
-    @State var activityToShow: ActivityToSave
+    @ObservedObject var activityToShow: ActivityToSave
     let categories = ["category1", "category2", "category3", "category4"]
-    @State var showingAllActivities = true
-    @State var nameIndex = 0
+    @State private var showingAllActivities = true
+    @State private var nameIndex = 0
     
    
     
@@ -104,9 +105,13 @@ struct ActivityHistory: View {
                                     
                                 })
                                 {
-                                    ActivitySelectorView(filter: activityToShow.category, showActivitySelector: $showActivitySelectorView, allActivities: activities, categoryNames: categoryNames)
-                                        .environmentObject(activityToShow)
+                                    ActivitySelectorView(filter: activityToShow.category,
+                                                         showActivitySelector: $showActivitySelectorView,
+                                                         activityToSave: activityToShow,
+                                                         allActivities: activities,
+                                                         categoryNames: categoryNames)
                                 }
+                                .environment(\.managedObjectContext, self.viewContext)
                             
                             HStack {
                                 Spacer()
@@ -159,7 +164,7 @@ struct ActivityHistory: View {
                     let activityAllTime = allData.filter({ showingAllActivities ? $0.timestamp! < Date().addingTimeInterval(999999999) : activityName == "Select Activity..." ? $0.category == activityToShow.category : $0.name == activityToShow.activityName })
                      
             
-                    //Minutes in time period
+                    //Minutes in all time periods
                     VStack(spacing: 0) {
                         HStack {
                             Text("This Week:")
@@ -170,7 +175,8 @@ struct ActivityHistory: View {
                             let activitySessionsThisWeek = activityThisWeek.count
                                                                         
                                                                     
-                            Text("\(Int(activityMinutesThisWeek)) mins (\(activitySessionsThisWeek) sessions x \(Int(dividBy(lhs:Float(activityMinutesThisWeek), rhs:Float(activitySessionsThisWeek)))))")
+                            Text("\(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activityMinutesThisWeek, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours)) (\(activitySessionsThisWeek) sessions)")
+//                                x \(Int(dividBy(lhs:Float(activityMinutesThisWeek), rhs:Float(activitySessionsThisWeek)))))")
                             Spacer()
                         }
                     
@@ -182,7 +188,8 @@ struct ActivityHistory: View {
                             let activityMinutesThisMonth = activityThisMonth.reduce(0) { $0 + $1.duration }
                             let activitySessionsThisMonth = activityThisMonth.count
                                                                
-                            Text("\(Int(activityMinutesThisMonth)) mins (\(activitySessionsThisMonth) sessions x \(Int(dividBy(lhs:Float(activityMinutesThisMonth), rhs:Float(activitySessionsThisMonth)))))")
+                            Text("\(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activityMinutesThisMonth, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours)) (\(activitySessionsThisMonth) sessions)")
+//                                x \(Int(dividBy(lhs:Float(activityMinutesThisMonth), rhs:Float(activitySessionsThisMonth)))))")
                             Spacer()
                         }
             
@@ -191,7 +198,8 @@ struct ActivityHistory: View {
                                 .fontWeight(.bold)
                             let activityMinutesAllTime = activityAllTime.reduce(0) { $0 + $1.duration }
                             let activitySessionsAllTime = activityAllTime.count
-                            Text("\(Int(activityMinutesAllTime))mins (\(activitySessionsAllTime) sessions x \(Int(dividBy(lhs:Float(activityMinutesAllTime), rhs:Float(activitySessionsAllTime))))avg)")
+                            Text("\(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activityMinutesAllTime, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours)) (\(activitySessionsAllTime) sessions)")
+//                                x \(Int(dividBy(lhs:Float(activityMinutesAllTime), rhs:Float(activitySessionsAllTime)))))")
                             Spacer()
                         }
                     }
@@ -236,7 +244,7 @@ struct ActivityHistory: View {
                                     Spacer()
                                 }
                             //Logged Activity
-                                RecentActivityLog(activity: sortedActivities[index])
+                                RecentActivityLog(activity: sortedActivities[index], isHours: $isHours)
                                     .padding(.horizontal, 16)
                             }
                         }
@@ -273,6 +281,7 @@ struct ActivityHistory: View {
 struct RecentActivityLog: View {
     
     var activity: AddedActivity
+    @Binding var isHours: Bool
     
     var body: some View {
         
@@ -296,7 +305,7 @@ struct RecentActivityLog: View {
             
             //Activity Length
             HStack {
-                Text("Minutes: \(Int(activity.duration))")
+                Text("\(timeUnitName(isHours: isHours)): \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activity.duration, timeUnitIsHours: isHours)))")
                 
                 Spacer()
             }
