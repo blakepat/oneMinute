@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-struct ActivityHistory: View {
+struct ActivityHistoryView: View {
+    
+    @StateObject private var viewModel = ActivityHistoryViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -26,10 +28,11 @@ struct ActivityHistory: View {
     @Binding var isHours: Bool
     
     //local variables
+    @State var activityFilter = ActivityFilter.all
     @State private var activityName = "Select Category..."
     @Binding var showActivitySelectorView: Bool
     @ObservedObject var activityToShow: ActivityToSave
-    let categories = ["category1", "category2", "category3", "category4"]
+//    let categories = ["category1", "category2", "category3", "category4"]
     @State private var showingAllActivities = true
     @State private var nameIndex = 0
     
@@ -60,6 +63,7 @@ struct ActivityHistory: View {
                                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                     self.activityToShow.category = category
                                     self.activityName = "Select Activity..."
+                                    self.activityFilter = .category
                                     self.showingAllActivities = false
                                     self.nameIndex = index
                                 })
@@ -70,6 +74,7 @@ struct ActivityHistory: View {
                                         activityToShow.category = category
                                         self.activityName = "Select Activity..."
                                         self.activityToShow.activityName = "Select Activity..."
+                                        self.activityFilter = .category
                                         self.showingAllActivities = false
                                         self.nameIndex = index
                                     })
@@ -85,14 +90,7 @@ struct ActivityHistory: View {
 
                         ZStack(alignment: .leading) {
                             
-                            Text(self.activityName)
-                                .frame(width: screen.width - 54, height: 32, alignment: .leading)
-                                .padding(.leading, 4)
-                                .padding(.horizontal, 6)
-                                .background(Color(.black))
-                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                .foregroundColor(Color("\(activityToShow.category)Color"))
-                                .font(.system(size: 22))
+                            ActivityNameView(activityToSave: activityToShow)
                                 .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                     if !showingAllActivities { self.showActivitySelectorView = true }
                                 })
@@ -109,7 +107,9 @@ struct ActivityHistory: View {
                                                          showActivitySelector: $showActivitySelectorView,
                                                          activityToSave: activityToShow,
                                                          allActivities: activities,
-                                                         categoryNames: categoryNames)
+                                                         categoryNames: categoryNames,
+                                                         activityFilter: $activityFilter
+                                    )
                                 }
                                 .environment(\.managedObjectContext, self.viewContext)
                             
@@ -127,6 +127,7 @@ struct ActivityHistory: View {
                                         activityToShow.category = "category0"
                                         self.activityName = "Select Category..."
                                         self.showingAllActivities = true
+                                        self.activityFilter = .all
                                     }
                             }
                         }
@@ -160,16 +161,15 @@ struct ActivityHistory: View {
                     
                     .padding(.horizontal, 10)
                     
-                    
-                    let activityAllTime = allData.filter({ showingAllActivities ? $0.timestamp! < Date().addingTimeInterval(999999999) : activityName == "Select Activity..." ? $0.category == activityToShow.category : $0.name == activityToShow.activityName })
-                     
-            
                     //Minutes in all time periods
                     VStack(spacing: 0) {
                         HStack {
                             Text("This Week:")
                                 .fontWeight(.bold)
-                            let activityThisWeek = activityAllTime.filter({$0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().startOfWeek().addingTimeInterval(7*24*60*60)})
+                            let activityThisWeek = viewModel.getActivitiesForTimeFrameAndFilter(timeFrame: TimeFrame.week,
+                                                                                                data: allData,
+                                                                                                activityToShow: activityToShow,
+                                                                                                activityFilter: activityFilter)
                                                               
                             let activityMinutesThisWeek = activityThisWeek.reduce(0) { $0 + $1.duration }
                             let activitySessionsThisWeek = activityThisWeek.count
@@ -183,7 +183,10 @@ struct ActivityHistory: View {
                         HStack {
                             Text("This Month:")
                                 .fontWeight(.bold)
-                            let activityThisMonth = activityAllTime.filter({$0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth })
+                            let activityThisMonth = viewModel.getActivitiesForTimeFrameAndFilter(timeFrame: TimeFrame.month,
+                                                                                                 data: allData,
+                                                                                                 activityToShow: activityToShow,
+                                                                                                 activityFilter: activityFilter)
                                                                
                             let activityMinutesThisMonth = activityThisMonth.reduce(0) { $0 + $1.duration }
                             let activitySessionsThisMonth = activityThisMonth.count
@@ -196,6 +199,10 @@ struct ActivityHistory: View {
                         HStack {
                             Text("All-Time:")
                                 .fontWeight(.bold)
+                            let activityAllTime = viewModel.getActivitiesForTimeFrameAndFilter(timeFrame: TimeFrame.allTime,
+                                                                                               data: allData,
+                                                                                               activityToShow: activityToShow,
+                                                                                               activityFilter: activityFilter)
                             let activityMinutesAllTime = activityAllTime.reduce(0) { $0 + $1.duration }
                             let activitySessionsAllTime = activityAllTime.count
                             Text("\(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activityMinutesAllTime, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours)) (\(activitySessionsAllTime) sessions)")
@@ -224,7 +231,10 @@ struct ActivityHistory: View {
                     //Most recent recorded activity of selected type
                     ScrollView(.vertical) {
                         
-                        let sortedActivities = activityAllTime.sorted {
+                        let sortedActivities = viewModel.getActivitiesForTimeFrameAndFilter(timeFrame: TimeFrame.allTime,
+                                                                                            data: allData,
+                                                                                            activityToShow: activityToShow,
+                                                                                            activityFilter: activityFilter).sorted {
                             $0.timestamp ?? Date() > $1.timestamp ?? Date()
                             
                         }.prefix(20)
@@ -269,12 +279,6 @@ struct ActivityHistory: View {
         .edgesIgnoringSafeArea(.bottom)
     }
 }
-
-
-
-
-
-
 
 
 

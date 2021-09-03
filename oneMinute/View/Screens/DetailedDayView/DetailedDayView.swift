@@ -9,6 +9,8 @@ import SwiftUI
 
 struct DetailedDayView: View {
     
+    @StateObject private var viewModel = DetailedDayViewModel()
+    
     var dailyData: [AddedActivity]
     
     @Binding var showEditScreen: Bool
@@ -33,20 +35,15 @@ struct DetailedDayView: View {
     
     @Binding var activeSheet: ActiveSheet?
     
-    private let categories = ["category1", "category2", "category3", "category4"]
-    
     var body: some View {
         
         
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
-        let dailyFitnessTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category1"}).reduce(0) {$0 + $1.duration}
-        
-        let dailyLearningTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category2"}).reduce(0) {$0 + $1.duration}
-        
-        let dailyChoresTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category3"}).reduce(0) {$0 + $1.duration}
-        
-        let dailyWorkTotal = dailyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == "category4"}).reduce(0) {$0 + $1.duration}
+        let dailyFitnessTotal = viewModel.getCategoryTotalForDate(date, category: category1, allActivities: dailyData)
+        let dailyLearningTotal = viewModel.getCategoryTotalForDate(date, category: category2, allActivities: dailyData)
+        let dailyChoresTotal = viewModel.getCategoryTotalForDate(date, category: category3, allActivities: dailyData)
+        let dailyWorkTotal = viewModel.getCategoryTotalForDate(date, category: category4, allActivities: dailyData)
         
         ZStack{
             
@@ -91,20 +88,16 @@ struct DetailedDayView: View {
                 //List of All completed Activities sorted by catagory
                 ScrollView(.vertical) {
                     VStack {
-                        ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { catagory, index in
+                        ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { category, index in
                             
-                            let dailyCategoryData = dailyData.filter {
-                                    Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: date) && $0.category == categories[index]
-                            }
+                            let dailyCategoryData = viewModel.getCategoryActivitiesForDate(date, allActivities: dailyData, index: index)
                             
                             if !dailyCategoryData.isEmpty {
-                                
                                 HStack {
-                                    
-                                    Text("\(catagory.capitalized)")
+                                    Text("\(category.capitalized)")
                                         .frame(width: screen.width - 56, alignment: .leading)
                                         .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(Color("\(categories[index])Color"))
+                                        .foregroundColor(categoryColors[index])
                                         .padding(.leading, 16)
                                         .padding(.top, 4)
                                         
@@ -140,7 +133,7 @@ struct DetailedDayView: View {
                     }
                 }
                 .frame(width: screen.width - 32, alignment: .leading)
-                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                .background(Color.minutesBackgroundBlack)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.bottom, 30)
                 
@@ -149,16 +142,6 @@ struct DetailedDayView: View {
             }
         }
         .frame(width: screen.width, height: screen.height)
-    }
-    
-    //MARK: - Reset Activity Function
-    private func resetActivity(_ : ActivityToSave) {
-        activityToSave.activityName = "Select Category..."
-        activityToSave.category = "category0"
-        activityToSave.hours = 0
-        activityToSave.minutes = 0
-        activityToSave.notes = ""
-    }
-    
+    }    
 }
 

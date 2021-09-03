@@ -14,5 +14,14 @@ extension Color {
     static let minutesGreen = Color("category3Color")
     static let minutesBlue = Color("category4Color")
     static let minutesBackgroundCharcoal = Color("charcoalColor")
-    static let minutesbackgroundBlack = Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1))
+    static let minutesBackgroundBlack = Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1))
+}
+
+
+extension Color {
+    
+    static func getCategoryColor(_ category: String) -> Color {
+        Color("\(category)Color")
+    }
+    
 }

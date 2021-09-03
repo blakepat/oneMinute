@@ -10,6 +10,8 @@ import CoreData
 
 struct AddActivityView: View {
     
+    @StateObject private var viewModel = AddActivityViewModel()
+    
     //Fetch listed activities
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: Activity.entity(), sortDescriptors: [])
@@ -36,8 +38,7 @@ struct AddActivityView: View {
     @State private var viewState = CGSize.zero
     @State private var showingAlert = false
     @State private var showCalendar = false
-    private let hourArray = (0...24).map{"\($0)"}
-    private let minutesArray = (0...60).map{"\($0)"}
+    @State var activityFilter = ActivityFilter.all
 
     @Binding var activeSheet: ActiveSheet?
     var body: some View {
@@ -57,22 +58,8 @@ struct AddActivityView: View {
                 
             //MARK: - Category Name Edit Button
                 HStack {
-                    
                     Spacer()
-                    
-                    Text("Edit")
-                        .font(.system(size: 16))
-                        .foregroundColor(.white)
-                        .padding(.all, 4)
-                        .padding(.horizontal, 2)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                        .padding(.trailing, screen.size.width * 0.07)
-                        .onTapGesture {
-                            print("edit button tapped")
-                            self.showingNameEditor.toggle()
-                        }
-                        
+                    EditButton(showingNameEditor: $showingNameEditor)
                 }
                 .padding(.bottom, 4)
                 
@@ -103,22 +90,15 @@ struct AddActivityView: View {
                 
             //MARK: - Activity Name - IE: run, laundry, learn french, Work
                 HStack(spacing: 4) {
-                    
+
                     Image(systemName: "list.bullet")
                         .padding(.leading, 8)
                         .font(.system(size: 24))
-                        
-                    
+
+
                     ZStack(alignment: .leading) {
-                        
-                        Text(self.activityToSave.activityName)
-                            .frame(width: screen.width - 50, height: 40, alignment: .leading)
-                            .padding(.leading, 4)
-                            .padding(.horizontal, 6)
-                            .background(Color(.black))
-                            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                            .foregroundColor(Color("\(activityToSave.category)Color"))
-                            .font(.system(size: 26))
+
+                        ActivityNameView(activityToSave: activityToSave)
                             .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                 if categorySelected { self.showActivitySelector = true }
                             })
@@ -134,7 +114,8 @@ struct AddActivityView: View {
                                                      showActivitySelector: $showActivitySelector,
                                                      activityToSave: activityToSave,
                                                      allActivities: activities,
-                                                     categoryNames: categoryNames
+                                                     categoryNames: categoryNames,
+                                                     activityFilter: $activityFilter
                                 ).environment(\.managedObjectContext, self.viewContext)
                             }
                     }
@@ -159,71 +140,14 @@ struct AddActivityView: View {
                                 .frame(width: screen.width / 2, height: 50, alignment: .leading)
 
                             Spacer()
-                        
                         }
                         .padding(.vertical, 8)
                     }
-                
-            
                 }
                 
             
             //MARK: - Activity Time - 45 minutes
-                VStack(alignment: .leading, spacing: 0) {
-
-                    Text("Duration: ")
-                        .font(.system(size: 20, weight: .semibold))
-                        .padding(.vertical, 0)
-                        .padding(.leading, 8)
-
-                    GeometryReader { geometry in
-                        HStack {
-                            
-                            //clock image
-                            Image(systemName: "clock")
-                                .padding(.leading, 8)
-                                .font(.system(size: 24))
-                            
-                            //Hour Selection
-                            
-                            Picker(selection: $activityToSave.hours, label: Text("Hours")) {
-                                ForEach(0 ..< self.hourArray.count) { number in
-                                    Text(self.hourArray[number]).tag(Float(number))
-                                }
-                            }
-                            .frame(width: 100, height: 100, alignment: .center)
-                            .clipped()
-                            
-        
-                            
-                            //hour signafier
-                            Text("hours")
-                                .font(.system(size: 16, weight: .semibold))
-                            
-                            
-                            //Spacer
-                            Spacer()
-                            
-                            
-                            
-                           //Minute Selection
-                            Picker(selection: $activityToSave.minutes, label: Text("Hours")) {
-                                ForEach(0 ..< self.minutesArray.count) { number in
-                                    Text(self.minutesArray[number]).tag(Float(number))
-                                }
-                            }
-                            .frame(width: 100, height: 100, alignment: .center)
-                            .clipped()
-                            
-                            //minute signafier
-                            Text("minutes")
-                                .font(.system(size: 16, weight: .semibold))
-                            
-                            Spacer()
-                        }
-                    }
-                    .frame(height: 120)
-                }
+                TimeSelectorView(activityToSave: activityToSave)
                 
             //MARK: - Activity Notes - 5km run, chest workout, rosetta stone, 1 hour overtime
                 VStack(alignment: .leading, spacing: 0) {
@@ -242,7 +166,7 @@ struct AddActivityView: View {
             //MARK: - Confirm Activity - add to data set
                 ZStack {
                     
-                    Color("\(activityToSave.category)Color")
+                    Color.getCategoryColor(activityToSave.category)
                     
                     Text("Save Activity")
                         .foregroundColor(.black)
@@ -258,11 +182,11 @@ struct AddActivityView: View {
                     //If activity and duration has been selected save and dismiss screen
                     if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
                         //save activity
-                        saveActivity(activity: activityToSave, date: selectedDate, favourite: false)
+                        viewModel.saveActivity(activity: activityToSave, date: selectedDate, favourite: false, viewContext: viewContext)
                         //reset activity
-                        resetActivity(activityToSave)
+                        viewModel.resetActivity(activityToSave)
 //                        activityToSave.category = "category0"
-                        deleteActivity()
+                        viewModel.deleteActivity(itemToDelete: itemToDelete, viewContext: viewContext)
                         
                         //dismiss screen
                         self.activeSheet = nil
@@ -288,20 +212,18 @@ struct AddActivityView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                 .onTapGesture {
                     if isEditScreen {
-                    
-                        deleteActivity()
-                        resetActivity(activityToSave)
-//                        activityToSave.category = "category1"
+                        viewModel.deleteActivity(itemToDelete: itemToDelete, viewContext: viewContext)
+                        viewModel.resetActivity(activityToSave)
                         self.showAddActivity = false
 
                     } else {
                         //If activity and duration has been selected save and dismiss screen
                         if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category"  {
                             //save activity
-                            saveActivity(activity: activityToSave, date: selectedDate, favourite: true)
+                            viewModel.saveActivity(activity: activityToSave, date: selectedDate, favourite: true, viewContext: viewContext)
                             //reset activity
-                            resetActivity(activityToSave)
-                            activityToSave.category = "category1"
+                            viewModel.resetActivity(activityToSave)
+                            activityToSave.category = category1
                             //dismiss screen
                             self.showAddActivity = false
                             self.activeSheet = nil
@@ -330,56 +252,10 @@ struct AddActivityView: View {
                 .animation(.easeInOut)
         }
     }
-    
-    
-    //MARK: - Delete Activity
-    private func deleteActivity() {
-        
-        self.viewContext.delete(self.itemToDelete)
-                    do {
-                        try self.viewContext.save()
-                    }catch{
-                        print(error)
-                    }
-            
-    }
-    
-    
-    
-    
-    //MARK: - Reset Activity Function
-    private func resetActivity(_ : ActivityToSave) {
-        activityToSave.activityName = "Select Category"
-        activityToSave.category = "category0"
-        activityToSave.hours = 0
-        activityToSave.minutes = 0
-        activityToSave.notes = ""
-    }
-    
-    
-    //MARK: - Save Item
-    private func saveActivity(activity: ActivityToSave, date: Date, favourite: Bool) {
-        withAnimation {
-            
-                let newAddedActivity = AddedActivity(context: viewContext)
-                newAddedActivity.name = activity.activityName
-                newAddedActivity.category = activity.category
-                newAddedActivity.notes = activity.notes
-                newAddedActivity.duration = activity.minutes + (activity.hours * 60)
-                newAddedActivity.timestamp = date
-                newAddedActivity.favourite = favourite
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
 }
 
+
+//MARK: - VIEWS for this screen
 struct PullDownTab: View {
     var body: some View {
         HStack {
@@ -393,6 +269,81 @@ struct PullDownTab: View {
                 .padding(.bottom, 0)
             
             Spacer()
+        }
+    }
+}
+
+struct EditButton: View {
+    
+    @Binding var showingNameEditor: Bool
+    
+    var body: some View {
+        Text("Edit")
+            .font(.system(size: 16))
+            .foregroundColor(.white)
+            .padding(.all, 4)
+            .padding(.horizontal, 2)
+            .background(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .padding(.trailing, screen.size.width * 0.07)
+            .onTapGesture {
+                print("edit button tapped")
+                self.showingNameEditor.toggle()
+            }
+    }
+}
+
+struct TimeSelectorView: View {
+    
+    @ObservedObject var activityToSave: ActivityToSave
+    private let hourArray = (0...24).map{"\($0)"}
+    private let minutesArray = (0...60).map{"\($0)"}
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Duration: ")
+                .font(.system(size: 20, weight: .semibold))
+                .padding(.vertical, 0)
+                .padding(.leading, 8)
+            GeometryReader { geometry in
+                HStack {
+                    //clock image
+                    Image(systemName: "clock")
+                        .padding(.leading, 8)
+                        .font(.system(size: 24))
+                    
+                    //Hour Selection
+                    Picker(selection: $activityToSave.hours, label: Text("Hours")) {
+                        ForEach(0 ..< self.hourArray.count) { number in
+                            Text(self.hourArray[number]).tag(Float(number))
+                        }
+                    }
+                    .frame(width: 100, height: 100, alignment: .center)
+                    .clipped()
+                    
+                    //hour signafier
+                    Text("hours")
+                        .font(.system(size: 16, weight: .semibold))
+                    
+                    Spacer()
+                    
+                    //Minute Selection
+                    Picker(selection: $activityToSave.minutes, label: Text("Hours")) {
+                        ForEach(0 ..< self.minutesArray.count) { number in
+                            Text(self.minutesArray[number]).tag(Float(number))
+                        }
+                    }
+                    .frame(width: 100, height: 100, alignment: .center)
+                    .clipped()
+                    
+                    //minute signafier
+                    Text("minutes")
+                        .font(.system(size: 16, weight: .semibold))
+                    
+                    Spacer()
+                }
+            }
+            .frame(height: 120)
         }
     }
 }

@@ -12,8 +12,26 @@ import SwiftUI
 
 
 //Mark: - Universal Variables
-let categories = ["category1", "category2", "category3", "category4"]
 let screen = UIScreen.main.bounds
+
+let category1 = "category1"
+let category2 = "category2"
+let category3 = "category3"
+let category4 = "category4"
+
+let categories = [category1, category2, category3, category4]
+
+let categoryColors = [Color.minutesRed, Color.minutesPurple, Color.minutesGreen, Color.minutesBlue]
+
+////MARK: - Reset Activity Function
+//func resetActivity(activityToSave: ActivityToSave) {
+//    activityToSave.activityName = "Select Category..."
+//    activityToSave.category = "category0"
+//    activityToSave.hours = 0
+//    activityToSave.minutes = 0
+//    activityToSave.notes = ""
+//}
+
 
 
 //Mark: - Data Types/Functions
@@ -33,6 +51,10 @@ enum TimeFrame {
 
 enum TimeUnits {
     case minutes, hours
+}
+
+enum ActivityFilter {
+    case all, category, activityName
 }
 
 //Convert time to minutes or hours

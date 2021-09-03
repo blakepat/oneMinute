@@ -14,30 +14,33 @@ struct ActivitySelectorView: View {
     var allActivities: FetchedResults<Activity>
     var fetchRequest: FetchRequest<Activity>
     
+    //Passed variables
     @Binding var showActivitySelector: Bool
     @ObservedObject var activityToSave: ActivityToSave
+    var categoryNames: [String]
+    @Binding var activityFilter: ActivityFilter
+    
+    //local variables
     @State private var showingAlert = false
     @State private var alertInput = ""
     @State private var editActive = false
-    var categoryNames: [String]
     @State private var searchText = ""
     @State private var activityToEdit = ""
+    
     
  
     var body: some View {
     
         ZStack {
             //backgroundColor
-            Color("\(activityToSave.category)Color")
+            Color.getCategoryColor(activityToSave.category)
 
             VStack {
-                
                 //Title Bar
                 TitleBar(showingAlert: $showingAlert, editActive: $editActive, categoryName: categoryNames[(Int(String(activityToSave.category.last!)) ?? 1) - 1])
                 
                 //List
                 List {
-                    
                     SearchBar(text: $searchText)
                     
                     ForEach(fetchRequest.wrappedValue.filter({ searchText.isEmpty ? true : $0.name.contains(searchText) }), id: \.self) { activity in
@@ -60,6 +63,7 @@ struct ActivitySelectorView: View {
                             } else {
                                 self.showActivitySelector = false
                                 self.activityToSave.activityName = activity.name
+                                self.activityFilter = .activityName
                             }
                         }
                     }
@@ -91,7 +95,7 @@ struct ActivitySelectorView: View {
         }
     }
         
-    init(filter: String, showActivitySelector: Binding<Bool>, activityToSave: ActivityToSave, allActivities: FetchedResults<Activity>, categoryNames: [String]) {
+    init(filter: String, showActivitySelector: Binding<Bool>, activityToSave: ActivityToSave, allActivities: FetchedResults<Activity>, categoryNames: [String], activityFilter: Binding<ActivityFilter>) {
         
         fetchRequest = FetchRequest<Activity>(entity: Activity.entity(), sortDescriptors: [], predicate: NSPredicate(format: "category CONTAINS %@", filter))
         
@@ -99,6 +103,7 @@ struct ActivitySelectorView: View {
         self.activityToSave = activityToSave
         self.allActivities = allActivities
         self.categoryNames = categoryNames
+        self._activityFilter = activityFilter
     }
 }
     

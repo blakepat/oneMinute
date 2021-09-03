@@ -76,7 +76,7 @@ struct CategoryNameEditAlert: View {
                             self.isShowing.toggle()
                         }
                     } label: {
-                        Text("Add")
+                        Text("Done")
                             .foregroundColor(.white)
                             .padding(.trailing, 8)
                             .padding(.bottom, 4)

@@ -10,10 +10,13 @@ import CoreData
 
 struct ContentView: View {
      
+    @StateObject private var viewModel = ContentViewModel()
+    
     //Fetch saved activities
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(entity: AddedActivity.entity(), sortDescriptors: [])
-    private var allSavedActivities:FetchedResults<AddedActivity>
+    private var allSavedActivities:FetchedResults <AddedActivity>
+    
     
     //@States for showing views
     @State private var showLastWeek = false
@@ -37,15 +40,6 @@ struct ContentView: View {
     @State private var activeSheet: ActiveSheet?
     
     
-    //MARK: - Category Names
-    @State private var category1Name = UserDefaults.standard.string(forKey: "category1Name")!
-    @State private var category2Name = UserDefaults.standard.string(forKey: "category2Name")!
-    @State private var category3Name = UserDefaults.standard.string(forKey: "category3Name")!
-    @State private var category4Name = UserDefaults.standard.string(forKey: "category4Name")!
-    
-    //Time Unit
-    @State var isHours = UserDefaults.standard.bool(forKey: "isHours")
-    
     //Week Date Data
     private var currentWeek : [Date] {
         Array(stride(from: Date().startOfWeek(), through: Date().startOfWeek().addingTimeInterval(6*60*60*24), by:  60*60*24))
@@ -53,7 +47,7 @@ struct ContentView: View {
     private var lastWeek : [Date] {
         Array(stride(from: Date().startOfWeek().addingTimeInterval(-6*24*60*60), to: Date().startOfWeek(), by:  60*60*24))
     }
-    private let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
+
     
     
     
@@ -94,13 +88,13 @@ struct ContentView: View {
                 SummaryView(
                     selectedDate: selectedDate,
                     allData: allSavedActivities,
-                    isHours: $isHours,
-                    category1Name: $category1Name,
-                    category2Name: $category2Name,
-                    category3Name: $category3Name,
-                    category4Name: $category4Name
+                    isHours: $viewModel.isHours,
+                    category1Name: $viewModel.category1Name,
+                    category2Name: $viewModel.category2Name,
+                    category3Name: $viewModel.category3Name,
+                    category4Name: $viewModel.category4Name
                 )
-                .environment(\.managedObjectContext, self.viewContext)
+                .environment(\.managedObjectContext, viewContext)
                 
                 //MARK: - View of days of the week
                 DayScrollView(
@@ -108,14 +102,13 @@ struct ContentView: View {
                     selectedDate: $selectedDate,
                     showEditScreen: $showEditScreen,
                     activityToSave: activityToSave,
-                    category1Name: $category1Name,
-                    category2Name: $category2Name,
-                    category3Name: $category3Name,
-                    category4Name: $category4Name,
-                    isHours: $isHours,
-                    weekOnlyData: allSavedActivities.filter({ $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.endOfWeek }
-                                                        
-                    ), activeSheet: $activeSheet
+                    category1Name: $viewModel.category1Name,
+                    category2Name: $viewModel.category2Name,
+                    category3Name: $viewModel.category3Name,
+                    category4Name: $viewModel.category4Name,
+                    isHours: $viewModel.isHours,
+                    weekOnlyData: viewModel.returnThisWeek(selectedDate: selectedDate, activities: allSavedActivities),
+                    activeSheet: $activeSheet
                 )
                 .padding(.leading, screen.size.width * 0.01)
                     
@@ -125,11 +118,11 @@ struct ContentView: View {
                         //Chart
                         BarChart(
                             selectedDate: $selectedDate,
-                            weekOneData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[0].startOfWeek() && $0.timestamp ?? Date() < dates[0].endOfWeek}),
-                            weekTwoData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[1].startOfWeek() && $0.timestamp ?? Date() < dates[1].endOfWeek}),
-                            weekThreeData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[2].startOfWeek() && $0.timestamp ?? Date() < dates[2].endOfWeek}),
-                            weekFourData: allSavedActivities.filter({ $0.timestamp ?? Date() > dates[3].startOfWeek() && $0.timestamp ?? Date() < dates[3].endOfWeek}),
-                            isHours: $isHours
+                            weekOneData: viewModel.returnWeekFromNumber(0, fetchedResults: allSavedActivities),
+                            weekTwoData: viewModel.returnWeekFromNumber(1, fetchedResults: allSavedActivities),
+                            weekThreeData: viewModel.returnWeekFromNumber(2, fetchedResults: allSavedActivities),
+                            weekFourData: viewModel.returnWeekFromNumber(3, fetchedResults: allSavedActivities),
+                            isHours: $viewModel.isHours
                         )
                         Spacer()
                     }
@@ -178,25 +171,25 @@ struct ContentView: View {
                             switch item {
                             case .first:
                                 StatsView(allData: allSavedActivities,
-                                          category1Name: $category1Name,
-                                          category2Name: $category2Name,
-                                          category3Name: $category3Name,
-                                          category4Name: $category4Name,
-                                          isHours: $isHours,
+                                          category1Name: $viewModel.category1Name,
+                                          category2Name: $viewModel.category2Name,
+                                          category3Name: $viewModel.category3Name,
+                                          category4Name: $viewModel.category4Name,
+                                          isHours: $viewModel.isHours,
                                           date: $selectedDate,
                                           showActivitySelectorView: $showActivitySelector,
                                           activityToShow: _activityToSave)
-                                    .environment(\.managedObjectContext, self.viewContext)
+                                    .environment(\.managedObjectContext, viewContext)
                             case .second:
-                                ActivityHistory(allData: allSavedActivities,
-                                                category1Name: $category1Name,
-                                                category2Name: $category2Name,
-                                                category3Name: $category3Name,
-                                                category4Name: $category4Name,
-                                                isHours: $isHours,
+                                ActivityHistoryView(allData: allSavedActivities,
+                                                category1Name: $viewModel.category1Name,
+                                                category2Name: $viewModel.category2Name,
+                                                category3Name: $viewModel.category3Name,
+                                                category4Name: $viewModel.category4Name,
+                                                isHours: $viewModel.isHours,
                                                 showActivitySelectorView: $showActivitySelector,
                                                 activityToShow: activityToSave)
-                                    .environment(\.managedObjectContext, self.viewContext)
+                                    .environment(\.managedObjectContext, viewContext)
                             case .third:
                                 AddActivityView(showActivitySelector: $showActivitySelector,
                                                 showAddActivity: $showAddActivity,
@@ -206,28 +199,28 @@ struct ContentView: View {
                                                 activityToSave: activityToSave,
                                                 isEditScreen: false,
                                                 categorySelected: false,
-                                                category1Name: $category1Name,
-                                                category2Name: $category2Name,
-                                                category3Name: $category3Name,
-                                                category4Name: $category4Name,
+                                                category1Name: $viewModel.category1Name,
+                                                category2Name: $viewModel.category2Name,
+                                                category3Name: $viewModel.category3Name,
+                                                category4Name: $viewModel.category4Name,
                                                 activeSheet: $activeSheet)
-                                    .environment(\.managedObjectContext, self.viewContext)
+                                    .environment(\.managedObjectContext, viewContext)
                             
                             case .fourth:
                                 AddFavouriteView(
                                     activityToSave: activityToSave,
                                     activities: allSavedActivities,
                                     showAddFavourite: $showAddFavourite,
-                                    category1Name: $category1Name,
-                                    category2Name: $category2Name,
-                                    category3Name: $category3Name,
-                                    category4Name: $category4Name,
+                                    category1Name: $viewModel.category1Name,
+                                    category2Name: $viewModel.category2Name,
+                                    category3Name: $viewModel.category3Name,
+                                    category4Name: $viewModel.category4Name,
                                     activeSheet: $activeSheet)
-                                    .environment(\.managedObjectContext, self.viewContext)
+                                    .environment(\.managedObjectContext, viewContext)
                                 
                             case .fifth:
-                                SettingsView(isHours: $isHours)
-                                    .environment(\.managedObjectContext, self.viewContext)
+                                SettingsView(isHours: $viewModel.isHours)
+                                    .environment(\.managedObjectContext, viewContext)
                             }
                            })
             }
