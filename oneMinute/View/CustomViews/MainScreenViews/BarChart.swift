@@ -48,7 +48,7 @@ struct BarChart: View {
         ]
         
         
-        let highestTotal = totalSums.max()
+        let highestTotal: Float = totalSums.max() ?? 0
         
         //Graph
         VStack(alignment: .leading) {
@@ -83,17 +83,22 @@ struct BarChart: View {
                                     
                                     //Layer number of category total over individual category capsule
                                     ZStack {
-                                    
-//                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
-//                                            .foregroundColor(Color("\(category)Color"))
-//                                        
-//                                        
-//                                        Text((monthData[dateIndex][index] > 0) ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
-//                                            .opacity(
-//                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
-//                                                    >
-//                                                (monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
-//                                                ? 0 : 1)
+                                        
+                                        let hasAddedActivity = totalSums[dateIndex] > 0
+                                        let categoryCapsuleWidth: Float = (Float(capsuleWidth) / Float(totalSums[dateIndex])) * Float(totalSums[dateIndex]) / highestTotal
+                                        
+                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * (hasAddedActivity ? categoryCapsuleWidth : 0)), height: capsuleHeight, alignment: .center)
+                                            .foregroundColor(Color("\(category)Color"))
+
+
+                                        let figure: Float = (monthData[dateIndex][index] * (hasAddedActivity ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal)) : 0))
+                                        
+                                        Text(hasAddedActivity ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
+                                            .opacity(
+                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+                                                    > figure
+                                                )
+                                                ? 0 : 1)
                                     }
                                 }
                             }
