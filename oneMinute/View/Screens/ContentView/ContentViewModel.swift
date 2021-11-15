@@ -18,8 +18,25 @@ final class ContentViewModel: ObservableObject {
     @Published var category3Name = UserDefaults.standard.string(forKey: "category3Name")!
     @Published var category4Name = UserDefaults.standard.string(forKey: "category4Name")!
     
+    
+    @Published var showingOnboardView = false
+    
+    
     //Time Unit
     @Published var isHours = UserDefaults.standard.bool(forKey: "isHours")
+    
+    var hasSeenOnboardView: Bool {
+        return UserDefaults.standard.bool(forKey: "hasSeenOnboardView")
+    }
+    
+    
+    func showOnboardView() {
+        if !hasSeenOnboardView {
+            showingOnboardView = true
+            UserDefaults.standard.set(true, forKey: "hasSeenOnboardView")
+        }
+    }
+    
     
     func returnWeekFromNumber(_ num : Int, fetchedResults: FetchedResults<AddedActivity>) -> [AddedActivity] {
         

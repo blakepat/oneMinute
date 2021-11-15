@@ -84,16 +84,16 @@ struct BarChart: View {
                                     //Layer number of category total over individual category capsule
                                     ZStack {
                                     
-                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
-                                            .foregroundColor(Color("\(category)Color"))
-                                        
-                                        
-                                        Text((monthData[dateIndex][index] > 0) ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
-                                            .opacity(
-                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
-                                                    >
-                                                (monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
-                                                ? 0 : 1)
+//                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)), height: capsuleHeight, alignment: .center)
+//                                            .foregroundColor(Color("\(category)Color"))
+//                                        
+//                                        
+//                                        Text((monthData[dateIndex][index] > 0) ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
+//                                            .opacity(
+//                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+//                                                    >
+//                                                (monthData[dateIndex][index] * ((totalSums[dateIndex] > 0) ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal!)) : 0)))
+//                                                ? 0 : 1)
                                     }
                                 }
                             }

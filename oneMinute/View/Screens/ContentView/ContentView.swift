@@ -30,6 +30,9 @@ struct ContentView: View {
     @State private var showStatsView = false
     @State private var showSettings = false
     
+    
+
+    
     //Variables
     @State var selectedDate = Date()
     @State var activityToDelete = AddedActivity()
@@ -151,7 +154,6 @@ struct ContentView: View {
                              showSettings: $showSettings
                 )
                     .padding(.bottom)
-                    .padding(.vertical, 4)
                     .edgesIgnoringSafeArea(.bottom)
                     .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
                     .sheet(item: $activeSheet,
@@ -219,13 +221,19 @@ struct ContentView: View {
                                     .environment(\.managedObjectContext, viewContext)
                                 
                             case .fifth:
-                                SettingsView(isHours: $viewModel.isHours)
+                                SettingsView(isHours: $viewModel.isHours, showOnboardView: $viewModel.showingOnboardView)
                                     .environment(\.managedObjectContext, viewContext)
                             }
                            })
             }
             .padding(.horizontal, 16)
             .edgesIgnoringSafeArea(.bottom)
+        }
+        .sheet(isPresented: $viewModel.showingOnboardView) {
+            OnboardView(showOnboardView: $viewModel.showingOnboardView)
+        }
+        .onAppear {
+            viewModel.showOnboardView()
         }
     }
     

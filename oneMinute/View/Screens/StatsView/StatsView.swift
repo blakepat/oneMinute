@@ -10,6 +10,7 @@ import SwiftUI
 struct StatsView: View {
     
     @StateObject private var viewModel = StatsViewModel()
+    @Environment(\.presentationMode)  var presentationMode
     
     init (allData: FetchedResults<AddedActivity>, category1Name: Binding<String>, category2Name: Binding<String>, category3Name: Binding<String>, category4Name: Binding<String>, isHours: Binding<Bool>, date: Binding<Date>, showActivitySelectorView: Binding<Bool>, activityToShow: ObservedObject<ActivityToSave>) {
         
@@ -60,104 +61,115 @@ struct StatsView: View {
         
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
-        ZStack {
-            
-            //Background
-            Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1))
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack(alignment: .center) {
-               
-                //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
-                ActivitySummaryView(useHours: false,
-                                    allData: allData,
-                                    fetchRequest: fetchRequest,
-                                    category1Name: $category1Name,
-                                    category2Name: $category2Name,
-                                    category3Name: $category3Name,
-                                    category4Name: $category4Name,
-                                    isHours: $isHours,
-                                    date: date,
-                                    timeFrameChanger: $timeFrame)
-                    .padding(.top)
+        NavigationView {
+            ZStack {
                 
+                //Background
+                Color.minutesBackgroundBlack
+                    .edgesIgnoringSafeArea(.all)
                 
-                //MARK: - Date title
-                VStack(spacing: 0) {
+                VStack(alignment: .center) {
+                   
+                    //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
+                    ActivitySummaryView(useHours: false,
+                                        allData: allData,
+                                        fetchRequest: fetchRequest,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        isHours: $isHours,
+                                        date: date,
+                                        timeFrameChanger: $timeFrame)
+                        .padding(.top)
                     
-                    DateTitleView(timeFrame: timeFrame, date: date)
-                        .padding(.vertical, 2)
                     
-                    let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
-                    
-                    
-                    Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions") Completed")
-                        .foregroundColor(.gray)
-                    
-                    //MARK: - Pie Chart View
-                    
-                    if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
+                    //MARK: - Date title
+                    VStack(spacing: 0) {
                         
-                        PieChartView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
-                                     colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
-                                     names: [category1Name, category2Name, category3Name, category4Name],
-                                     isHours: $isHours,
-                                     backgroundColor: Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)),
-                                     innerRadiusFraction: 0.6,
-                                     activeIndex: $activeIndex)
-                            .padding(.horizontal, 16)
-                            .frame(width: 360, height: 280)
-                    
-                            List {
-                                
-                                //List of top activities
-                                Text("Top Activities:")
-                                    .fontWeight(.bold)
-                                    .font(.title2)
+                        DateTitleView(timeFrame: timeFrame, date: date)
+                            .padding(.vertical, 2)
+                        
+                        let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
+                        
+                        
+                        Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions") Completed")
+                            .foregroundColor(.gray)
+                        
+                        //MARK: - Pie Chart View
+                        
+                        if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
+                            
+                            PieChartView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
+                                         colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
+                                         names: [category1Name, category2Name, category3Name, category4Name],
+                                         isHours: $isHours,
+                                         backgroundColor: Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)),
+                                         innerRadiusFraction: 0.6,
+                                         activeIndex: $activeIndex)
+                                .padding(.horizontal, 16)
+                                .frame(width: 360, height: 280)
+                        
+                                List {
+                                    
+                                    //List of top activities
+                                    Text("Top Activities:")
+                                        .fontWeight(.bold)
+                                        .font(.title2)
+                                        .foregroundColor(.white)
+                                        .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                                    
+                                    ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
+                                        
+                                        Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
+                                        
+                                    }
                                     .foregroundColor(.white)
                                     .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                                
-                                ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
-                                    
-                                    Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
-                                    
+                                    .padding(.vertical, 0)
+                            
                                 }
-                                .foregroundColor(.white)
-                                .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                                .padding(.vertical, 0)
-                        
-                            }
-                            .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                            .environment(\.defaultMinListRowHeight, 10)
-                            
+//                                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                                .environment(\.defaultMinListRowHeight, 10)
                                 
-                        } else {
-                            
-                            Text("No data to show for \nthis timeframe.")
-                                .foregroundColor(.white)
-                                .font(.title)
-                                .multilineTextAlignment(.center)
-                                .padding(.top)
-                            
-                        }
-                            
-                    Spacer()
+                                    
+                            } else {
+                                
+                                Text("No data to show for \nthis timeframe.")
+                                    .foregroundColor(.white)
+                                    .font(.title)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.top)
+                                
+                            }
+                                
+                        Spacer()
+                        
+                    }
+                    .frame(width: screen.size.width * 0.94)
+                    .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .padding(.horizontal)
                     
+                    
+                    //Most productive day - maybe add this feature in version 2.0?
+                                
+
+                    //Add Other Stats here
+                    
+            
                 }
-                .frame(width: screen.size.width * 0.94)
-                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                .padding(.horizontal)
-                
-                
-                //Most productive day - maybe add this feature in version 2.0?
-                            
 
-                //Add Other Stats here
-                
-        
             }
-
+            .navigationTitle("Productivity Stats")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                Button {
+                    presentationMode.wrappedValue.dismiss()
+                } label: {
+                    Text("Dismiss")
+                }
+            }
         }
 
     }
@@ -195,81 +207,82 @@ struct ActivitySummaryView: View {
     
     var body: some View {
 
-        VStack {
-            
-            
-            Text("Productive Time Breakdown")
-                .font(.title2)
-                .foregroundColor(Color.minutesYellow)
-                .padding(.vertical, 4)
-                .padding(.bottom, 4)
-            
-            
-            ZStack {
-                VStack(alignment: .center) {
-                    
-                    //Top 2 Categories
-                    HStack(alignment: .top) {
-                        Text("\(category1Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category1)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
+            VStack {
+                
+                
+                Text("Productive Time Breakdown")
+                    .font(.title2)
+                    .foregroundColor(Color.minutesYellow)
+                    .padding(.vertical, 4)
+                    .padding(.bottom, 4)
+                
+                
+                ZStack {
+                    VStack(alignment: .center) {
                         
-                        Text("\(category2Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category2)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
-                    }
-                    .font(.system(size: 16, weight: .semibold))
-
-                    //Bottom 2 categories
-                    HStack(alignment: .top) {
-                        Text("\(category3Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category3)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
-                        Text("\(category4Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category4)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                            .padding(.horizontal, 10)
-                            .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
-                    }
-                    .padding(.horizontal, 4)
-                    .padding(.vertical, 2)
-                    .font(.system(size: 16, weight: .semibold))
-                    
-                    //Summary changer
-                    HStack {
-                        
-                        Text("Week")
-                            .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
-                            .onTapGesture {
-                                self.timeFrameChanger = TimeFrame.week
-                            }
+                        //Top 2 Categories
+                        HStack(alignment: .top) {
+                            Text("\(category1Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category1)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)))
                             
-                        Divider()
+                            Text("\(category2Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category2)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
+                        }
+                        .font(.system(size: 16, weight: .semibold))
+
+                        //Bottom 2 categories
+                        HStack(alignment: .top) {
+                            Text("\(category3Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category3)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)))
+                            Text("\(category4Name.capitalized): \(timeConverter(time: categorySummary(timeFrame: timeFrameChanger, results: allData, category: categoryStringGetter(Category.category4)), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                                .padding(.horizontal, 10)
+                                .foregroundColor(Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)))
+                        }
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 2)
+                        .font(.system(size: 16, weight: .semibold))
                         
-                        Text("Month")
-                            .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
-                            .onTapGesture {
-                                self.timeFrameChanger = TimeFrame.month
-                            }
-                        
-                        Divider()
-                        
-                        Text("Total")
-                            .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
-                            .onTapGesture {
-                                self.timeFrameChanger = TimeFrame.allTime
-                            }
+                        //Summary changer
+                        HStack {
+                            
+                            Text("Week")
+                                .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.week
+                                }
+                                
+                            Divider()
+                            
+                            Text("Month")
+                                .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.month
+                                }
+                            
+                            Divider()
+                            
+                            Text("Total")
+                                .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.allTime
+                                }
+                        }
+                        .padding(.top, 4)
                     }
-                    .padding(.top, 4)
+                    .font(.system(size: 14))
+                    .foregroundColor(.white)
+                    .padding(.bottom)
                 }
-                .font(.system(size: 14))
-                .foregroundColor(.white)
-                .padding(.bottom)
             }
+            .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.20)
+            .background(Color.black)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal)
         }
-        .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.20)
-        .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-        .padding(.horizontal)
-    }
+    
     
 
     

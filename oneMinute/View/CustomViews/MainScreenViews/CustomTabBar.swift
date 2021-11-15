@@ -23,7 +23,9 @@ struct CustomTabBar: View {
     private let tabBarImageNames = ["chart.bar.doc.horizontal", "book.circle.fill", "plus.app.fill", "bookmark.circle.fill", "gear"]
     
     var body: some View {
-        HStack{
+    
+        
+        HStack {
             ForEach(0..<5) { num in
                 Button(action: {
                     //Button Fuctions:
@@ -76,10 +78,18 @@ struct CustomTabBar: View {
                         ZStack {
                             let colorArray: [Color] = [Color(#colorLiteral(red: 0.8549019694, green: 0.250980407, blue: 0.4784313738, alpha: 1)), Color(#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)), Color(#colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)), Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1))]
                             
-                            LinearGradient(gradient: Gradient(colors: colorArray), startPoint: .topLeading, endPoint: .bottomTrailing)
-                                .mask(Image(systemName: "plus.circle.fill")
-                                        .font(.system(size: 36)))
-                                .frame(width: 36, height: 36, alignment: .center)
+                            ZStack {
+                                
+                                Circle()
+                                    .foregroundColor(.minutesBackgroundBlack)
+                                    .frame(width: 72, height: 72, alignment: .center)
+                                
+                                LinearGradient(gradient: Gradient(colors: colorArray), startPoint: .topLeading, endPoint: .bottomTrailing)
+                                    .mask(Image(systemName: "plus.circle.fill")
+                                            .font(.system(size: 48)))
+                                .frame(width: 48, height: 48, alignment: .center)
+                            }
+                            .offset(y: -14)
                             
                         }
                         
@@ -98,6 +108,7 @@ struct CustomTabBar: View {
             Spacer()
         }
     }
+
 }
 
 //MARK - Add Activity Button

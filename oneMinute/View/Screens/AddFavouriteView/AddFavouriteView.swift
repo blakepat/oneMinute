@@ -86,12 +86,22 @@ struct FavouriteRow: View {
 
 struct ListHeader: View {
     
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
         HStack {
             Image(systemName: "bookmark")
                 
             Text("Quick Add Favourites")
                 .font(.title3)
+            
+            Spacer()
+            
+            Button {
+                presentationMode.wrappedValue.dismiss()
+            } label: {
+                Text("Dismiss")
+            }
         }
     }
 }
