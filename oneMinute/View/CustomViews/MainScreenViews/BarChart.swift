@@ -74,37 +74,44 @@ struct BarChart: View {
                         ZStack(alignment: .leading) {
                             
                             //background capsule
-                            Capsule().frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
-                                .foregroundColor(Color("charcoalColor"))
+//                            Capsule().frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
+//                                .foregroundColor(Color("charcoalColor"))
                             
                             //stack of category capsules - Cycle through categories
-                            HStack(alignment: .center, spacing: 0) {
+                            HStack(spacing: 0) {
                                 ForEach(Array(zip(categories, categories.indices)), id: \.0) { category, index in
                                     
                                     //Layer number of category total over individual category capsule
-                                    ZStack {
+//                                    ZStack {
                                         
                                         let hasAddedActivity = totalSums[dateIndex] > 0
                                         let categoryCapsuleWidth: Float = (Float(capsuleWidth) / Float(totalSums[dateIndex])) * Float(totalSums[dateIndex]) / highestTotal
-                                        
-                                        Capsule().frame(width: CGFloat(monthData[dateIndex][index] * (hasAddedActivity ? categoryCapsuleWidth : 0)), height: capsuleHeight, alignment: .center)
-                                            .foregroundColor(Color("\(category)Color"))
-
-
                                         let figure: Float = (monthData[dateIndex][index] * (hasAddedActivity ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal)) : 0))
-                                        
-                                        Text(hasAddedActivity ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
-                                            .opacity(
-                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
-                                                    > figure
-                                                )
-                                                ? 0 : 1)
-                                    }
+                                    
+                                        if hasAddedActivity {
+                                            Capsule().frame(width: CGFloat(monthData[dateIndex][index] * (hasAddedActivity ? categoryCapsuleWidth : 0)), height: capsuleHeight, alignment: .leading)
+                                                .foregroundColor(Color("\(category)Color"))
+                                                .overlay(Text(hasAddedActivity ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
+                                                            .opacity(
+                                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+                                                                    > figure
+                                                                )
+                                                                ? 0 : 1))
+                                                
+                                        }
+                                }
+                                if totalSums[dateIndex] != highestTotal {
+                                    Spacer()
                                 }
                             }
+                            .background(Color.minutesBackgroundCharcoal)
+                            .frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
+                            .clipShape(Capsule())
+                            .clipped()
+
+                            
                         }
-                        .frame(height: capsuleHeight)
-                        
+
                         //Total for the week (all categories)
                         Text("\(timeConverter(time: totalSums[dateIndex], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
                             .font(.system(size: 16, weight: .semibold))
