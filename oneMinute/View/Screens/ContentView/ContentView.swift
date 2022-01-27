@@ -65,7 +65,7 @@ struct ContentView: View {
             VStack {
                 //MARK: - Week Toggle at top
                 WeekToggle(showLastWeek: $showLastWeek, dateSelected: $selectedDate)
-                    .padding(.top, 4)
+                    .padding(.top, 8)
                 
                 //MARK:- Calendar Button
                 HStack {
@@ -136,11 +136,7 @@ struct ContentView: View {
                 .padding(.vertical, 2)
 
                 Spacer()
-            
-                Divider()
-                    .frame(height: 6)
-                    .foregroundColor(.init(white: 0.8))
-            
+   
                 
                 //MARK: - Tab Bar
                 CustomTabBar(activeSheet: $activeSheet,

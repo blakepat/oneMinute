@@ -51,7 +51,7 @@ struct SettingsView: View {
                         }
                     
                     //rewatch onboarding
-                    Text("Rewatch Onboarding on next open")
+                    Text("See Intro Screen")
                         .foregroundColor(.white)
                         .frame(width: 280, height: 70, alignment: .center)
                         .background(Color.minutesBackgroundCharcoal)

@@ -282,7 +282,7 @@ struct ActivityHistoryView: View {
                 Button {
                     presentationMode.wrappedValue.dismiss()
                 } label: {
-                    Text("dismiss")
+                    Text("Dismiss")
                 }
             }
         }
