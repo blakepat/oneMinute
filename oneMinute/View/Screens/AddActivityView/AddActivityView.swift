@@ -327,7 +327,7 @@ struct TimeSelectorView: View {
                     
                     //Hour Selection
                     Picker(selection: $activityToSave.hours, label: Text("Hours")) {
-                        ForEach(0 ..< self.hourArray.count) { number in
+                        ForEach(0 ..< self.hourArray.count, id: \.self) { number in
                             Text(self.hourArray[number]).tag(Float(number))
                         }
                     }
@@ -342,7 +342,7 @@ struct TimeSelectorView: View {
                     
                     //Minute Selection
                     Picker(selection: $activityToSave.minutes, label: Text("Hours")) {
-                        ForEach(0 ..< self.minutesArray.count) { number in
+                        ForEach(0 ..< self.minutesArray.count, id: \.self) { number in
                             Text(self.minutesArray[number]).tag(Float(number))
                         }
                     }

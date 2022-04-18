@@ -97,7 +97,7 @@ struct DayScrollView: View {
                                 activeSheet: $activeSheet
                             )
                             .environmentObject(activityToSave)
-                            .offset(y: 40)
+//                            .offset(y: 40)
                         }
                     }
                 }

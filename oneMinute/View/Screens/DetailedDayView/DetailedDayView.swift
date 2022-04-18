@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DetailedDayView: View {
     
+    @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel = DetailedDayViewModel()
     
     var dailyData: [AddedActivity]
@@ -22,7 +23,7 @@ struct DetailedDayView: View {
     
     private let dateFormatter: DateFormatter = {
         var df = DateFormatter()
-        df.dateFormat = "EEEE, MMM, d, yyyy"
+        df.dateFormat = "EEEE, MMM d, yyyy"
         return df
     }()
     
@@ -36,112 +37,84 @@ struct DetailedDayView: View {
     @Binding var activeSheet: ActiveSheet?
     
     var body: some View {
-        
-        
         let categoryNames = [category1Name, category2Name, category3Name, category4Name]
         
-        let dailyFitnessTotal = viewModel.getCategoryTotalForDate(date, category: category1, allActivities: dailyData)
-        let dailyLearningTotal = viewModel.getCategoryTotalForDate(date, category: category2, allActivities: dailyData)
-        let dailyChoresTotal = viewModel.getCategoryTotalForDate(date, category: category3, allActivities: dailyData)
-        let dailyWorkTotal = viewModel.getCategoryTotalForDate(date, category: category4, allActivities: dailyData)
-        
-        ZStack{
+        NavigationView {
             
-            //Background Color
-            Color(#colorLiteral(red: 0.2082437575, green: 0.2156656086, blue: 0.2157248855, alpha: 1))
-                .edgesIgnoringSafeArea(.all)
-            VStack {
-                
-                //MARK: - Pull down tap
-                    HStack {
+                List {
+                    ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { category, index in
+                        let dailyCategoryData = viewModel.getCategoryActivitiesForDate(date, allActivities: dailyData, index: index)
                         
-                        Spacer()
-                        Color.black
-                            .clipShape(RoundedRectangle(cornerRadius: 30))
-                            .frame(width: 50, height: 8, alignment: .center)
-                            .padding(.top, 8)
-                            .padding(.bottom, 0)
-                            
-                        Spacer()
-                    }
-                
-                //Date
-                Text("\(date, formatter: dateFormatter)")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundColor(.white)
-                    .padding(4)
-                
-                //Summary of day similar to summary of week on main screen
-                DaySummaryView(
-                    sumOfWeeklyFitnessMinutes: dailyFitnessTotal,
-                    sumOfWeeklyLearningMinutes: dailyLearningTotal,
-                    sumOfWeeklyChoresMinutes: dailyChoresTotal,
-                    sumOfWeeklyWorkMinutes: dailyWorkTotal,
-                    category1Name: $category1Name,
-                    category2Name: $category2Name,
-                    category3Name: $category3Name,
-                    category4Name: $category4Name,
-                    isHours: $isHours
-                )
-                
-                
-                //List of All completed Activities sorted by catagory
-                ScrollView(.vertical) {
-                    VStack {
-                        ForEach(Array(zip(categoryNames, categoryNames.indices)), id: \.0) { category, index in
-                            
-                            let dailyCategoryData = viewModel.getCategoryActivitiesForDate(date, allActivities: dailyData, index: index)
-                            
-                            if !dailyCategoryData.isEmpty {
-                                HStack {
-                                    Text("\(category.capitalized)")
-                                        .frame(width: screen.width - 56, alignment: .leading)
-                                        .font(.system(size: 20, weight: .bold))
-                                        .foregroundColor(categoryColors[index])
-                                        .padding(.leading, 16)
-                                        .padding(.top, 4)
-                                        
-                                     Spacer()
-                                }
-                            }
+                        Section(header: Text("\(category) - \(Int(dailyCategoryData.reduce(0) {$0 + $1.duration})) \(isHours ? "Hours" : "Minutes")").font(.headline)
+                            ) {
+                           
                             ForEach(dailyCategoryData, id: \.self) { data in
                                 
-                                DetailedDayCategorySectionItem(
-                                    data: data,
-                                    showEditScreen: $showEditScreen,
-                                    activityToEdit: activityToSave,
-                                    itemToDelete: $itemToDelete,
-                                    showActivitySelector: $showActivitySelector,
-                                    activityToSave: activityToSave,
-                                    showCategoryNameEditor: $showCategoryNameEditor,
-                                    category1Name: $category1Name,
-                                    category2Name: $category2Name,
-                                    category3Name: $category3Name,
-                                    category4Name: $category4Name,
-                                    isHours: $isHours,
-                                    date: $date,
-                                    activeSheet: $activeSheet
-                                )
-                                    .frame(width: screen.width - 56, alignment: .leading)
-                                    .background(Color.black)
-                                    .clipShape(RoundedRectangle(cornerRadius: 10))
-
-                                    .padding(.vertical, 2)
+                                HStack {
+                                    DetailedDayCategorySectionItem(
+                                        data: data,
+                                        showEditScreen: $showEditScreen,
+                                        activityToEdit: activityToSave,
+                                        itemToDelete: $itemToDelete,
+                                        showActivitySelector: $showActivitySelector,
+                                        activityToSave: activityToSave,
+                                        showCategoryNameEditor: $showCategoryNameEditor,
+                                        category1Name: $category1Name,
+                                        category2Name: $category2Name,
+                                        category3Name: $category3Name,
+                                        category4Name: $category4Name,
+                                        isHours: $isHours,
+                                        date: date,
+                                        activeSheet: $activeSheet
+                                    )
+                                    
+                                    Spacer()
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    itemToDelete = data as AddedActivity
+                                    
+                                    activityToSave.activityName = data.name ?? "Unknown Activity"
+                                    activityToSave.category = data.category ?? "category0"
+                                    activityToSave.hours = (data.duration / 60).rounded(.down)
+                                    activityToSave.minutes = data.duration.truncatingRemainder(dividingBy: 60)
+                                    activityToSave.notes = data.notes ?? ""
+                                    
+                                    self.showEditScreen.toggle()
+                                }
+                                .sheet(isPresented: $showEditScreen, onDismiss: {
+                                    self.showEditScreen = false
+                                    self.showActivitySelector = false
+                                    resetActivity(activityToSave: activityToSave)
+                                }) {
+                                    //MARK: - Add activity view
+                                    AddActivityView(showActivitySelector: $showActivitySelector,
+                                                    showAddActivity: $showEditScreen,
+                                                    selectedDate: $date,
+                                                    itemToDelete: $itemToDelete,
+                                                    showingNameEditor: $showCategoryNameEditor,
+                                                    activityToSave: activityToSave,
+                                                    isEditScreen: true,
+                                                    categorySelected: true,
+                                                    category1Name: $category1Name,
+                                                    category2Name: $category2Name,
+                                                    category3Name: $category3Name,
+                                                    category4Name: $category4Name,
+                                                    activeSheet: $activeSheet)
+                                }
                             }
-                            .frame(width: screen.width - 56, alignment: .leading)
                         }
                     }
                 }
-                .frame(width: screen.width - 32, alignment: .leading)
-                .background(Color.minutesBackgroundBlack)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .padding(.bottom, 30)
-                
-                Spacer()
-                
-            }
+                .listStyle(GroupedListStyle())
+                .navigationTitle("\(date, formatter: dateFormatter)")
+                .toolbar {
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Text("Dismiss")
+                    }
+                }
         }
-        .frame(width: screen.width, height: screen.height)
     }    
 }
-

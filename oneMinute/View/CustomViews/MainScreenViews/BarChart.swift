@@ -103,6 +103,13 @@ struct BarChart: View {
                                 if totalSums[dateIndex] != highestTotal {
                                     Spacer()
                                 }
+                                
+                                if totalSums[dateIndex] == 0 {
+                                    Capsule()
+                                        .frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
+                                        .foregroundColor(.minutesBackgroundCharcoal)
+                                }
+                                
                             }
                             .background(Color.minutesBackgroundCharcoal)
                             .frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)

@@ -46,7 +46,7 @@ struct PieChartView: View {
                     
                     ZStack{
                                             
-                        ForEach(0..<self.values.count) { i in
+                        ForEach(0..<self.values.count, id: \.self) { i in
                             PieSliceView(pieSliceData: self.slices[i])
                                 .scaleEffect(self.activeIndex == i ? 1.03 : 1)
                                 .animation(Animation.spring())

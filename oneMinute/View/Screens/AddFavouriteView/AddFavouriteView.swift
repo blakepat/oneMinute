@@ -35,6 +35,7 @@ struct AddFavouriteView: View {
             Color.minutesBackgroundBlack
                 .edgesIgnoringSafeArea(.all)
 
+            
             //MARK: - List of all favourites
             List {
                 Section(header: ListHeader()) {

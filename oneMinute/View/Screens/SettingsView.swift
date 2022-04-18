@@ -16,7 +16,6 @@ struct SettingsView: View {
     @Environment(\.presentationMode)  var presentationMode
     
     @Binding var isHours: Bool
-    @Binding var showOnboardView: Bool
     @State private var showDeleteAllAlert = false
     
     var body: some View {
@@ -51,14 +50,14 @@ struct SettingsView: View {
                         }
                     
                     //rewatch onboarding
-                    Text("See Intro Screen")
+                    Text("See Intro Screen on Next Open")
                         .foregroundColor(.white)
                         .frame(width: 280, height: 70, alignment: .center)
                         .background(Color.minutesBackgroundCharcoal)
                         .cornerRadius(10)
                         .onTapGesture {
                             
-                            showOnboardView = true
+                            UserDefaults.standard.set(false, forKey: "hasSeenOnboardView")
                             presentationMode.wrappedValue.dismiss()
                         }
                     

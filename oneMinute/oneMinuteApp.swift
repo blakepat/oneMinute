@@ -26,7 +26,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
 
         preloadData()
-
         return true
     }
     
@@ -63,10 +62,6 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                             let activityObject = Activity(context: backgroundContext)
                             activityObject.name = activity[1] ?? "Unknown Activity"
                             activityObject.category = activity[0] ?? "Unknown Category"
-                            
-                  
-                            
-                            
                         }
 
                         //Save categories and Items and change key so preloaded data won't be loaded again

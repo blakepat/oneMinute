@@ -11,34 +11,33 @@ struct OnboardView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
-    @Binding var showOnboardView: Bool
-    
     var body: some View {
+
         ZStack {
-            
+
             Color.minutesBackgroundCharcoal
                 .edgesIgnoringSafeArea(.all)
-            
+
             VStack {
-                
+
                 HStack {
-                    
+
                     Spacer()
                     XDismissButton()
                         .onTapGesture {
                             presentationMode.wrappedValue.dismiss()
                     }
                 }
-                
+
                 Spacer()
-                
+
                 VStack(alignment: .center) {
                     Text("The Minutes App")
                         .foregroundColor(.minutesYellow)
                         .font(.title)
                         .bold()
                         .padding(.bottom, 6)
-                    
+
                     Text("The app built to help people live healthy balanced lives. See the productive time you accumlate to reach your goals!")
                         .bold()
                         .font(.title3)
@@ -46,13 +45,13 @@ struct OnboardView: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.bottom)
-                
+
                 VStack(alignment: .leading, spacing: 20) {
                     HStack(spacing: 16) {
                         Image(systemName: "checkmark.circle")
                             .font(.system(size: 40, weight: .bold))
                             .foregroundColor(.minutesYellow)
-                        
+
                         VStack(alignment: .leading) {
                             Text("Track Your Productivity")
                                 .foregroundColor(.minutesYellow)
@@ -60,12 +59,12 @@ struct OnboardView: View {
                                 .foregroundColor(.white)
                         }
                     }
-                    
+
                     HStack(spacing: 16) {
                         Image(systemName: "book.circle.fill")
                             .font(.system(size: 40, weight: .bold))
                             .foregroundColor(.minutesYellow)
-                        
+
                         VStack(alignment: .leading) {
                             Text("Review Activity History")
                                 .foregroundColor(.minutesYellow)
@@ -73,12 +72,12 @@ struct OnboardView: View {
                                 .foregroundColor(.white)
                         }
                     }
-                    
+
                     HStack(spacing: 16) {
                         Image(systemName: "chart.bar.doc.horizontal")
                             .font(.system(size: 40, weight: .bold))
                             .foregroundColor(.minutesYellow)
-                        
+
                         VStack(alignment: .leading) {
                             Text("Productivity Stats")
                                 .foregroundColor(.minutesYellow)
@@ -87,17 +86,17 @@ struct OnboardView: View {
                         }
                     }
                 }
-                
+
                 Spacer()
-                
+
             }
             .frame(width: screen.width - 42)
         }
     }
 }
 
-struct OnboardView_Previews: PreviewProvider {
-    static var previews: some View {
-        OnboardView(showOnboardView: .constant(true))
-    }
-}
+//struct OnboardView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        OnboardView(showOnboardView: .constant(true))
+//    }
+//}

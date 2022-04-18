@@ -31,8 +31,6 @@ struct ContentView: View {
     @State private var showSettings = false
     
     
-
-    
     //Variables
     @State var selectedDate = Date()
     @State var activityToDelete = AddedActivity()
@@ -51,7 +49,6 @@ struct ContentView: View {
         Array(stride(from: Date().startOfWeek().addingTimeInterval(-6*24*60*60), to: Date().startOfWeek(), by:  60*60*24))
     }
 
-    
     
     
     //MARK: - Body
@@ -217,23 +214,23 @@ struct ContentView: View {
                                     .environment(\.managedObjectContext, viewContext)
                                 
                             case .fifth:
-                                SettingsView(isHours: $viewModel.isHours, showOnboardView: $viewModel.showingOnboardView)
+                                SettingsView(isHours: $viewModel.isHours)
                                     .environment(\.managedObjectContext, viewContext)
                             }
                            })
             }
             .padding(.horizontal, 16)
             .edgesIgnoringSafeArea(.bottom)
+            
+            
         }
-        .sheet(isPresented: $viewModel.showingOnboardView) {
-            OnboardView(showOnboardView: $viewModel.showingOnboardView)
-        }
+        .sheet(isPresented: $viewModel.showingOnboardView, content: {
+            OnboardView()
+        })
         .onAppear {
             viewModel.showOnboardView()
         }
     }
-    
-
     
     private let itemFormatter: DateFormatter = {
         let formatter = DateFormatter()

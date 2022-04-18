@@ -19,7 +19,11 @@ final class ContentViewModel: ObservableObject {
     @Published var category4Name = UserDefaults.standard.string(forKey: "category4Name")!
     
     
-    @Published var showingOnboardView = false
+    @Published var showingOnboardView = false {
+        didSet {
+            print("✅ showingOnboardView changed!")
+        }
+    }
     
     
     //Time Unit
