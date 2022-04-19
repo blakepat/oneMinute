@@ -35,6 +35,47 @@ final class StatsViewModel: ObservableObject {
     }
     
     
+    func getDataForLineChart(timeframe: TimeFrame, activeIndex: Int, data: FetchedResults<AddedActivity>, date: Date) -> [Double] {
+        
+        let activities = getActivitiesForThis(timeFrame: timeframe, activeIndex: activeIndex, data: data, date: date)
+        var totalsToReturn: [Double] = []
+        
+        if timeframe == TimeFrame.week {
+            let daysOfWeek = dates(from: date.startOfWeek(), to: date.endOfWeek)
+            
+            for day in daysOfWeek {
+                
+                let daysActivities = activities.filter({ $0.timestamp ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
+                
+                totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
+            }
+        } else if timeframe == TimeFrame.month {
+            let daysOfMonth = dates(from: date.startOfMonth, to: date.endOfMonth)
+            
+            for day in daysOfMonth {
+                
+                let daysActivities = activities.filter({ $0.timestamp ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
+                
+                totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
+            }
+        } else {
+            
+            let oldestActivity = activities.max(by: { $0.timestamp ?? Date() > $1.timestamp ?? Date() })
+            
+            let monthsOfYear = dates(from: oldestActivity?.timestamp ?? Date(), to: date.endOfMonth) // get oldest activities and do months from there until end of current month
+            
+            for month in monthsOfYear {
+                
+                let monthActivities = activities.filter({ $0.timestamp ?? Date() > month.startOfMonth && $0.timestamp ?? Date() < month.endOfMonth})
+                
+                totalsToReturn.append(Double(monthActivities.reduce(0) { $0 + $1.duration}))
+            }
+        }
+        
+       return totalsToReturn
+    }
+    
+    
     
     //Get totals for each category and put in Array
     func eachCategoryTotalDuration(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, date: Date) -> [Double] {
@@ -63,11 +104,11 @@ final class StatsViewModel: ObservableObject {
     
     
     //Cycle through all actvitiesAdded and get which ones are done the most based on timeFrame provided
-    func mostActivityLoggedDuring(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, activityNames: FetchRequest<Activity>, activeIndex: Int, date: Date) -> [(String, Float)] {
+    func mostActivityLoggedDuring(timeFrame: TimeFrame, results: FetchedResults<AddedActivity>, activityNames: FetchRequest<Activity>, activeIndex: Int, date: Date) -> [((String, Float), String)] {
         
         if timeFrame == TimeFrame.week {
             
-            var topActivtiesArray = [(String, Float)]()
+            var topActivtiesArray = [((String, Float), String)]()
             var activityTotalAmount: Float = 0
             
             //Cycle through all activity types
@@ -83,23 +124,24 @@ final class StatsViewModel: ObservableObject {
 
                 
                 //CHANGE IT TO CHECK IF IT IS LOWER THAN 5th item in array
-                if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
+                if activityTotalAmount > topActivtiesArray.min(by: { $0.0.1 < $1.0.1 })?.0.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
                     
                     if topActivtiesArray.count < 5 {
-                        topActivtiesArray.append((activity.name, activityTotalAmount))
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                     } else {
-                        topActivtiesArray.sort(by: { $0.1 > $1.1 })
+                        topActivtiesArray.sort(by: { $0.0.1 > $1.0.1 })
                         topActivtiesArray.removeLast()
-                        topActivtiesArray.append((activity.name, activityTotalAmount))
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                     }
 
                 }
             }
-            return topActivtiesArray.sorted(by: {$0.1 > $1.1})
+            return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
+            
         //Activity with Most this Month
         } else if timeFrame == TimeFrame.month {
             
-            var topActivtiesArray = [(String, Float)]()
+            var topActivtiesArray = [((String, Float), String)]()
             var activityTotalAmount: Float = 0
             
                 //Cycle through all activity types
@@ -114,23 +156,23 @@ final class StatsViewModel: ObservableObject {
                     
           
                     
-                    if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
+                    if activityTotalAmount > topActivtiesArray.min(by: { $0.0.1 < $1.0.1 })?.0.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
                         
                         if topActivtiesArray.count < 5 {
-                            topActivtiesArray.append((activity.name, activityTotalAmount))
+                            topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                         } else {
-                            topActivtiesArray.sort(by: { $0.1 > $1.1 })
+                                topActivtiesArray.sort(by: { $0.0.1 > $1.0.1 })
                             topActivtiesArray.removeLast()
-                            topActivtiesArray.append((activity.name, activityTotalAmount))
+                            topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                         }
    
                     }
                 }
-            return topActivtiesArray.sorted(by: {$0.1 > $1.1})
+            return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
         //Activity  with most ALL TIME
         } else if timeFrame == TimeFrame.allTime {
             
-            var topActivtiesArray = [(String, Float)]()
+            var topActivtiesArray = [((String, Float), String)]()
             var activityTotalAmount: Float = 0
             
             //Cycle through all activity types
@@ -144,22 +186,22 @@ final class StatsViewModel: ObservableObject {
                 }
                 
                 
-                if activityTotalAmount > topActivtiesArray.min(by: { $0.1 < $1.1 })?.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
+                if activityTotalAmount > topActivtiesArray.min(by: { $0.0.1 < $1.0.1 })?.0.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
                     
                     if topActivtiesArray.count < 5 {
-                        topActivtiesArray.append((activity.name, activityTotalAmount))
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                     } else {
-                        topActivtiesArray.sort(by: { $0.1 > $1.1 })
+                        topActivtiesArray.sort(by: { $0.0.1 > $1.0.1 })
                         topActivtiesArray.removeLast()
-                        topActivtiesArray.append((activity.name, activityTotalAmount))
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
                     }
 
                 }
             }
-            return topActivtiesArray.sorted(by: {$0.1 > $1.1})
+            return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
             
         } else {
-            return [("Unknown", Float(0.0))]
+            return [(("Unknown", Float(0.0)), "category1")]
         }
         
     }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -31,7 +31,7 @@
 		3414CFFF26DFEC0F00887A7B /* ActivityNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */; };
 		3414D00226E0A5C300887A7B /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414D00126E0A5C300887A7B /* StatsViewModel.swift */; };
 		342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */; };
-		342A2DA826B9ECBF00F7FBD5 /* PieChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */; };
+		342A2DA826B9ECBF00F7FBD5 /* PieGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */; };
 		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
 		344F061A260C2B6200BFAECE /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F0619260C2B6200BFAECE /* ActivityHistoryView.swift */; };
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
@@ -39,6 +39,7 @@
 		348027A82577FBD30083DD73 /* CategoryNameEditAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348027A72577FBD30083DD73 /* CategoryNameEditAlert.swift */; };
 		348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89EF255C856B00385B6B /* ActivityToSave.swift */; };
 		349421F2280E0AFD00395276 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349421F1280E0AFD00395276 /* Activity+CoreDataClass.swift */; };
+		349421F7280E3B5300395276 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = 349421F6280E3B5300395276 /* SwiftUICharts */; };
 		34A1AFAE2741F20500610888 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34A1AFAD2741F20500610888 /* Assets.xcassets */; };
 		34A1AFB02742002400610888 /* OnboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1AFAF2742002400610888 /* OnboardView.swift */; };
 		34A1AFB2274206FB00610888 /* XDismissButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1AFB1274206FA00610888 /* XDismissButton.swift */; };
@@ -101,7 +102,7 @@
 		3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityNameView.swift; sourceTree = "<group>"; };
 		3414D00126E0A5C300887A7B /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
 		342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieSliceView.swift; sourceTree = "<group>"; };
-		342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieChartView.swift; sourceTree = "<group>"; };
+		342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraphView.swift; sourceTree = "<group>"; };
 		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
 		344F0619260C2B6200BFAECE /* ActivityHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryView.swift; sourceTree = "<group>"; };
 		347983B025546E9200823F39 /* PreloadedData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PreloadedData.plist; sourceTree = SOURCE_ROOT; };
@@ -140,6 +141,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				349421F7280E3B5300395276 /* SwiftUICharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +189,7 @@
 				34C851BB26245606000DEAD9 /* ActivityTypeIcon.swift */,
 				34DF374825534A8600232BCD /* BlurView.swift */,
 				34DF374925534A8600232BCD /* SearchBar.swift */,
-				342A2DA726B9ECBF00F7FBD5 /* PieChartView.swift */,
+				342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */,
 				342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */,
 				3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */,
 			);
@@ -398,6 +400,9 @@
 			dependencies = (
 			);
 			name = oneMinute;
+			packageProductDependencies = (
+				349421F6280E3B5300395276 /* SwiftUICharts */,
+			);
 			productName = oneMinute;
 			productReference = 34DF370E25534A2000232BCD /* oneMinute.app */;
 			productType = "com.apple.product-type.application";
@@ -469,6 +474,9 @@
 				Base,
 			);
 			mainGroup = 34DF370525534A2000232BCD;
+			packageReferences = (
+				349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */,
+			);
 			productRefGroup = 34DF370F25534A2000232BCD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -512,7 +520,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				342A2DA826B9ECBF00F7FBD5 /* PieChartView.swift in Sources */,
+				342A2DA826B9ECBF00F7FBD5 /* PieGraphView.swift in Sources */,
 				3414CFC726D81C0B00887A7B /* Color+Ext.swift in Sources */,
 				348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */,
 				3414CFD426D8245800887A7B /* DateView.swift in Sources */,
@@ -878,6 +886,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apppear/chartview";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		349421F6280E3B5300395276 /* SwiftUICharts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */;
+			productName = SwiftUICharts;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		34DF371C25534A2400232BCD /* oneMinute.xcdatamodeld */ = {

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PieChartView: View {
+struct PieGraphView: View {
     
     public let values: [Double]
     public let colors: [Color]
@@ -84,13 +84,13 @@ struct PieChartView: View {
                         
                         VStack {
                             Text(self.activeIndex == -1 ? "Total" : names[self.activeIndex])
-                                .font(.title)
+                                .font(.headline)
                                 .foregroundColor(Color.gray)
                             Text(String(format: decimalsToShow(isHours: isHours), timeConverter(time: Float((self.activeIndex == -1 ? values.reduce(0, +) : values[self.activeIndex])), timeUnitIsHours: isHours)))
-                                .font(.title)
+                                .font(.headline)
                             Text("\(timeUnitName(isHours: isHours))")
                                 .foregroundColor(.gray)
-                                .font(.title)
+                                .font(.headline)
                         }
                     }
                 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUICharts
 
 struct StatsView: View {
     
@@ -67,72 +68,55 @@ struct StatsView: View {
                 //Background
                 Color.minutesBackgroundBlack
                     .edgesIgnoringSafeArea(.all)
-                
-                VStack(alignment: .center) {
-                   
-                    //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
-                    ActivitySummaryView(useHours: false,
-                                        allData: allData,
-                                        fetchRequest: fetchRequest,
-                                        category1Name: $category1Name,
-                                        category2Name: $category2Name,
-                                        category3Name: $category3Name,
-                                        category4Name: $category4Name,
-                                        isHours: $isHours,
-                                        date: date,
-                                        timeFrameChanger: $timeFrame)
-                        .padding(.top)
-                    
-                    
-                    //MARK: - Date title
-                    VStack(spacing: 0) {
-                        
-                        DateTitleView(timeFrame: timeFrame, date: date)
-                            .padding(.vertical, 2)
-                        
-                        let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
+
+                ScrollView {
+                    VStack(alignment: .center, spacing: 0) {
+                       
+                        //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
+                        ActivitySummaryView(useHours: false,
+                                            allData: allData,
+                                            fetchRequest: fetchRequest,
+                                            category1Name: $category1Name,
+                                            category2Name: $category2Name,
+                                            category3Name: $category3Name,
+                                            category4Name: $category4Name,
+                                            isHours: $isHours,
+                                            date: date,
+                                            timeFrameChanger: $timeFrame)
+                        .padding(.bottom, 8)
                         
                         
-                        Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions") Completed")
-                            .foregroundColor(.gray)
-                        
-                        //MARK: - Pie Chart View
-                        
-                        if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
+                        //MARK: - Date title
+                        HStack(spacing: 0) {
                             
-                            PieChartView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
-                                         colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
-                                         names: [category1Name, category2Name, category3Name, category4Name],
-                                         isHours: $isHours,
-                                         backgroundColor: Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)),
-                                         innerRadiusFraction: 0.6,
-                                         activeIndex: $activeIndex)
-                                .padding(.horizontal, 16)
-                                .frame(width: 360, height: 280)
-                        
-                                List {
-                                    
-                                    //List of top activities
-                                    Text("Top Activities:")
-                                        .fontWeight(.bold)
-                                        .font(.title2)
-                                        .foregroundColor(.white)
-                                        .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                                    
-                                    ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
-                                        
-                                        Text("\(index + 1): \(topItem.0)").bold() + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
-                                        
-                                    }
-                                    .foregroundColor(.white)
-                                    .listRowBackground(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                                    .padding(.vertical, 0)
-                            
-                                }
-//                                .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                                .environment(\.defaultMinListRowHeight, 10)
+                            VStack(alignment: .leading) {
+                                DateTitleView(timeFrame: timeFrame, date: date)
                                 
-                                    
+                                let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
+                                
+                                
+                                Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
+                                    .foregroundColor(.gray)
+                                    .font(.subheadline)
+                            }
+                            .padding(.leading)
+                            
+                            Spacer()
+                            //MARK: - Pie Chart View
+                            
+                            if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
+                                
+                                PieGraphView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
+                                             colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
+                                             names: [category1Name, category2Name, category3Name, category4Name],
+                                             isHours: $isHours,
+                                             backgroundColor: Color.black,
+                                             innerRadiusFraction: 0.6,
+                                             activeIndex: $activeIndex)
+                                
+                                    .frame(width: 220, height: 180)
+                                    .padding(.vertical, 8)
+                           
                             } else {
                                 
                                 Text("No data to show for \nthis timeframe.")
@@ -142,24 +126,56 @@ struct StatsView: View {
                                     .padding(.top)
                                 
                             }
+                        }
+                        .frame(width: screen.size.width * 0.94)
+                        .background(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.bottom, 8)
+                
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            
+                            //List of top activities
+                            Text("Top \(activeIndex > -1 ? categoryNames[activeIndex] : "") Activities:")
+                                .fontWeight(.bold)
+                                .font(.title2)
+                                .foregroundColor(.minutesYellow)
+                                .listRowBackground(Color.black)
+                                .padding(8)
+                            
+                            ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
                                 
-                        Spacer()
+                                HStack {
+                                    Text("\(index + 1): \(topItem.0.0)").bold().foregroundColor(getCategoryColor(topItem.1)) + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.0.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
+                                        
+                                    
+                                    Spacer()
+                                }
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            
+                            
+                        }
+                        .padding(.bottom, 8)
+                        .frame(width: screen.size.width * 0.94)
+                        .background(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .padding(.bottom, 8)
+                        
+                        //Line chart
+                        LineView(data: viewModel.getDataForLineChart(timeframe: timeFrame, activeIndex: activeIndex, data: allData, date: date),
+                                 title: "\(timeFrame == .week ? "Week" : timeFrame == .month ? "Month" : "All-Time") \(activeIndex > -1 ? categoryNames[activeIndex] : "Productivity") \(isHours ? "Hours" : "Minutes")",
+                                 style: ChartStyle(backgroundColor: .black, accentColor: .minutesYellow, gradientColor: (activeIndex > -1 ? GradientColor(start: getCategoryColor(categories[activeIndex]), end: getCategoryColor(categories[activeIndex])) : GradientColor(start: .minutesYellow, end: Color.minutesYellow)), textColor: .white, legendTextColor: .gray, dropShadowColor: .clear))
+
+                        .padding(.horizontal)
+                        .padding(.vertical, 2)
+                        .frame(width: screen.size.width * 0.94,height: 400)
+                        .background(Color.black)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                         
                     }
-                    .frame(width: screen.size.width * 0.94)
-                    .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    .padding(.horizontal)
-                    
-                    
-                    //Most productive day - maybe add this feature in version 2.0?
-                                
-
-                    //Add Other Stats here
-                    
-            
                 }
-
             }
             .navigationTitle("Productivity Stats")
             .navigationBarTitleDisplayMode(.inline)
@@ -171,11 +187,7 @@ struct StatsView: View {
                 }
             }
         }
-
     }
-    
-  
-    
 }
 //
 //struct StatsView_Previews: PreviewProvider {
@@ -208,17 +220,40 @@ struct ActivitySummaryView: View {
     var body: some View {
 
             VStack {
-                
-                
-                Text("Productive Time Breakdown")
-                    .font(.title2)
-                    .foregroundColor(Color.minutesYellow)
-                    .padding(.vertical, 4)
-                    .padding(.bottom, 4)
-                
-                
                 ZStack {
                     VStack(alignment: .center) {
+                        
+                        //Summary changer
+                        HStack {
+                            
+                            Text("Week")
+                                .font(.headline)
+                                .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.week
+                                }
+                                
+                            Divider()
+                                .frame(height: 26)
+                            
+                            Text("Month")
+                                .font(.headline)
+                                .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.month
+                                }
+                            
+                            Divider()
+                                .frame(height: 26)
+                            
+                            Text("Total")
+                                .font(.headline)
+                                .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.allTime
+                                }
+                        }
+                        .padding(.top)
                         
                         //Top 2 Categories
                         HStack(alignment: .top) {
@@ -231,6 +266,7 @@ struct ActivitySummaryView: View {
                                 .foregroundColor(Color(#colorLiteral(red: 0.5568627715, green: 0.3529411852, blue: 0.9686274529, alpha: 1)))
                         }
                         .font(.system(size: 16, weight: .semibold))
+//                        .padding(.top)
 
                         //Bottom 2 categories
                         HStack(alignment: .top) {
@@ -245,39 +281,14 @@ struct ActivitySummaryView: View {
                         .padding(.vertical, 2)
                         .font(.system(size: 16, weight: .semibold))
                         
-                        //Summary changer
-                        HStack {
-                            
-                            Text("Week")
-                                .foregroundColor(timeFrameChanger == TimeFrame.week ? .white : .gray)
-                                .onTapGesture {
-                                    self.timeFrameChanger = TimeFrame.week
-                                }
-                                
-                            Divider()
-                            
-                            Text("Month")
-                                .foregroundColor(timeFrameChanger == TimeFrame.month ? .white : .gray)
-                                .onTapGesture {
-                                    self.timeFrameChanger = TimeFrame.month
-                                }
-                            
-                            Divider()
-                            
-                            Text("Total")
-                                .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
-                                .onTapGesture {
-                                    self.timeFrameChanger = TimeFrame.allTime
-                                }
-                        }
-                        .padding(.top, 4)
+
                     }
                     .font(.system(size: 14))
                     .foregroundColor(.white)
                     .padding(.bottom)
                 }
             }
-            .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.20)
+            .frame(width: screen.size.width * 0.94)
             .background(Color.black)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .padding(.horizontal)
@@ -313,7 +324,7 @@ struct DateTitleView: View {
     
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
-        df.dateFormat = "EEE, MMM d"
+        df.dateFormat = "MMM d"
         return df
     }()
     
@@ -322,13 +333,13 @@ struct DateTitleView: View {
         
         if timeFrame == TimeFrame.week {
             
-            Text("\(date.startOfWeek(), formatter: dateFormatter) - \(date.endOfWeek, formatter: dateFormatter)")
+            Text("\(date.startOfWeek(), formatter: dateFormatter) - \n\(date.endOfWeek, formatter: dateFormatter)")
                 .font(.title2)
                 .foregroundColor(Color.minutesYellow)
             
         } else if timeFrame == TimeFrame.month {
             
-            Text("\(date.startOfMonth, formatter: dateFormatter) - \(date.endOfMonth, formatter: dateFormatter)")
+            Text("\(date.startOfMonth, formatter: dateFormatter) - \n\(date.endOfMonth, formatter: dateFormatter)")
                 .font(.title2)
                 .foregroundColor(Color.minutesYellow)
             
