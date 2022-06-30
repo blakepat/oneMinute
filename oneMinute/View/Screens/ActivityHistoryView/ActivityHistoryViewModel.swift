@@ -16,11 +16,21 @@ final class ActivityHistoryViewModel: ObservableObject {
                                       activityToShow: ActivityToSave,
                                       activityFilter: ActivityFilter) -> [AddedActivity] {
         if activityFilter == .all {
-            return data.filter({_ in true})
+            return getAllActivitiesFor(timeFrame: timeFrame, data: data)
         } else if activityFilter == .category {
             return filterActivitiesForCategory(category: activityToShow.category, data: data, timeFrame: timeFrame)
         } else {
             return filterActivitiesForActivityName(name: activityToShow.activityName, data: data, timeFrame: timeFrame)
+        }
+    }
+    
+    func getAllActivitiesFor(timeFrame: TimeFrame, data: FetchedResults<AddedActivity>) -> [AddedActivity] {
+        if timeFrame == TimeFrame.allTime {
+            return data.filter({_ in true})
+        } else if timeFrame == TimeFrame.month {
+            return data.filter({ $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth  })
+        } else {
+            return data.filter(({ $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek  }))
         }
     }
     

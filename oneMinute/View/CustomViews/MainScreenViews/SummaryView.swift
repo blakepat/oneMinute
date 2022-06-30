@@ -39,7 +39,7 @@ struct SummaryView: View {
                 .foregroundColor(.white)
                 
                 ZStack {
-                    VStack(alignment: .center) {
+                    VStack(alignment: .center, spacing: 2) {
                         
                         //Top 2 Categories
                         HStack(alignment: .top) {
@@ -99,7 +99,7 @@ struct SummaryView: View {
                     .padding(.bottom)
                 }
             }
-            .frame(width: screen.size.width * 0.94, height: screen.size.height * 0.16)
+            .frame(width: screen.size.width * 0.94, height: 120)
             .background(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .padding(.horizontal)

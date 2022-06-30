@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -39,7 +39,6 @@
 		348027A82577FBD30083DD73 /* CategoryNameEditAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348027A72577FBD30083DD73 /* CategoryNameEditAlert.swift */; };
 		348F89F0255C856B00385B6B /* ActivityToSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89EF255C856B00385B6B /* ActivityToSave.swift */; };
 		349421F2280E0AFD00395276 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349421F1280E0AFD00395276 /* Activity+CoreDataClass.swift */; };
-		349421F7280E3B5300395276 /* SwiftUICharts in Frameworks */ = {isa = PBXBuildFile; productRef = 349421F6280E3B5300395276 /* SwiftUICharts */; };
 		34A1AFAE2741F20500610888 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34A1AFAD2741F20500610888 /* Assets.xcassets */; };
 		34A1AFB02742002400610888 /* OnboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1AFAF2742002400610888 /* OnboardView.swift */; };
 		34A1AFB2274206FB00610888 /* XDismissButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34A1AFB1274206FA00610888 /* XDismissButton.swift */; };
@@ -141,7 +140,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				349421F7280E3B5300395276 /* SwiftUICharts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +284,13 @@
 			path = StatsView;
 			sourceTree = "<group>";
 		};
+		3421FF31286D3E7F00CB0564 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		34DF370525534A2000232BCD = {
 			isa = PBXGroup;
 			children = (
@@ -293,6 +298,7 @@
 				34DF372725534A2400232BCD /* oneMinuteTests */,
 				34DF373225534A2400232BCD /* oneMinuteUITests */,
 				34DF370F25534A2000232BCD /* Products */,
+				3421FF31286D3E7F00CB0564 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -401,7 +407,6 @@
 			);
 			name = oneMinute;
 			packageProductDependencies = (
-				349421F6280E3B5300395276 /* SwiftUICharts */,
 			);
 			productName = oneMinute;
 			productReference = 34DF370E25534A2000232BCD /* oneMinute.app */;
@@ -475,7 +480,6 @@
 			);
 			mainGroup = 34DF370525534A2000232BCD;
 			packageReferences = (
-				349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */,
 			);
 			productRefGroup = 34DF370F25534A2000232BCD /* Products */;
 			projectDirPath = "";
@@ -722,6 +726,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"oneMinute/Preview Content\"";
 				DEVELOPMENT_TEAM = 5S28H6FD88;
 				ENABLE_PREVIEWS = YES;
@@ -731,10 +736,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.01;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blakepat.oneMinute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -744,6 +750,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_ASSET_PATHS = "\"oneMinute/Preview Content\"";
 				DEVELOPMENT_TEAM = 5S28H6FD88;
 				ENABLE_PREVIEWS = YES;
@@ -753,10 +760,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 1.01;
 				PRODUCT_BUNDLE_IDENTIFIER = com.blakepat.oneMinute;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
@@ -886,25 +894,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apppear/chartview";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		349421F6280E3B5300395276 /* SwiftUICharts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 349421F5280E3B5300395276 /* XCRemoteSwiftPackageReference "chartview" */;
-			productName = SwiftUICharts;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		34DF371C25534A2400232BCD /* oneMinute.xcdatamodeld */ = {

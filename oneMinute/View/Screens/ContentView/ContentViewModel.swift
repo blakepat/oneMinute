@@ -43,11 +43,11 @@ final class ContentViewModel: ObservableObject {
     
     
     func returnWeekFromNumber(_ num : Int, fetchedResults: FetchedResults<AddedActivity>) -> [AddedActivity] {
-        
-        let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
-        
-        return fetchedResults.filter({ $0.timestamp ?? Date() > dates[num].startOfWeek() && $0.timestamp ?? Date() < dates[num].endOfWeek})
-        
+        withAnimation(.linear(duration: 3)) {
+            let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
+            
+            return fetchedResults.filter({ $0.timestamp ?? Date() > dates[num].startOfWeek() && $0.timestamp ?? Date() < dates[num].endOfWeek})
+        }
     }
     
     

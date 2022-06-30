@@ -117,7 +117,7 @@ struct AddActivityView: View {
                     VStack(alignment: .leading) {
                         
                         Text("Time Started: ")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.headline)
                             .padding(.top, 8)
                             .padding(.leading, 8)
                         
@@ -145,15 +145,17 @@ struct AddActivityView: View {
                     VStack(alignment: .leading, spacing: 0) {
                     
                         Text("Notes: ")
-                            .font(.system(size: 24, weight: .semibold))
+                            .font(.headline)
                             .padding(.vertical, 0)
                         
                         TextField("notes...", text: $activityToSave.notes)
-                            .frame(width: screen.width - 16, height: screen.height / 7, alignment: .topLeading)
+                            .frame(width: screen.width - 16, height: screen.size.height > 800 ? screen.height / 7 : 40, alignment: .topLeading)
                             .contentShape(Rectangle())
                             .background(Color.black)
                             .foregroundColor(.white)
                     }
+                    
+                    Spacer()
                     
                 //MARK: - Confirm Activity - add to data set
                     ZStack {
@@ -210,7 +212,7 @@ struct AddActivityView: View {
 
                         } else {
                             //If activity and duration has been selected save and dismiss screen
-                            if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category"  {
+                            if activityToSave.minutes + activityToSave.hours != 0 && (activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category")  {
                                 //save activity
                                 viewModel.saveActivity(activity: activityToSave, date: selectedDate, favourite: true, viewContext: viewContext)
                                 //reset activity
@@ -315,7 +317,7 @@ struct TimeSelectorView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("Duration: ")
-                .font(.system(size: 20, weight: .semibold))
+                .font(.headline)
                 .padding(.vertical, 0)
                 .padding(.leading, 8)
             GeometryReader { geometry in
@@ -331,7 +333,7 @@ struct TimeSelectorView: View {
                             Text(self.hourArray[number]).tag(Float(number))
                         }
                     }
-                    .frame(width: 100, height: 100, alignment: .center)
+                    .frame(width: 100, height: 80, alignment: .center)
                     .clipped()
                     
                     //hour signafier
@@ -346,7 +348,7 @@ struct TimeSelectorView: View {
                             Text(self.minutesArray[number]).tag(Float(number))
                         }
                     }
-                    .frame(width: 100, height: 100, alignment: .center)
+                    .frame(width: 100, height: 80, alignment: .center)
                     .clipped()
                     
                     //minute signafier
@@ -356,7 +358,7 @@ struct TimeSelectorView: View {
                     Spacer()
                 }
             }
-            .frame(height: 120)
+            .frame(height: 80)
         }
     }
 }

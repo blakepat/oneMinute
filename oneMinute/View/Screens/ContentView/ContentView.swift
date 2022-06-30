@@ -57,12 +57,17 @@ struct ContentView: View {
         ZStack {
             //Background Color
             Color.black
-                .edgesIgnoringSafeArea(.all)
+//                .edgesIgnoringSafeArea(.all)
             
             VStack {
                 //MARK: - Week Toggle at top
-                WeekToggle(showLastWeek: $showLastWeek, dateSelected: $selectedDate)
-                    .padding(.top, 8)
+                if screen.size.height > 900 {
+                    WeekToggle(showLastWeek: $showLastWeek, dateSelected: $selectedDate)
+                        .padding(.top, 8)
+                }
+                
+                
+                Spacer()
                 
                 //MARK:- Calendar Button
                 HStack {
@@ -74,6 +79,8 @@ struct ContentView: View {
                     DatePicker("", selection: $selectedDate, displayedComponents: .date)
                         .datePickerStyle(CompactDatePickerStyle())
                         .frame(width: 100, height: 50, alignment: .leading)
+                        .colorMultiply(.white)
+                        .preferredColorScheme(.dark)
                         
                     Spacer()
 

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftUICharts
 
 struct StatsView: View {
     
@@ -85,94 +84,90 @@ struct StatsView: View {
                                             timeFrameChanger: $timeFrame)
                         .padding(.bottom, 8)
                         
-                        
-                        //MARK: - Date title
-                        HStack(spacing: 0) {
+                        if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
                             
-                            VStack(alignment: .leading) {
-                                DateTitleView(timeFrame: timeFrame, date: date)
-                                
-                                let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
-                                
-                                
-                                Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
-                                    .foregroundColor(.gray)
-                                    .font(.subheadline)
-                            }
-                            .padding(.leading)
-                            
-                            Spacer()
-                            //MARK: - Pie Chart View
-                            
-                            if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
-                                
-                                PieGraphView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
-                                             colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
-                                             names: [category1Name, category2Name, category3Name, category4Name],
-                                             isHours: $isHours,
-                                             backgroundColor: Color.black,
-                                             innerRadiusFraction: 0.6,
-                                             activeIndex: $activeIndex)
-                                
-                                    .frame(width: 220, height: 180)
-                                    .padding(.vertical, 8)
-                           
-                            } else {
-                                
-                                Text("No data to show for \nthis timeframe.")
-                                    .foregroundColor(.white)
-                                    .font(.title)
-                                    .multilineTextAlignment(.center)
-                                    .padding(.top)
-                                
-                            }
-                        }
-                        .frame(width: screen.size.width * 0.94)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .padding(.bottom, 8)
-                
-                        
-                        VStack(alignment: .leading, spacing: 8) {
-                            
-                            //List of top activities
-                            Text("Top \(activeIndex > -1 ? categoryNames[activeIndex] : "") Activities:")
-                                .fontWeight(.bold)
-                                .font(.title2)
-                                .foregroundColor(.minutesYellow)
-                                .listRowBackground(Color.black)
-                                .padding(8)
-                            
-                            ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
-                                
-                                HStack {
-                                    Text("\(index + 1): \(topItem.0.0)").bold().foregroundColor(getCategoryColor(topItem.1)) + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.0.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
+                            VStack {
+                                //MARK: - Date title
+                                HStack(spacing: 0) {
+                                    
+                                    VStack(alignment: .leading) {
+                                        DateTitleView(timeFrame: timeFrame, date: date)
                                         
+                                        let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
+                                        
+                                        
+                                        Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
+                                            .foregroundColor(.gray)
+                                            .font(.subheadline)
+                                    }
+                                    .padding(.leading)
                                     
                                     Spacer()
+                                    //MARK: - Pie Chart View
+                                    
+                                    
+                                        
+                                        PieGraphView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
+                                                     colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
+                                                     names: [category1Name, category2Name, category3Name, category4Name],
+                                                     isHours: $isHours,
+                                                     backgroundColor: Color.black,
+                                                     innerRadiusFraction: 0.6,
+                                                     activeIndex: $activeIndex)
+                                        
+                                            .frame(width: 220, height: 180)
+                                            .padding(.vertical, 8)
+                                   
+
                                 }
+                                .frame(width: screen.size.width * 0.94)
+                                .background(Color.black)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .padding(.bottom, 8)
+                        
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    
+                                    //List of top activities
+                                    Text("Top \(activeIndex > -1 ? categoryNames[activeIndex] : "") Activities:")
+                                        .fontWeight(.bold)
+                                        .font(.title2)
+                                        .foregroundColor(.minutesYellow)
+                                        .listRowBackground(Color.black)
+                                        .padding(8)
+                                    
+                                    ForEach(Array(zip(viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date).indices, viewModel.mostActivityLoggedDuring(timeFrame: timeFrame, results: allData, activityNames: fetchRequest, activeIndex: activeIndex, date: date))), id: \.0) { index, topItem in
+                                        
+                                        HStack {
+                                            Text("\(index + 1): \(topItem.0.0)").bold().foregroundColor(getCategoryColor(topItem.1)) + Text(" - \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: topItem.0.1, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours))")
+                                                
+                                            
+                                            Spacer()
+                                        }
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    
+                                    
+                                }
+                                .padding(.bottom, 8)
+                                .frame(width: screen.size.width * 0.94)
+                                .background(Color.black)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                                .padding(.bottom, 8)
+                                
+                                //Line chart
+
                             }
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
+                        } else {
                             
+                            Text("No data to show for \nthis timeframe.")
+                                .foregroundColor(.white)
+                                .font(.title)
+                                .multilineTextAlignment(.center)
+                                .padding(.top)
                             
                         }
-                        .padding(.bottom, 8)
-                        .frame(width: screen.size.width * 0.94)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .padding(.bottom, 8)
-                        
-                        //Line chart
-                        LineView(data: viewModel.getDataForLineChart(timeframe: timeFrame, activeIndex: activeIndex, data: allData, date: date),
-                                 title: "\(timeFrame == .week ? "Week" : timeFrame == .month ? "Month" : "All-Time") \(activeIndex > -1 ? categoryNames[activeIndex] : "Productivity") \(isHours ? "Hours" : "Minutes")",
-                                 style: ChartStyle(backgroundColor: .black, accentColor: .minutesYellow, gradientColor: (activeIndex > -1 ? GradientColor(start: getCategoryColor(categories[activeIndex]), end: getCategoryColor(categories[activeIndex])) : GradientColor(start: .minutesYellow, end: Color.minutesYellow)), textColor: .white, legendTextColor: .gray, dropShadowColor: .clear))
-
-                        .padding(.horizontal)
-                        .padding(.vertical, 2)
-                        .frame(width: screen.size.width * 0.94,height: 400)
-                        .background(Color.black)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
                         
                     }
                 }
@@ -356,3 +351,15 @@ struct DateTitleView: View {
     
 }
 
+
+
+
+//LineView(data: viewModel.getDataForLineChart(timeframe: timeFrame, activeIndex: activeIndex, data: allData, date: date),
+//         title: "\(timeFrame == .week ? "Week" : timeFrame == .month ? "Month" : "All-Time") \(activeIndex > -1 ? categoryNames[activeIndex] : "Productivity") \(isHours ? "Hours" : "Minutes")",
+//         style: ChartStyle(backgroundColor: .black, accentColor: .minutesYellow, gradientColor: (activeIndex > -1 ? GradientColor(start: getCategoryColor(categories[activeIndex]), end: getCategoryColor(categories[activeIndex])) : GradientColor(start: .minutesYellow, end: Color.minutesYellow)), textColor: .white, legendTextColor: .gray, dropShadowColor: .clear))
+//
+//.padding(.horizontal)
+//.padding(.vertical, 2)
+//.frame(width: screen.size.width * 0.94,height: 400)
+//.background(Color.black)
+//.clipShape(RoundedRectangle(cornerRadius: 16))

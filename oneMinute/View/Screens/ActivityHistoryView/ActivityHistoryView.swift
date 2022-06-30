@@ -317,17 +317,22 @@ struct RecentActivityLog: View {
             }
             
             //Activity Length
-            HStack {
-                Text("\(timeUnitName(isHours: isHours)): \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activity.duration, timeUnitIsHours: isHours)))")
+            HStack(spacing: 0) {
+                Text("\(timeUnitName(isHours: isHours))").fontWeight(.semibold)
+                
+                Text(": \(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activity.duration, timeUnitIsHours: isHours)))")
                 
                 Spacer()
             }
             
             //Activity Notes
-            HStack {
-                Text("Notes: \(activity.notes ?? "none")")
-                
-                Spacer()
+            if activity.notes != nil && !(activity.notes ?? "").isEmpty {
+                HStack {
+                    
+                    Text("Notes: \(activity.notes ?? "none")")
+                    
+                    Spacer()
+                }
             }
         }
         .padding(4)

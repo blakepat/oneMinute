@@ -23,7 +23,7 @@ struct DetailedDayView: View {
     
     private let dateFormatter: DateFormatter = {
         var df = DateFormatter()
-        df.dateFormat = "EEEE, MMM d, yyyy"
+        df.dateFormat = "EEE, MMM d, yyyy"
         return df
     }()
     

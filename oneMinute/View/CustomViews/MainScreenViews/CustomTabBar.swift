@@ -107,6 +107,7 @@ struct CustomTabBar: View {
             }
             Spacer()
         }
+        .frame(height: 40)
     }
 
 }

@@ -16,17 +16,23 @@ struct BarChart: View {
     var weekFourData: [AddedActivity]
     @Binding var isHours: Bool
     let capsuleWidth: CGFloat = screen.size.width * 0.80 - 60
-    let capsuleHeight: CGFloat = 40
+    let capsuleHeight: CGFloat = 36
+    
+    @State var animater = false
 
+    
     let dateFormatter: DateFormatter = {
         var df = DateFormatter()
         df.dateFormat = "MMM d"
         return df
     }()
     
+
     let dates = [Date(), Date().addingTimeInterval(-60*60*24*7), Date().addingTimeInterval(-60*60*24*14), Date().addingTimeInterval(-60*60*24*21)]
     
+    
     var monthData: [[Float]] { [weekOneData, weekTwoData, weekThreeData, weekFourData].map { week in
+        
         var data = [Float]()
             for categoryName in categories {
                 let total = week.filter({ $0.category == categoryName} ).reduce(0) { $0 + $1.duration }
@@ -41,10 +47,10 @@ struct BarChart: View {
         
         //array of the totals of all categories per week
         let totalSums: [Float] = [
-            monthData[0].reduce(0, +),
-            monthData[1].reduce(0, +),
-            monthData[2].reduce(0, +),
-            monthData[3].reduce(0, +)
+                monthData[0].reduce(0, +),
+                monthData[1].reduce(0, +),
+                monthData[2].reduce(0, +),
+                monthData[3].reduce(0, +)
         ]
         
         
@@ -65,6 +71,7 @@ struct BarChart: View {
                         //Date text
                         Text("\(date.endOfWeek, formatter: dateFormatter) -\n\(date.startOfWeek(), formatter: dateFormatter)")
                             .foregroundColor(.white)
+                            .minimumScaleFactor(0.65)
                             .font(.system(size: 13, weight: .semibold))
                             .frame(width: 58, height: capsuleHeight + 8, alignment: .center)
                             .padding(.trailing, 4)
@@ -87,10 +94,17 @@ struct BarChart: View {
                                         let hasAddedActivity = totalSums[dateIndex] > 0
                                         let categoryCapsuleWidth: Float = (Float(capsuleWidth) / Float(totalSums[dateIndex])) * Float(totalSums[dateIndex]) / highestTotal
                                         let figure: Float = (monthData[dateIndex][index] * (hasAddedActivity ? ((Float(capsuleWidth) / totalSums[dateIndex]) * (totalSums[dateIndex] / highestTotal)) : 0))
-                                    
+                                
+                                        
                                         if hasAddedActivity {
-                                            Capsule().frame(width: CGFloat(monthData[dateIndex][index] * (hasAddedActivity ? categoryCapsuleWidth : 0)), height: capsuleHeight, alignment: .leading)
+                                            Capsule().frame(
+                                                width: CGFloat(monthData[dateIndex][index] * (hasAddedActivity ? categoryCapsuleWidth : 0)),
+                                                height: capsuleHeight,
+                                                alignment: .leading
+                                                                    )
                                                 .foregroundColor(Color("\(category)Color"))
+                                                .offset(x: animater ? 0 : -100)
+                                                .animation(.easeOut(duration: 2))
                                                 .overlay(Text(hasAddedActivity ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
                                                             .opacity(
                                                                 ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
@@ -130,6 +144,9 @@ struct BarChart: View {
                     selectedDate = date.startOfWeek()
                 }
             }
+        }
+        .onAppear {
+            animater = true
         }
     }
 }
