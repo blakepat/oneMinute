@@ -10,16 +10,16 @@ import SwiftUI
 struct DetailedDayView: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) var viewContext
+    
     @StateObject private var viewModel = DetailedDayViewModel()
+    @StateObject private var coreDataManager = CoreDataManager()
+    @ObservedObject var activityToSave: ActivityToSave
     
     var dailyData: [AddedActivity]
-    
     @Binding var showEditScreen: Bool
-    @State var showActivitySelector: Bool = false
-    @ObservedObject var activityToSave: ActivityToSave
     @Binding var date: Date
-    @State private var itemToDelete = AddedActivity()
-    @State private var showCategoryNameEditor = false
+    
     
     private let dateFormatter: DateFormatter = {
         var df = DateFormatter()
@@ -33,7 +33,6 @@ struct DetailedDayView: View {
     @Binding var category3Name: String
     @Binding var category4Name: String
     @Binding var isHours: Bool
-    
     @Binding var activeSheet: ActiveSheet?
     
     var body: some View {
@@ -55,10 +54,10 @@ struct DetailedDayView: View {
                                         data: data,
                                         showEditScreen: $showEditScreen,
                                         activityToEdit: activityToSave,
-                                        itemToDelete: $itemToDelete,
-                                        showActivitySelector: $showActivitySelector,
+                                        itemToDelete: $viewModel.itemToDelete,
+                                        showActivitySelector: $viewModel.showActivitySelector,
                                         activityToSave: activityToSave,
-                                        showCategoryNameEditor: $showCategoryNameEditor,
+                                        showCategoryNameEditor: $viewModel.showCategoryNameEditor,
                                         category1Name: $category1Name,
                                         category2Name: $category2Name,
                                         category3Name: $category3Name,
@@ -72,7 +71,7 @@ struct DetailedDayView: View {
                                 }
                                 .contentShape(Rectangle())
                                 .onTapGesture {
-                                    itemToDelete = data as AddedActivity
+                                    viewModel.itemToDelete = data as AddedActivity
                                     
                                     activityToSave.activityName = data.name ?? "Unknown Activity"
                                     activityToSave.category = data.category ?? "category0"
@@ -84,15 +83,15 @@ struct DetailedDayView: View {
                                 }
                                 .sheet(isPresented: $showEditScreen, onDismiss: {
                                     self.showEditScreen = false
-                                    self.showActivitySelector = false
+                                    viewModel.showActivitySelector = false
                                     resetActivity(activityToSave: activityToSave)
                                 }) {
                                     //MARK: - Add activity view
-                                    AddActivityView(showActivitySelector: $showActivitySelector,
+                                    AddActivityView(showActivitySelector: $viewModel.showActivitySelector,
                                                     showAddActivity: $showEditScreen,
                                                     selectedDate: $date,
-                                                    itemToDelete: $itemToDelete,
-                                                    showingNameEditor: $showCategoryNameEditor,
+                                                    itemToDelete: $viewModel.itemToDelete,
+                                                    showingNameEditor: $viewModel.showCategoryNameEditor,
                                                     activityToSave: activityToSave,
                                                     isEditScreen: true,
                                                     categorySelected: true,
@@ -102,6 +101,9 @@ struct DetailedDayView: View {
                                                     category4Name: $category4Name,
                                                     activeSheet: $activeSheet)
                                 }
+                            }
+                            .onDelete { index in
+                                viewModel.deleteActivity(section: dailyCategoryData, offsets: index, viewContext: viewContext)
                             }
                         }
                     }

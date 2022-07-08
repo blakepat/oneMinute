@@ -27,15 +27,17 @@ struct SummaryView: View {
             
             VStack {
                 HStack {
-                    HStack {
-                        Text("Total \(timeFrameStringGetter(timeFrameChanger).capitalized) \(timeUnitName(isHours: isHours)): \(timeConverter(time: totalSummary(timeFrame: timeFrameChanger, results: allData), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundColor(Color("defaultYellow"))
-                        Text("")
-                            .font(.system(size: 20))
+                    HStack(spacing: 0) {
+                        Text("Total \(timeFrameStringGetter(timeFrameChanger).capitalized) \(timeUnitName(isHours: isHours)): ")
+                            .font(.system(size: 22, weight: .bold))
+                            .foregroundColor(.minutesYellow)
+                        Text("\(timeConverter(time: totalSummary(timeFrame: timeFrameChanger, results: allData), timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                            .font(.system(size: 22, weight: .semibold))
+                            .foregroundColor(.minutesYellow)
                     }
                 }
-                .padding(.all, 6)
+                .padding(6)
+                .padding(.top, 4)
                 .foregroundColor(.white)
                 
                 ZStack {

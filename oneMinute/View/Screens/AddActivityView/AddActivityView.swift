@@ -34,12 +34,7 @@ struct AddActivityView: View {
     @Binding var category3Name: String
     @Binding var category4Name: String
     
-    //Local Items
-    @State private var activityName = "Select Category..."
-    @State private var viewState = CGSize.zero
-    @State private var showingAlert = false
-    @State private var showCalendar = false
-    @State var activityFilter = ActivityFilter.all
+
 
     @Binding var activeSheet: ActiveSheet?
     var body: some View {
@@ -71,7 +66,7 @@ struct AddActivityView: View {
                                     .onTapGesture(count: 1, perform: {
                                         activityToSave.category = category
                                         self.categorySelected = true
-                                        self.activityName = "Select Activity..."
+                                        viewModel.activityName = "Select Activity..."
                                         self.activityToSave.activityName = "Select Activity..."
                                     })
                             }
@@ -97,7 +92,7 @@ struct AddActivityView: View {
                                 //MARK: - ActivitySelectorView
                                 .sheet(isPresented: $showActivitySelector, onDismiss: {
                                     self.showActivitySelector = false
-                                    self.activityName = self.activityToSave.activityName
+                                    viewModel.activityName = self.activityToSave.activityName
                                     print(activityToSave.activityName)
                                     
                                 })
@@ -107,7 +102,7 @@ struct AddActivityView: View {
                                                          activityToSave: activityToSave,
                                                          allActivities: activities,
                                                          categoryNames: categoryNames,
-                                                         activityFilter: $activityFilter
+                                                         activityFilter: $viewModel.activityFilter
                                     ).environment(\.managedObjectContext, self.viewContext)
                                 }
                         }
@@ -188,9 +183,9 @@ struct AddActivityView: View {
                             
                         //if missing info show alert
                         } else {
-                            self.showingAlert = true
+                            viewModel.showingAlert = true
                         }
-                    }.alert(isPresented: $showingAlert) {
+                    }.alert(isPresented: $viewModel.showingAlert) {
                         Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                     }
                     
@@ -223,11 +218,11 @@ struct AddActivityView: View {
                                 self.activeSheet = nil
                             //if missing info show alert
                             } else {
-                                self.showingAlert = true
+                                viewModel.showingAlert = true
                             }
                         }
                    
-                    }.alert(isPresented: $showingAlert) {
+                    }.alert(isPresented: $viewModel.showingAlert) {
                         Alert(title: Text("Form Not Completed"), message: Text("Please ensure you have selected an Activity and Duration, Thank you!"), dismissButton: .cancel(Text("Okay")))
                     }
                     

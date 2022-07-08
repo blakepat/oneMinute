@@ -16,6 +16,7 @@ struct SettingsView: View {
     @Environment(\.presentationMode)  var presentationMode
     
     @Binding var isHours: Bool
+    @Binding var startWeekOnMonday: Bool
     @State private var showDeleteAllAlert = false
     
     var body: some View {
@@ -48,6 +49,19 @@ struct SettingsView: View {
                             isHours.toggle()
                             UserDefaults.standard.setValue("\(isHours)", forKey: "isHours")
                         }
+                    
+                    Text("\(startWeekOnMonday ? "Start Week On Sunday" : "Start Week On Monday")")
+                        .foregroundColor(.white)
+                        .frame(width: 280, height: 70, alignment: .center)
+                        .background(Color.minutesBackgroundCharcoal)
+                        .cornerRadius(10)
+                        .onTapGesture {
+                            startWeekOnMonday.toggle()
+                            UserDefaults.standard.setValue("\(startWeekOnMonday)", forKey: "startWeekOnMonday")
+                        }
+                    
+                    
+                    
                     
                     //rewatch onboarding
                     Text("See Intro Screen on Next Open")

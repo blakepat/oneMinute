@@ -11,6 +11,14 @@ import SwiftUI
 
 
 
+
+func getCalendarForCorrectWeekday() -> Calendar {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.firstWeekday = UserDefaults.standard.bool(forKey: "startWeekOnMonday") ? 2 : 1
+    print("⚠️")
+    return calendar
+}
+
 //Mark: - Universal Variables
 let screen = UIScreen.main.bounds
 
@@ -84,6 +92,7 @@ func timeConverter(time: Float, timeUnitIsHours: Bool) -> Float {
     }
     
 }
+
 
 //Get string for current time unit
 func timeUnitName(isHours: Bool) -> String {

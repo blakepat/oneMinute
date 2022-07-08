@@ -65,7 +65,7 @@ struct BarChart: View {
                 ZStack {
                     
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .foregroundColor(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
+                        .foregroundColor(selectedDate <= date && selectedDate >= date.addingTimeInterval(-60*60*24*7) ? .minutesBackgroundCharcoal :  .minutesBackgroundBlack)
                         
                     HStack(alignment: .center, spacing: 0) {
                         //Date text
@@ -106,11 +106,15 @@ struct BarChart: View {
                                                 .offset(x: animater ? 0 : -100)
                                                 .animation(.easeOut(duration: 2))
                                                 .overlay(Text(hasAddedActivity ? "\(timeConverter(time: monthData[dateIndex][index], timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))" : "")
+                                                    .fontWeight(.bold)
+                                                    .minimumScaleFactor(0.75)
+                                                    .lineLimit(1)
                                                             .opacity(
-                                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 16))))
+                                                                ((Float("\(Int(monthData[dateIndex][index]))".widthOfString(usingFont: UIFont.systemFont(ofSize: 22))))
                                                                     > figure
                                                                 )
                                                                 ? 0 : 1))
+                                                
                                                 
                                         }
                                 }
@@ -121,11 +125,10 @@ struct BarChart: View {
                                 if totalSums[dateIndex] == 0 {
                                     Capsule()
                                         .frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
-                                        .foregroundColor(.minutesBackgroundCharcoal)
+                                        .foregroundColor(selectedDate <= date && selectedDate >= date.addingTimeInterval(-60*60*24*7) ? .minutesBackgroundBlack : .minutesBackgroundCharcoal)
                                 }
-                                
                             }
-                            .background(Color.minutesBackgroundCharcoal)
+                            .background(selectedDate <= date && selectedDate >= date.addingTimeInterval(-60*60*24*7) ? Color.minutesBackgroundBlack :  Color.minutesBackgroundCharcoal)
                             .frame(width: capsuleWidth, height: capsuleHeight, alignment: .center)
                             .clipShape(Capsule())
                             .clipped()

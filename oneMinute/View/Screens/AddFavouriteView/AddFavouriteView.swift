@@ -12,6 +12,7 @@ struct AddFavouriteView: View {
     @StateObject private var viewModel = AddFavouriteViewModel()
     
     @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.presentationMode) var presentationMode
     
     //Passed Items
     @ObservedObject var activityToSave: ActivityToSave
@@ -25,6 +26,9 @@ struct AddFavouriteView: View {
     @Binding var category4Name: String
     
     @Binding var activeSheet: ActiveSheet?
+    
+    
+    @State var save = false
     
     var body: some View {
         
@@ -49,7 +53,19 @@ struct AddFavouriteView: View {
                                 .onTapGesture {
                                     self.showAddFavourite = false
                                     self.activeSheet = nil
-                                    viewModel.saveActivity(activity: favourite, notes: "", date: Date(), viewContext: viewContext)
+                                    viewModel.favouriteToSave = favourite
+                                    viewModel.saveActivity(viewContext: viewContext)
+                                }
+                                .contextMenu {
+                                    Button {
+//                                        self.showAddFavourite = false
+//                                        self.activeSheet = nil
+                                        viewModel.favouriteToSave = favourite
+                                        viewModel.addNotesAlertView(activity: favourite)
+                                    } label: {
+                                        Text("Save with notes")
+                                            .bold()
+                                    }
                                 }
                             }
                             .onDelete{ viewModel.deleteFavourite(at: $0, activities: activities, viewContext: viewContext) }
@@ -57,6 +73,12 @@ struct AddFavouriteView: View {
             }
             .listStyle(GroupedListStyle())
         }
+        .onChange(of: save) { _ in
+            viewModel.saveActivity(viewContext: viewContext)
+            presentationMode.wrappedValue.dismiss()
+        }
+        .notesTextFieldAlert(isShowing: $viewModel.isShowingSaveAlert, text: $viewModel.notes, saveActivity: $save, title: "Save Activity with notes:")
+        
     }
 }
 

@@ -30,6 +30,9 @@
 		3414CFFD26DEEB0A00887A7B /* ActivityHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFFC26DEEB0A00887A7B /* ActivityHistoryViewModel.swift */; };
 		3414CFFF26DFEC0F00887A7B /* ActivityNameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */; };
 		3414D00226E0A5C300887A7B /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414D00126E0A5C300887A7B /* StatsViewModel.swift */; };
+		3421FF392875270900CB0564 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF382875270900CB0564 /* CoreDataManager.swift */; };
+		3421FF3B287684EF00CB0564 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3A287684EF00CB0564 /* AlertItem.swift */; };
+		3421FF3D2876860400CB0564 /* NotesTextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3C2876860400CB0564 /* NotesTextFieldAlert.swift */; };
 		342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */; };
 		342A2DA826B9ECBF00F7FBD5 /* PieGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */; };
 		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
@@ -100,6 +103,9 @@
 		3414CFFC26DEEB0A00887A7B /* ActivityHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryViewModel.swift; sourceTree = "<group>"; };
 		3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityNameView.swift; sourceTree = "<group>"; };
 		3414D00126E0A5C300887A7B /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsViewModel.swift; sourceTree = "<group>"; };
+		3421FF382875270900CB0564 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		3421FF3A287684EF00CB0564 /* AlertItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertItem.swift; sourceTree = "<group>"; };
+		3421FF3C2876860400CB0564 /* NotesTextFieldAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesTextFieldAlert.swift; sourceTree = "<group>"; };
 		342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieSliceView.swift; sourceTree = "<group>"; };
 		342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraphView.swift; sourceTree = "<group>"; };
 		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
@@ -190,6 +196,7 @@
 				342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */,
 				342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */,
 				3414CFFE26DFEC0F00887A7B /* ActivityNameView.swift */,
+				3421FF3C2876860400CB0564 /* NotesTextFieldAlert.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -203,6 +210,8 @@
 				3414CFC226D81B5100887A7B /* View+Ext.swift */,
 				3414CFDA26D82C9C00887A7B /* DataManagementSupport.swift */,
 				3414CFBF26D819E800887A7B /* Date+Ext.swift */,
+				3421FF382875270900CB0564 /* CoreDataManager.swift */,
+				3421FF3A287684EF00CB0564 /* AlertItem.swift */,
 			);
 			path = SupportItems;
 			sourceTree = "<group>";
@@ -320,7 +329,6 @@
 				3414CFC126D819F000887A7B /* SupportItems */,
 				34DF374425534A4200232BCD /* View */,
 				34DF374525534A4A00232BCD /* Model */,
-				34DF374625534A5600232BCD /* ViewModel */,
 				34DF371F25534A2400232BCD /* Info.plist */,
 				34DF371A25534A2400232BCD /* Persistence.swift */,
 				34DF371C25534A2400232BCD /* oneMinute.xcdatamodeld */,
@@ -368,18 +376,11 @@
 		34DF374525534A4A00232BCD /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				348F89EF255C856B00385B6B /* ActivityToSave.swift */,
 				347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */,
 				349421F1280E0AFD00395276 /* Activity+CoreDataClass.swift */,
 			);
 			path = Model;
-			sourceTree = "<group>";
-		};
-		34DF374625534A5600232BCD /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				348F89EF255C856B00385B6B /* ActivityToSave.swift */,
-			);
-			path = ViewModel;
 			sourceTree = "<group>";
 		};
 		34DF375425534AE200232BCD /* Supporting Files */ = {
@@ -532,6 +533,7 @@
 				344F061A260C2B6200BFAECE /* ActivityHistoryView.swift in Sources */,
 				34031962261D8EFC0047CBAD /* SupportItems.swift in Sources */,
 				3414CFD726D825B400887A7B /* DetailedDayCategorySectionItem.swift in Sources */,
+				3421FF392875270900CB0564 /* CoreDataManager.swift in Sources */,
 				3414CFFA26DEDDF400887A7B /* AddFavouriteViewModel.swift in Sources */,
 				342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */,
 				34137D5E26B2096600B6298C /* StatsView.swift in Sources */,
@@ -559,6 +561,7 @@
 				34DF374C25534A8600232BCD /* AddActivityView.swift in Sources */,
 				347983B92554B32400823F39 /* FilteredList.swift in Sources */,
 				3414CFD126D8241800887A7B /* WeekToggle.swift in Sources */,
+				3421FF3B287684EF00CB0564 /* AlertItem.swift in Sources */,
 				3414CFCD26D8238800887A7B /* DayScrollView.swift in Sources */,
 				3414CFFF26DFEC0F00887A7B /* ActivityNameView.swift in Sources */,
 				34DF374F25534A8600232BCD /* ActivitySelectorView.swift in Sources */,
@@ -568,6 +571,7 @@
 				3414CFF726DED24100887A7B /* AddAcitivityViewModel.swift in Sources */,
 				3414D00226E0A5C300887A7B /* StatsViewModel.swift in Sources */,
 				3414CFC326D81B5100887A7B /* View+Ext.swift in Sources */,
+				3421FF3D2876860400CB0564 /* NotesTextFieldAlert.swift in Sources */,
 				34137D6326B210BB00B6298C /* SettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

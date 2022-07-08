@@ -221,7 +221,7 @@ struct ContentView: View {
                                     .environment(\.managedObjectContext, viewContext)
                                 
                             case .fifth:
-                                SettingsView(isHours: $viewModel.isHours)
+                                SettingsView(isHours: $viewModel.isHours, startWeekOnMonday: $viewModel.startWeekOnMonday)
                                     .environment(\.managedObjectContext, viewContext)
                             }
                            })
@@ -236,6 +236,9 @@ struct ContentView: View {
         })
         .onAppear {
             viewModel.showOnboardView()
+        }
+        .onChange(of:  viewModel.startWeekOnMonday) { _ in
+            
         }
     }
     

@@ -28,21 +28,29 @@ extension Date {
 
 extension Calendar {
     func isDayInCurrentWeek(date: Date) -> Bool? {
-        let currentComponents = Calendar.current.dateComponents([.weekOfYear], from: Date())
-        let dateComponents = Calendar.current.dateComponents([.weekOfYear], from: date)
+        
+        
+        let currentComponents = getCalendarForCorrectWeekday().dateComponents([.weekOfYear], from: Date())
+        let dateComponents = getCalendarForCorrectWeekday().dateComponents([.weekOfYear], from: date)
         guard let currentWeekOfYear = currentComponents.weekOfYear, let dateWeekOfYear = dateComponents.weekOfYear else { return nil }
         return currentWeekOfYear == dateWeekOfYear
     }
 }
 
 extension Calendar {
-    static let gregorian = Calendar(identifier: .gregorian)
+    
+    @State static var gregorian: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.firstWeekday = UserDefaults.standard.bool(forKey: "startWeekOnMonday") ? 2 : 1
+        print("⚠️")
+        return calendar
+    }()
 }
 
 
 extension Date {
-    func startOfWeek(using calendar: Calendar = .gregorian) -> Date {
-        calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
+    func startOfWeek() -> Date {
+        getCalendarForCorrectWeekday().date(from: getCalendarForCorrectWeekday().dateComponents([.yearForWeekOfYear, .weekOfYear], from: self))!
     }
 }
 
@@ -53,7 +61,7 @@ extension Date {
 
     var startOfMonth: Date {
 
-        let calendar = Calendar(identifier: .gregorian)
+        let calendar = getCalendarForCorrectWeekday()
         let components = calendar.dateComponents([.year, .month], from: self)
 
         return  calendar.date(from: components)!
@@ -70,14 +78,14 @@ extension Date {
         var components = DateComponents()
         components.month = 1
         components.second = -1
-        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfMonth)!
+        return getCalendarForCorrectWeekday().date(byAdding: components, to: startOfMonth)!
     }
     
     var endOfWeek: Date {
         var components = DateComponents()
         components.weekOfYear = 1
         components.second = -1
-        return Calendar(identifier: .gregorian).date(byAdding: components, to: startOfWeek())!
+        return getCalendarForCorrectWeekday().date(byAdding: components, to: startOfWeek())!
         
         
     }

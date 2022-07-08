@@ -44,6 +44,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
             userDefaults.setValue("Work", forKey: "category4Name")
             userDefaults.setValue(false, forKey: "isHours")
             userDefaults.setValue(false, forKey: "hasSeenOnboardView")
+            userDefaults.setValue(false, forKey: "startWeekOnMonday")
+            
             
             //preload activity list data
             guard let urlPath = Bundle.main.url(forResource: "PreloadedData", withExtension: "plist") else {

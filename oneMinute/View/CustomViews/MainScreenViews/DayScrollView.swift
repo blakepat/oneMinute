@@ -19,6 +19,15 @@ struct DayScrollView: View {
     @Binding var category4Name: String
     @Binding var isHours: Bool
     
+    lazy var weekToDisplay: [Date] = {
+        
+        return Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.endOfWeek)
+    }()
+    
+    func getDates() -> [Date] {
+        var mutableSelf = self
+        return mutableSelf.weekToDisplay
+    }
     
     @StateObject var scrollObject = ScrollToModel()
     
@@ -32,15 +41,17 @@ struct DayScrollView: View {
     
     @Binding var activeSheet: ActiveSheet?
     
+
+    
     var body: some View {
         
-        let weekToDisplay = Date.dates(from: selectedDate.startOfWeek(), to: selectedDate.endOfWeek)
+        
         
         ScrollView(.horizontal) {
             ScrollViewReader { sp in
                 HStack(spacing: 4) {
                     //Cycle through days of either last week or this week
-                    ForEach((weekToDisplay), id: \.self) { day in
+                    ForEach((getDates()), id: \.self) { day in
                         GeometryReader { geometry in
                             VStack{
                                 HStack {
@@ -85,9 +96,9 @@ struct DayScrollView: View {
                         }) {
                             //MARK: - Show DetailedDayView
                             DetailedDayView(
+                                activityToSave: activityToSave,
                                 dailyData:  weekOnlyData,
                                 showEditScreen: $showEditScreen,
-                                activityToSave: activityToSave,
                                 date: $selectedDate,
                                 category1Name: $category1Name,
                                 category2Name: $category2Name,
@@ -102,15 +113,15 @@ struct DayScrollView: View {
                     }
                 }
                 .onReceive(scrollObject.$direction) { action in
-                                        guard !weekToDisplay.isEmpty else { return }
+                                        guard !getDates().isEmpty else { return }
                                         withAnimation {
                                             switch action {
                                                 case .top:
-                                                    sp.scrollTo(weekToDisplay.first!, anchor: .leading)
+                                                    sp.scrollTo(getDates().first!, anchor: .leading)
                                                 case .end:
-                                                    sp.scrollTo(weekToDisplay.last!, anchor: .trailing)
+                                                    sp.scrollTo(getDates().last!, anchor: .trailing)
                                                 case .point(let point):
-                                                    sp.scrollTo(weekToDisplay[point], anchor: .center)
+                                                    sp.scrollTo(getDates()[point], anchor: .center)
                                                 default:
                                                     return
                                             }

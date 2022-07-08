@@ -12,6 +12,14 @@ final class AddActivityViewModel: ObservableObject {
     
     @Environment(\.managedObjectContext) private var viewContext
     
+    //Local Items
+    @Published var activityName = "Select Category..."
+    @Published var viewState = CGSize.zero
+    @Published var showingAlert = false
+    @Published var showCalendar = false
+    @Published var activityFilter = ActivityFilter.all
+    
+    
     //MARK: - Reset Activity Function
     func resetActivity(_ activityToSave: ActivityToSave) {
         activityToSave.activityName = "Select Category"
