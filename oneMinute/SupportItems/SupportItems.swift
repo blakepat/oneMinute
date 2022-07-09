@@ -15,7 +15,6 @@ import SwiftUI
 func getCalendarForCorrectWeekday() -> Calendar {
     var calendar = Calendar(identifier: .gregorian)
     calendar.firstWeekday = UserDefaults.standard.bool(forKey: "startWeekOnMonday") ? 2 : 1
-    print("⚠️")
     return calendar
 }
 
@@ -144,6 +143,14 @@ struct dayOfWeek: Identifiable {
     
 }
 
+func isSameDay(date1: Date, date2: Date) -> Bool {
+    let diff = Calendar.current.dateComponents([.day], from: date1, to: date2)
+    if diff.day == 0 {
+        return true
+    } else {
+        return false
+    }
+}
 
 //Category filter functions
 enum Category {

@@ -6,9 +6,22 @@
 //
 
 import SwiftUI
+import Foundation
 
 
 final class StatsViewModel: ObservableObject {
+    
+    func getDatesForTimeFrame(timeFrame: TimeFrame, date: Date, activities: [AddedActivity]) -> [Date] {
+        
+        if timeFrame == .week {
+            return Date.dates(from: date.startOfWeek(), to: date.endOfWeek)
+        } else if timeFrame == .month {
+            return Date.dates(from: date.startOfMonth, to: date.endOfMonth)
+        } else {
+            let sortedActivities = activities.sorted(by: { $0.timestamp ?? Date() < $1.timestamp ?? Date() })
+            return Date.dates(from: sortedActivities.first?.timestamp ?? Date(), to: sortedActivities.last?.timestamp ?? Date())
+        }
+    }
     
     func getActivitiesForThis(timeFrame: TimeFrame, activeIndex: Int, data: FetchedResults<AddedActivity>, date: Date) -> [AddedActivity] {
         return data.filter({
@@ -28,7 +41,7 @@ final class StatsViewModel: ObservableObject {
                 } else if timeFrame == TimeFrame.month {
                     return $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth  && $0.category == categories[activeIndex]
                 } else {
-                    return  $0.category == categories[activeIndex]
+                    return $0.category == categories[activeIndex]
                 }
             }
         })
@@ -45,7 +58,7 @@ final class StatsViewModel: ObservableObject {
             
             for day in daysOfWeek {
                 
-                let daysActivities = activities.filter({ $0.timestamp ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
+                let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
                 
                 totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
             }
@@ -53,26 +66,23 @@ final class StatsViewModel: ObservableObject {
             let daysOfMonth = dates(from: date.startOfMonth, to: date.endOfMonth)
             
             for day in daysOfMonth {
-                
-                let daysActivities = activities.filter({ $0.timestamp ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
-                
+                let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
                 totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
             }
         } else {
             
-            let oldestActivity = activities.max(by: { $0.timestamp ?? Date() > $1.timestamp ?? Date() })
+            let oldestActivity = activities.max(by: { $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > $1.timestamp ?? Date() })
             
             let monthsOfYear = dates(from: oldestActivity?.timestamp ?? Date(), to: date.endOfMonth) // get oldest activities and do months from there until end of current month
             
             for month in monthsOfYear {
                 
-                let monthActivities = activities.filter({ $0.timestamp ?? Date() > month.startOfMonth && $0.timestamp ?? Date() < month.endOfMonth})
+                let monthActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > month.startOfMonth && $0.timestamp ?? Date() < month.endOfMonth})
                 
                 totalsToReturn.append(Double(monthActivities.reduce(0) { $0 + $1.duration}))
             }
         }
-        
-       return totalsToReturn
+        return totalsToReturn
     }
     
     

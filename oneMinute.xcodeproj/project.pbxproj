@@ -33,6 +33,7 @@
 		3421FF392875270900CB0564 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF382875270900CB0564 /* CoreDataManager.swift */; };
 		3421FF3B287684EF00CB0564 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3A287684EF00CB0564 /* AlertItem.swift */; };
 		3421FF3D2876860400CB0564 /* NotesTextFieldAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3C2876860400CB0564 /* NotesTextFieldAlert.swift */; };
+		3421FF3F2878EB4400CB0564 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3E2878EB4400CB0564 /* ChartView.swift */; };
 		342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */; };
 		342A2DA826B9ECBF00F7FBD5 /* PieGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */; };
 		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
@@ -106,6 +107,7 @@
 		3421FF382875270900CB0564 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		3421FF3A287684EF00CB0564 /* AlertItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertItem.swift; sourceTree = "<group>"; };
 		3421FF3C2876860400CB0564 /* NotesTextFieldAlert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesTextFieldAlert.swift; sourceTree = "<group>"; };
+		3421FF3E2878EB4400CB0564 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieSliceView.swift; sourceTree = "<group>"; };
 		342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraphView.swift; sourceTree = "<group>"; };
 		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 			children = (
 				34137D5D26B2096600B6298C /* StatsView.swift */,
 				3414D00126E0A5C300887A7B /* StatsViewModel.swift */,
+				3421FF3E2878EB4400CB0564 /* ChartView.swift */,
 			);
 			path = StatsView;
 			sourceTree = "<group>";
@@ -535,6 +538,7 @@
 				3414CFD726D825B400887A7B /* DetailedDayCategorySectionItem.swift in Sources */,
 				3421FF392875270900CB0564 /* CoreDataManager.swift in Sources */,
 				3414CFFA26DEDDF400887A7B /* AddFavouriteViewModel.swift in Sources */,
+				3421FF3F2878EB4400CB0564 /* ChartView.swift in Sources */,
 				342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */,
 				34137D5E26B2096600B6298C /* StatsView.swift in Sources */,
 				3414CFC526D81B7200887A7B /* String+Ext.swift in Sources */,

@@ -65,6 +65,7 @@ struct ActivityHistoryView: View {
                                     .onTapGesture(count: /*@START_MENU_TOKEN@*/1/*@END_MENU_TOKEN@*/, perform: {
                                         self.activityToShow.category = category
                                         self.activityName = "Select Activity..."
+                                        self.activityToShow.activityName = "Select Activity..."
                                         self.activityFilter = .category
                                         self.showingAllActivities = false
                                         self.nameIndex = index

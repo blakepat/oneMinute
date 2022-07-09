@@ -70,61 +70,75 @@ struct StatsView: View {
 
                 ScrollView {
                     VStack(alignment: .center, spacing: 0) {
+                        
+                        ChartView(activities: viewModel.getDataForLineChart(timeframe: timeFrame, activeIndex: activeIndex, data: allData, date: date),
+                                  activeIndex: activeIndex,
+                                  timeframe: timeFrame,
+                                  dates: viewModel.getDatesForTimeFrame(timeFrame: timeFrame, date: date, activities: viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date))
+                        )
+                        .padding(.bottom)
                        
                         //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
-                        ActivitySummaryView(useHours: false,
-                                            allData: allData,
-                                            fetchRequest: fetchRequest,
-                                            category1Name: $category1Name,
-                                            category2Name: $category2Name,
-                                            category3Name: $category3Name,
-                                            category4Name: $category4Name,
-                                            isHours: $isHours,
-                                            date: date,
-                                            timeFrameChanger: $timeFrame)
-                        .padding(.bottom, 8)
+//                        ActivitySummaryView(useHours: false,
+//                                            allData: allData,
+//                                            fetchRequest: fetchRequest,
+//                                            category1Name: $category1Name,
+//                                            category2Name: $category2Name,
+//                                            category3Name: $category3Name,
+//                                            category4Name: $category4Name,
+//                                            isHours: $isHours,
+//                                            date: date,
+//                                            timeFrameChanger: $timeFrame)
+//                        .padding(.bottom, 8)
                         
                         if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
                             
                             VStack {
                                 //MARK: - Date title
-                                HStack(spacing: 0) {
-                                    
-                                    VStack(alignment: .leading) {
-                                        DateTitleView(timeFrame: timeFrame, date: date)
-                                        
-                                        let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
-                                        
-                                        
-                                        Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
-                                            .foregroundColor(.gray)
-                                            .font(.subheadline)
-                                    }
-                                    .padding(.leading)
-                                    
-                                    Spacer()
-                                    //MARK: - Pie Chart View
-                                    
-                                    
-                                        
-                                        PieGraphView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
-                                                     colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
-                                                     names: [category1Name, category2Name, category3Name, category4Name],
-                                                     isHours: $isHours,
-                                                     backgroundColor: Color.black,
-                                                     innerRadiusFraction: 0.6,
-                                                     activeIndex: $activeIndex)
-                                        
-                                            .frame(width: 220, height: 180)
-                                            .padding(.vertical, 8)
-                                   
+                                Group {
+                                    VStack {
+                                        timeframeChanger
+                                        HStack(spacing: 0) {
+                                            
+                                            VStack(alignment: .leading) {
+                                                DateTitleView(timeFrame: timeFrame, date: date)
+                                                
+                                                let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
+                                                
+                                                
+                                                Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
+                                                    .foregroundColor(.gray)
+                                                    .font(.subheadline)
+                                            }
+                                            .padding(.leading)
+                                            
+                                            Spacer()
+                                            //MARK: - Pie Chart View
+                                            
+                                            
+                                                
+                                                PieGraphView(values: viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date),
+                                                             colors: [Color("category1Color"), Color("category2Color"), Color("category3Color"), Color("category4Color")],
+                                                             names: [category1Name, category2Name, category3Name, category4Name],
+                                                             isHours: $isHours,
+                                                             backgroundColor: Color.black,
+                                                             innerRadiusFraction: 0.6,
+                                                             activeIndex: $activeIndex)
+                                                
+                                                    .frame(width: 220, height: 180)
+                                                    .padding(.vertical, 8)
+                                           
 
+                                        }
+                                        
+                                    }
+                                    .frame(width: screen.size.width * 0.94)
+                                    .background(Color.black)
+                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                                    .padding(.bottom, 8)
                                 }
-                                .frame(width: screen.size.width * 0.94)
-                                .background(Color.black)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
-                                .padding(.bottom, 8)
-                        
+                                
+                                
                                 
                                 VStack(alignment: .leading, spacing: 8) {
                                     
@@ -157,6 +171,8 @@ struct StatsView: View {
                                 .padding(.bottom, 8)
                                 
                                 //Line chart
+                                
+                                
 
                             }
                         } else {
@@ -168,7 +184,6 @@ struct StatsView: View {
                                 .padding(.top)
                             
                         }
-                        
                     }
                 }
             }
@@ -345,12 +360,45 @@ struct DateTitleView: View {
                 .foregroundColor(Color.minutesYellow)
             
         }
-        
     }
-    
-    
 }
 
+extension StatsView {
+    
+    private var timeframeChanger: some View {
+        //Summary changer
+        HStack {
+            
+            Text("Week")
+                .font(.headline)
+                .foregroundColor(timeFrame == TimeFrame.week ? .white : .gray)
+                .onTapGesture {
+                    self.timeFrame = TimeFrame.week
+                }
+                
+            Divider()
+                .frame(height: 26)
+            
+            Text("Month")
+                .font(.headline)
+                .foregroundColor(timeFrame == TimeFrame.month ? .white : .gray)
+                .onTapGesture {
+                    self.timeFrame = TimeFrame.month
+                }
+            
+            Divider()
+                .frame(height: 26)
+            
+            Text("Total")
+                .font(.headline)
+                .foregroundColor(timeFrame == .allTime ? .white : .gray)
+                .onTapGesture {
+                    self.timeFrame = TimeFrame.allTime
+                }
+        }
+        .padding(.top)
+    }
+}
 
 
 

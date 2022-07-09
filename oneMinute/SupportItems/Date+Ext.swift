@@ -26,6 +26,19 @@ extension Date {
     }
 }
 
+
+extension Date {
+    func isSameDay(date: Date) -> Bool {
+        let diff = Calendar.current.dateComponents([.month], from: self, to: date)
+        if diff.day == 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+
 extension Calendar {
     func isDayInCurrentWeek(date: Date) -> Bool? {
         
@@ -39,10 +52,9 @@ extension Calendar {
 
 extension Calendar {
     
-    @State static var gregorian: Calendar = {
+    static let gregorian: Calendar = {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = UserDefaults.standard.bool(forKey: "startWeekOnMonday") ? 2 : 1
-        print("⚠️")
         return calendar
     }()
 }
@@ -70,7 +82,7 @@ extension Date {
     var endOfDay: Date {
         var components = DateComponents()
         components.day = 1
-        components.second = -1
+        components.second = 0
         return Calendar.current.date(byAdding: components, to: startOfDay)!
     }
 
