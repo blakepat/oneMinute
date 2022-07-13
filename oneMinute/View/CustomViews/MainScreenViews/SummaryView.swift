@@ -88,6 +88,16 @@ struct SummaryView: View {
                             
                             Divider()
                             
+                            
+                            Text("Year")
+                                .foregroundColor(timeFrameChanger == .year ? .white : .gray)
+                                .onTapGesture {
+                                    self.timeFrameChanger = TimeFrame.year
+                                }
+                            
+                            Divider()
+                            
+                            
                             Text("Total")
                                 .foregroundColor(timeFrameChanger == .allTime ? .white : .gray)
                                 .onTapGesture {
@@ -114,8 +124,8 @@ struct SummaryView: View {
                 return results.filter({$0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }
             } else if timeFrame == TimeFrame.month {
                 return results.filter({$0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }
-            } else if timeFrame == TimeFrame.allTime {
-                return results.reduce(0) { $0 + $1.duration }
+            } else if timeFrame == TimeFrame.year {
+                return results.filter({ $0.timestamp?.isInThisYear() ?? true }).reduce(0) { $0 + $1.duration }
             } else {
                 return results.reduce(0) { $0 + $1.duration }
             }
@@ -128,8 +138,8 @@ struct SummaryView: View {
                 return results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfWeek() && $0.timestamp ?? Date() < selectedDate.startOfWeek().addingTimeInterval(7*24*60*60)}).reduce(0) { $0 + $1.duration }
             } else if timeFrame == TimeFrame.month {
                 return results.filter({$0.category == category && $0.timestamp ?? Date() > selectedDate.startOfMonth && $0.timestamp ?? Date() < selectedDate.endOfMonth }).reduce(0) { $0 + $1.duration }
-            } else if timeFrame == TimeFrame.allTime {
-                return results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }
+            } else if timeFrame == TimeFrame.year {
+                return results.filter({$0.category == category && $0.timestamp?.isInThisYear() ?? true }).reduce(0) { $0 + $1.duration }
             } else {
                 return results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }
             }

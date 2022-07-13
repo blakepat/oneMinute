@@ -18,6 +18,7 @@ struct SettingsView: View {
     @Binding var isHours: Bool
     @Binding var startWeekOnMonday: Bool
     @State private var showDeleteAllAlert = false
+    let impactMed = UIImpactFeedbackGenerator(style: .medium)
     
     var body: some View {
 
@@ -46,20 +47,22 @@ struct SettingsView: View {
                         .background(Color.minutesBackgroundCharcoal)
                         .cornerRadius(10)
                         .onTapGesture {
+                            impactMed.impactOccurred()
                             isHours.toggle()
                             UserDefaults.standard.setValue("\(isHours)", forKey: "isHours")
                         }
                     
+                    //Start week on sunday or monday
                     Text("\(startWeekOnMonday ? "Start Week On Sunday" : "Start Week On Monday")")
                         .foregroundColor(.white)
                         .frame(width: 280, height: 70, alignment: .center)
                         .background(Color.minutesBackgroundCharcoal)
                         .cornerRadius(10)
                         .onTapGesture {
+                            impactMed.impactOccurred()
                             startWeekOnMonday.toggle()
                             UserDefaults.standard.setValue("\(startWeekOnMonday)", forKey: "startWeekOnMonday")
                         }
-                    
                     
                     
                     
@@ -70,7 +73,7 @@ struct SettingsView: View {
                         .background(Color.minutesBackgroundCharcoal)
                         .cornerRadius(10)
                         .onTapGesture {
-                            
+                            impactMed.impactOccurred()
                             UserDefaults.standard.set(false, forKey: "hasSeenOnboardView")
                             presentationMode.wrappedValue.dismiss()
                         }

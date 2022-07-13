@@ -48,7 +48,7 @@ struct PieGraphView: View {
                                             
                         ForEach(0..<self.values.count, id: \.self) { i in
                             PieSliceView(pieSliceData: self.slices[i])
-                                .scaleEffect(self.activeIndex == i ? 1.03 : 1)
+                                .scaleEffect(self.activeIndex == i ? 1.07 : 1)
                                 .animation(Animation.spring())
                         }
                         .frame(width: geometry.size.width, height: geometry.size.height)
@@ -78,6 +78,7 @@ struct PieGraphView: View {
                             Circle()
                             .fill(self.backgroundColor)
                             .frame(width: geometry.size.width * innerRadiusFraction, height: geometry.size.width * innerRadiusFraction)
+                            .contentShape(Circle())
                             .onTapGesture {
                                 self.activeIndex = -1
                             }
@@ -85,12 +86,15 @@ struct PieGraphView: View {
                         VStack {
                             Text(self.activeIndex == -1 ? "Total" : names[self.activeIndex])
                                 .font(.headline)
-                                .foregroundColor(Color.gray)
+                                .foregroundColor(self.activeIndex == -1 ? Color.minutesYellow : getCategoryColor(categories[activeIndex]))
                             Text(String(format: decimalsToShow(isHours: isHours), timeConverter(time: Float((self.activeIndex == -1 ? values.reduce(0, +) : values[self.activeIndex])), timeUnitIsHours: isHours)))
                                 .font(.headline)
                             Text("\(timeUnitName(isHours: isHours))")
                                 .foregroundColor(.gray)
                                 .font(.headline)
+                        }
+                        .onTapGesture {
+                            self.activeIndex = -1
                         }
                     }
                 }

@@ -17,6 +17,8 @@ final class StatsViewModel: ObservableObject {
             return Date.dates(from: date.startOfWeek(), to: date.endOfWeek)
         } else if timeFrame == .month {
             return Date.dates(from: date.startOfMonth, to: date.endOfMonth)
+        } else if timeFrame == .year {
+            return Date.dates(from: date.startOfYear, to: date.endOfYear)
         } else {
             let sortedActivities = activities.sorted(by: { $0.timestamp ?? Date() < $1.timestamp ?? Date() })
             return Date.dates(from: sortedActivities.first?.timestamp ?? Date(), to: sortedActivities.last?.timestamp ?? Date())
@@ -31,6 +33,8 @@ final class StatsViewModel: ObservableObject {
                     return $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.endOfWeek
                 } else if timeFrame == TimeFrame.month {
                     return $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth
+                } else if timeFrame == TimeFrame.year {
+                    return $0.timestamp?.isInThisYear() ?? true
                 } else {
                     return true
                 }
@@ -40,6 +44,8 @@ final class StatsViewModel: ObservableObject {
                     return $0.timestamp ?? Date() > date.startOfWeek() && $0.timestamp ?? Date() < date.endOfWeek && $0.category == categories[activeIndex]
                 } else if timeFrame == TimeFrame.month {
                     return $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth  && $0.category == categories[activeIndex]
+                } else if timeFrame == TimeFrame.year {
+                    return $0.timestamp?.isInThisYear() ?? true && $0.category == categories[activeIndex]
                 } else {
                     return $0.category == categories[activeIndex]
                 }
@@ -69,6 +75,15 @@ final class StatsViewModel: ObservableObject {
                 let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
                 totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
             }
+        } else if timeframe == TimeFrame.year {
+            
+            let daysOfMonth = dates(from: date.startOfYear, to: date.endOfYear)
+            
+            for day in daysOfMonth {
+                let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
+                totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
+            }
+        
         } else {
             
             let oldestActivity = activities.max(by: { $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > $1.timestamp ?? Date() })
@@ -76,7 +91,7 @@ final class StatsViewModel: ObservableObject {
             let monthsOfYear = dates(from: oldestActivity?.timestamp ?? Date(), to: date.endOfMonth) // get oldest activities and do months from there until end of current month
             
             for month in monthsOfYear {
-                
+                print(month)
                 let monthActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > month.startOfMonth && $0.timestamp ?? Date() < month.endOfMonth})
                 
                 totalsToReturn.append(Double(monthActivities.reduce(0) { $0 + $1.duration}))
@@ -99,8 +114,8 @@ final class StatsViewModel: ObservableObject {
                 
                 totals.append(Double(results.filter({$0.category == category && $0.timestamp ?? Date() > date.startOfMonth && $0.timestamp ?? Date() < date.endOfMonth }).reduce(0) { $0 + $1.duration }))
                 
-            } else if timeFrame == TimeFrame.allTime {
-                totals.append(Double(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
+            } else if timeFrame == TimeFrame.year {
+                totals.append(Double(results.filter({$0.category == category && $0.timestamp?.isInThisYear() ?? true }).reduce(0) { $0 + $1.duration }))
             } else {
                 totals.append(Double(results.filter({$0.category == category}).reduce(0) { $0 + $1.duration }))
             }
@@ -180,6 +195,36 @@ final class StatsViewModel: ObservableObject {
                 }
             return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
         //Activity  with most ALL TIME
+        } else if timeFrame == TimeFrame.year {
+            
+            var topActivtiesArray = [((String, Float), String)]()
+            var activityTotalAmount: Float = 0
+            
+            //Cycle through all activity types
+            for activity in activityNames.wrappedValue {
+
+                //Get the total duration for each that activity type
+                if activeIndex == -1 {
+                    activityTotalAmount = results.filter({$0.name == activity.name && $0.timestamp?.isInThisYear() ?? true}).reduce(0) { $0 + $1.duration }
+                } else {
+                    activityTotalAmount = results.filter({$0.name == activity.name && $0.category == categories[activeIndex] && $0.timestamp?.isInThisYear() ?? true }).reduce(0) { $0 + $1.duration }
+                }
+                
+                
+                if activityTotalAmount > topActivtiesArray.min(by: { $0.0.1 < $1.0.1 })?.0.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
+                    
+                    if topActivtiesArray.count < 5 {
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
+                    } else {
+                        topActivtiesArray.sort(by: { $0.0.1 > $1.0.1 })
+                        topActivtiesArray.removeLast()
+                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
+                    }
+
+                }
+            }
+            return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
+            
         } else if timeFrame == TimeFrame.allTime {
             
             var topActivtiesArray = [((String, Float), String)]()
@@ -210,11 +255,7 @@ final class StatsViewModel: ObservableObject {
             }
             return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
             
-        } else {
-            return [(("Unknown", Float(0.0)), "category1")]
         }
-        
+        return [(("Unknown", Float(0)), "")]
     }
-    
-    
 }

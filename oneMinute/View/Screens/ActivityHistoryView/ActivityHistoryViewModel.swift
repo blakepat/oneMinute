@@ -29,6 +29,8 @@ final class ActivityHistoryViewModel: ObservableObject {
             return data.filter({_ in true})
         } else if timeFrame == TimeFrame.month {
             return data.filter({ $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth  })
+        } else if timeFrame == TimeFrame.year {
+            return data.filter({ $0.timestamp?.isInThisYear() ?? true  })
         } else {
             return data.filter(({ $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek  }))
         }
@@ -41,6 +43,8 @@ final class ActivityHistoryViewModel: ObservableObject {
             return data.filter({ $0.category == category })
         } else if timeFrame == TimeFrame.month {
             return data.filter({ $0.category == category && $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth  })
+        } else if timeFrame == TimeFrame.year {
+            return data.filter({ $0.category == category && $0.timestamp?.isInThisYear() ?? true  })
         } else {
             return data.filter(({ $0.category == category && $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek  }))
         }
@@ -54,7 +58,9 @@ final class ActivityHistoryViewModel: ObservableObject {
                 return data.filter({ $0.name == name })
             } else if timeFrame == TimeFrame.month {
                 return data.filter({ $0.name == name && $0.timestamp ?? Date() > Date().startOfMonth && $0.timestamp ?? Date() < Date().endOfMonth  })
-            } else {
+            } else if timeFrame == TimeFrame.year {
+                return data.filter({ $0.name == name && $0.timestamp?.isInThisYear() ?? true  })
+            }else {
                 return data.filter(({ $0.name == name && $0.timestamp ?? Date() > Date().startOfWeek() && $0.timestamp ?? Date() < Date().endOfWeek  }))
             }
     }

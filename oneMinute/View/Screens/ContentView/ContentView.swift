@@ -83,6 +83,10 @@ struct ContentView: View {
                         .preferredColorScheme(.dark)
                         
                     Spacer()
+                    
+                    //TO-DO: - Add something "Nice" here like a warm greeting or something.
+//                    Text("")
+                    
 
                 }
                 .frame(height: 16)

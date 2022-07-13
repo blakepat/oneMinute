@@ -38,7 +38,7 @@ struct OnboardView: View {
                         .bold()
                         .padding(.bottom, 6)
 
-                    Text("The app built to help people live healthy balanced lives. See the productive time you accumlate to reach your goals!")
+                    Text("The app built to help people live healthy balanced lives. See the minutes you accumulate to reach your goals!")
                         .bold()
                         .font(.title3)
                         .foregroundColor(.white)

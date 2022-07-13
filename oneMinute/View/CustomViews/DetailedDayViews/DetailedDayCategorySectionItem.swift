@@ -53,7 +53,6 @@ struct DetailedDayCategorySectionItem: View {
                             Text("\(data.notes!)")
                                 .font(.system(size: 16))
                                 .foregroundColor(Color.white)
-                                .padding(.bottom, 4)
                         }
                     }
                 }

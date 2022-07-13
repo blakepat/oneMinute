@@ -76,7 +76,7 @@ struct StatsView: View {
                                   timeframe: timeFrame,
                                   dates: viewModel.getDatesForTimeFrame(timeFrame: timeFrame, date: date, activities: viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date))
                         )
-                        .padding(.bottom)
+                        .padding(.bottom, 4)
                        
                         //MARK: - Summary View but for highest scores (which activity has most minutes) in week/month/year, but once an activity in selected it becomes scores for that activity only
 //                        ActivitySummaryView(useHours: false,
@@ -91,24 +91,29 @@ struct StatsView: View {
 //                                            timeFrameChanger: $timeFrame)
 //                        .padding(.bottom, 8)
                         
+                        timeframeChanger
+                            .padding(.bottom, 4)
+                        
                         if viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, results: allData, date: date).reduce(0) { $0 + $1 } > 0 {
                             
                             VStack {
                                 //MARK: - Date title
                                 Group {
                                     VStack {
-                                        timeframeChanger
+                                        
                                         HStack(spacing: 0) {
                                             
                                             VStack(alignment: .leading) {
                                                 DateTitleView(timeFrame: timeFrame, date: date)
+                                                    .padding(.bottom, 2)
+                                                
                                                 
                                                 let activitiesThisTimeFrame = viewModel.getActivitiesForThis(timeFrame: timeFrame, activeIndex: activeIndex, data: allData, date: date).count
                                                 
                                                 
-                                                Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + " " : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
+                                                Text("\(activitiesThisTimeFrame) \(activeIndex != -1 ? categoryNames[activeIndex] + "" : "") \(activitiesThisTimeFrame == 1 ? "Session" : "Sessions")")
                                                     .foregroundColor(.gray)
-                                                    .font(.subheadline)
+                                                    .font(.caption)
                                             }
                                             .padding(.leading)
                                             
@@ -130,7 +135,10 @@ struct StatsView: View {
                                            
 
                                         }
-                                        
+                                        .contentShape(RoundedRectangle(cornerRadius: 16))
+                                        .onTapGesture {
+                                            self.activeIndex = -1
+                                        }
                                     }
                                     .frame(width: screen.size.width * 0.94)
                                     .background(Color.black)
@@ -343,20 +351,23 @@ struct DateTitleView: View {
         
         if timeFrame == TimeFrame.week {
             
-            Text("\(date.startOfWeek(), formatter: dateFormatter) - \n\(date.endOfWeek, formatter: dateFormatter)")
-                .font(.title2)
+            Text("\(date.startOfWeek(), formatter: dateFormatter) - \(date.endOfWeek, formatter: dateFormatter)")
+                .bold()
+                .font(.headline)
                 .foregroundColor(Color.minutesYellow)
             
         } else if timeFrame == TimeFrame.month {
             
-            Text("\(date.startOfMonth, formatter: dateFormatter) - \n\(date.endOfMonth, formatter: dateFormatter)")
-                .font(.title2)
+            Text("\(date.startOfMonth, formatter: dateFormatter) - \(date.endOfMonth, formatter: dateFormatter)")
+                .font(.headline)
+                .bold()
                 .foregroundColor(Color.minutesYellow)
             
         } else {
             
             Text("All Activities Recorded")
-                .font(.title2)
+                .font(.headline)
+                .bold()
                 .foregroundColor(Color.minutesYellow)
             
         }
@@ -384,6 +395,16 @@ extension StatsView {
                 .foregroundColor(timeFrame == TimeFrame.month ? .white : .gray)
                 .onTapGesture {
                     self.timeFrame = TimeFrame.month
+                }
+            
+            Divider()
+                .frame(height: 26)
+            
+            Text("Year")
+                .font(.headline)
+                .foregroundColor(timeFrame == .year ? .white : .gray)
+                .onTapGesture {
+                    self.timeFrame = TimeFrame.year
                 }
             
             Divider()

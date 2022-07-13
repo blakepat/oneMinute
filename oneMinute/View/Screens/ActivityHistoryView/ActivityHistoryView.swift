@@ -198,6 +198,23 @@ struct ActivityHistoryView: View {
     //                                x \(Int(dividBy(lhs:Float(activityMinutesThisMonth), rhs:Float(activitySessionsThisMonth)))))")
                                 Spacer()
                             }
+                            
+                            HStack {
+                                Text("This Year:")
+                                    .fontWeight(.bold)
+                                let activityThisYear = viewModel.getActivitiesForTimeFrameAndFilter(timeFrame: TimeFrame.year,
+                                                                                                     data: allData,
+                                                                                                     activityToShow: activityToShow,
+                                                                                                     activityFilter: activityFilter)
+                                                                   
+                                let activityMinutesThisYear = activityThisYear.reduce(0) { $0 + $1.duration }
+                                let activitySessionsThisYear = activityThisYear.count
+                                                                   
+                                Text("\(String(format: decimalsToShow(isHours: isHours), timeConverter(time: activityMinutesThisYear, timeUnitIsHours: isHours))) \(timeUnitName(isHours: isHours)) (\(activitySessionsThisYear) sessions)")
+    //                                x \(Int(dividBy(lhs:Float(activityMinutesThisMonth), rhs:Float(activitySessionsThisMonth)))))")
+                                Spacer()
+                            }
+                            
                 
                             HStack {
                                 Text("All-Time:")
@@ -248,14 +265,17 @@ struct ActivityHistoryView: View {
                                 if !sortedActivities.isEmpty {
                                     let timeBetweenActivities = Calendar.current.numberOfDaysBetween(from: sortedActivities[index].timestamp ?? Date(), to: (index == 0) ? Date() : sortedActivities[index-1].timestamp ?? Date())
                                     //Days since or between activties
-                                    HStack {
-                                        Spacer()
-                                        Text((index == 0) ? "· \(timeBetweenActivities) day(s) since ·" : "· \(timeBetweenActivities) day(s) between ·")
-                                            .foregroundColor(.white)
-                                            .font(.system(size: 14))
-                                            .padding(0)
-                                        Spacer()
+                                    if timeBetweenActivities != 0 {
+                                        HStack {
+                                            Spacer()
+                                            Text((index == 0) ? "· \(timeBetweenActivities) day(s) since ·" : "· \(timeBetweenActivities) day(s) between ·")
+                                                .foregroundColor(.white)
+                                                .font(.system(size: 14))
+                                                .padding(0)
+                                            Spacer()
+                                        }
                                     }
+
                                 //Logged Activity
                                     RecentActivityLog(activity: sortedActivities[index], isHours: $isHours)
                                         .padding(.horizontal, 16)

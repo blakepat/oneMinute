@@ -10,9 +10,6 @@ import CoreData
 
 final class DetailedDayViewModel: ObservableObject {
     
-//    @Environment(\.managedObjectContext) private var viewContext
-    
-    
     @Published var itemToDelete = AddedActivity()
     @Published var showCategoryNameEditor = false
     @Published var showActivitySelector: Bool = false

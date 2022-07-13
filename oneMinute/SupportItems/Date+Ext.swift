@@ -75,6 +75,13 @@ extension Date {
 
         let calendar = getCalendarForCorrectWeekday()
         let components = calendar.dateComponents([.year, .month], from: self)
+        return  calendar.date(from: components)!
+    }
+    
+    var startOfYear: Date {
+
+        let calendar = getCalendarForCorrectWeekday()
+        let components = calendar.dateComponents([.year], from: self)
 
         return  calendar.date(from: components)!
     }
@@ -93,14 +100,28 @@ extension Date {
         return getCalendarForCorrectWeekday().date(byAdding: components, to: startOfMonth)!
     }
     
+    var endOfYear: Date {
+
+        let calendar = getCalendarForCorrectWeekday()
+        var components = calendar.dateComponents([.year], from: self)
+        components.year = 1
+        components.second = -1
+        return  getCalendarForCorrectWeekday().date(byAdding: components, to: startOfYear)!
+    }
+    
     var endOfWeek: Date {
         var components = DateComponents()
         components.weekOfYear = 1
         components.second = -1
         return getCalendarForCorrectWeekday().date(byAdding: components, to: startOfWeek())!
         
-        
     }
+    
+    func isEqual(to date: Date, toGranularity component: Calendar.Component, in calendar: Calendar = .current) -> Bool {
+            calendar.isDate(self, equalTo: date, toGranularity: component)
+        }
+    
+    func isInThisYear() -> Bool { isEqual(to: Date(), toGranularity: .year) }
 }
 
 
