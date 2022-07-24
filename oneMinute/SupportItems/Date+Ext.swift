@@ -122,6 +122,14 @@ extension Date {
         }
     
     func isInThisYear() -> Bool { isEqual(to: Date(), toGranularity: .year) }
+    
+    
+    func firstDayOfTheMonthFor(month: Int) -> Date {
+        var components = DateComponents()
+        components.month = month
+        components.second = 1
+        return getCalendarForCorrectWeekday().date(byAdding: components, to: startOfYear)!
+    }
 }
 
 

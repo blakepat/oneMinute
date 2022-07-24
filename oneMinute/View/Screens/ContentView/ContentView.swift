@@ -66,7 +66,6 @@ struct ContentView: View {
                         .padding(.top, 8)
                 }
                 
-                
                 Spacer()
                 
                 //MARK:- Calendar Button

@@ -53,7 +53,7 @@ struct DayScrollView: View {
                     //Cycle through days of either last week or this week
                     ForEach((getDates()), id: \.self) { day in
                         GeometryReader { geometry in
-                            VStack{
+                            VStack(spacing: 0){
                                 HStack {
                                     Spacer()
                                     Text("\(day, formatter: dateFormatter)")
@@ -61,15 +61,21 @@ struct DayScrollView: View {
                                         .font(.system(size: 20, weight: (Calendar.current.isDate(day, inSameDayAs: Date())) ? .bold : .semibold))
                                     Spacer()
                                 }.padding(.vertical, 4)
+                                
+                                Divider()
+                                    .padding(.bottom, 2)
+                                
                                 ScrollView(.vertical) {
                                     //For each day fill in information if dates match
                                     ForEach(weekOnlyData.filter({ Calendar.current.isDate($0.timestamp ?? Date(), inSameDayAs: day)}), id: \.self) { data in
                                         
-//                                        Print(day)
-                                        
                                         ActivityItem(item: data, isHours: isHours)
                                             .padding(.bottom, 2)
-                                            .frame(width: 132)
+                                            .frame(width: 132, height: 36)
+                                            .padding(8)
+                                            .background(Color("\(data.category ?? "category1")Color").opacity(0.25))
+                                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                                            
                                     }
                                 }
                                 Spacer()
@@ -80,6 +86,7 @@ struct DayScrollView: View {
                                     .font(.system(size: 16, weight: .semibold))
                                     .foregroundColor(Color("defaultYellow"))
                                     .padding(.bottom, 8)
+                                
                             }
                             .contentShape(Rectangle())
                            
@@ -156,16 +163,22 @@ struct ActivityItem: View {
     
     var body: some View {
         
-        HStack {
-            Text("\(item.name ?? "Unknown Activity")")
-                .font(.system(size: 16))
-                .foregroundColor(Color("\(item.category ?? "category1")Color"))
+        VStack {
+            HStack {
+                Text("\(item.name ?? "Unknown Activity")")
+                    .font(.footnote)
+                    .foregroundColor(.white)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(2)
+                    
+                Spacer()
                 
+                Text("\(timeConverter(time: item.duration, timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
+                    .font(.body)
+                    .foregroundColor(.white)
+                    .minimumScaleFactor(0.7)
+            }
             Spacer()
-            
-            Text("\(timeConverter(time: item.duration, timeUnitIsHours: isHours), specifier: decimalsToShow(isHours: isHours))")
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(Color("\(item.category ?? "category1")Color"))
         }
     }
 }
