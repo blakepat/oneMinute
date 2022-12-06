@@ -23,5 +23,4 @@ extension Color {
     static func getCategoryColor(_ category: String) -> Color {
         Color("\(category)Color")
     }
-    
 }

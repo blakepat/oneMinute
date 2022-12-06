@@ -18,7 +18,6 @@ final class StatsViewModel: ObservableObject {
         } else if timeFrame == .month {
             return Date.dates(from: date.startOfMonth, to: date.endOfMonth)
         } else {
-//            return Date.dates(from: date.startOfYear, to: date.endOfYear)
             
             var datesToReturn: [Date] = []
             for month in 0..<12 {
@@ -31,8 +30,6 @@ final class StatsViewModel: ObservableObject {
     }
     
     func getActivitiesForThis(timeFrame: TimeFrame, activeIndex: Int, data: FetchedResults<AddedActivity>, date: Date) -> [AddedActivity] {
-        
-        print("🤢 get activities for this timeframe called!")
         
         return data.filter({
             
@@ -63,10 +60,6 @@ final class StatsViewModel: ObservableObject {
     
     
     func getDataForLineChart(timeframe: TimeFrame, activeIndex: Int, activities: [AddedActivity], date: Date) -> [Double] {
-        //data: FetchedResults<AddedActivity>
-//        let activities = getActivitiesForThis(timeFrame: timeframe, activeIndex: activeIndex, data: data, date: date)
-        
-        print("⚠️ line chart data called")
         
         var totalsToReturn: [Double] = []
         
@@ -87,15 +80,6 @@ final class StatsViewModel: ObservableObject {
                 totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
             }
         } else if timeframe == TimeFrame.year {
-            
-//            let daysOfMonth = dates(from: date.startOfYear, to: date.endOfYear)
-//
-//            for day in daysOfMonth {
-//                let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > day.startOfDay && $0.timestamp ?? Date() < day.endOfDay})
-//
-//            }
-            
-//            totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
 
             for month in 0..<12 {
                 let daysActivities = activities.filter({ $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > Date().firstDayOfTheMonthFor(month: month) && $0.timestamp ?? Date() < Date().firstDayOfTheMonthFor(month: month + 1) })
@@ -103,7 +87,6 @@ final class StatsViewModel: ObservableObject {
                 totalsToReturn.append(Double(daysActivities.reduce(0) { $0 + $1.duration}))
             }
             
-        
         } else {
             
             let oldestActivity = activities.max(by: { $0.timestamp?.startOfDay.advanced(by: 1) ?? Date() > $1.timestamp ?? Date() })
@@ -123,7 +106,6 @@ final class StatsViewModel: ObservableObject {
     
     //Get totals for each category and put in Array
     func eachCategoryTotalDuration(timeFrame: TimeFrame, activities: FetchedResults<AddedActivity>, date: Date) -> [Double] {
-        print("🤡 each category total duration called")
         var totals = [Double]()
         
         for category in categories {
@@ -149,8 +131,6 @@ final class StatsViewModel: ObservableObject {
     
     //Cycle through all actvitiesAdded and get which ones are done the most based on timeFrame provided
     func mostActivityLoggedDuring(timeFrame: TimeFrame, activities: [AddedActivity], activityNames: FetchRequest<Activity>, activeIndex: Int, date: Date) -> [((String, Float), String)] {
-        
-        print("☕️")
         
         if timeFrame == TimeFrame.week {
             
@@ -247,37 +227,6 @@ final class StatsViewModel: ObservableObject {
             return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
             
         }
-//            else if timeFrame == TimeFrame.allTime {
-//            
-//            var topActivtiesArray = [((String, Float), String)]()
-//            var activityTotalAmount: Float = 0
-//            
-//            //Cycle through all activity types
-//            for activity in activityNames.wrappedValue {
-//
-//                //Get the total duration for each that activity type
-//                if activeIndex == -1 {
-//                    activityTotalAmount = results.filter({$0.name == activity.name }).reduce(0) { $0 + $1.duration }
-//                } else {
-//                    activityTotalAmount = results.filter({$0.name == activity.name && $0.category == categories[activeIndex] }).reduce(0) { $0 + $1.duration }
-//                }
-//                
-//                
-//                if activityTotalAmount > topActivtiesArray.min(by: { $0.0.1 < $1.0.1 })?.0.1 ?? 0 || topActivtiesArray.count < 5 && activityTotalAmount != 0 {
-//                    
-//                    if topActivtiesArray.count < 5 {
-//                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
-//                    } else {
-//                        topActivtiesArray.sort(by: { $0.0.1 > $1.0.1 })
-//                        topActivtiesArray.removeLast()
-//                        topActivtiesArray.append(((activity.name, activityTotalAmount), activity.category))
-//                    }
-//
-//                }
-//            }
-//            return topActivtiesArray.sorted(by: {$0.0.1 > $1.0.1})
-//            
-//        }
         return [(("Unknown", Float(0)), "")]
     }
 }

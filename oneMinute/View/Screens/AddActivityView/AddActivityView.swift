@@ -28,6 +28,9 @@ struct AddActivityView: View {
     @State var isEditScreen: Bool
     @State var categorySelected: Bool
     
+    @State var minutes = 0
+    @State var hours = 0
+    
     //Category Names
     @Binding var category1Name: String
     @Binding var category2Name: String
@@ -134,7 +137,7 @@ struct AddActivityView: View {
                     
                 
                 //MARK: - Activity Time - 45 minutes
-                    TimeSelectorView(activityToSave: activityToSave)
+                    TimeSelectorView(activityToSave: activityToSave, hours: $hours, minutes: $minutes)
                     
                 //MARK: - Activity Notes - 5km run, chest workout, rosetta stone, 1 hour overtime
                     VStack(alignment: .leading, spacing: 0) {
@@ -169,8 +172,10 @@ struct AddActivityView: View {
                     .padding(.bottom, 8)
                     .onTapGesture {
                         //If activity and duration has been selected save and dismiss screen
-                        if activityToSave.minutes + activityToSave.hours != 0 && activityToSave.activityName != "Select Activity..." {
+                        if minutes + hours != 0 && activityToSave.activityName != "Select Activity..." {
                             //save activity
+                            activityToSave.hours = Float(hours)
+                            activityToSave.minutes = Float(minutes)
                             viewModel.saveActivity(activity: activityToSave, date: selectedDate, favourite: false, viewContext: viewContext)
                             //reset activity
                             viewModel.resetActivity(activityToSave)
@@ -207,8 +212,10 @@ struct AddActivityView: View {
 
                         } else {
                             //If activity and duration has been selected save and dismiss screen
-                            if activityToSave.minutes + activityToSave.hours != 0 && (activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category")  {
+                            if minutes + hours != 0 && (activityToSave.activityName != "Select Activity..." || activityToSave.activityName != "Select Category")  {
                                 //save activity
+                                activityToSave.hours = Float(hours)
+                                activityToSave.minutes = Float(minutes)
                                 viewModel.saveActivity(activity: activityToSave, date: selectedDate, favourite: true, viewContext: viewContext)
                                 //reset activity
                                 viewModel.resetActivity(activityToSave)
@@ -305,9 +312,12 @@ struct EditButton: View {
 
 struct TimeSelectorView: View {
     
-    @ObservedObject var activityToSave: ActivityToSave
+    @StateObject var activityToSave: ActivityToSave
     private let hourArray = (0...24).map{"\($0)"}
     private let minutesArray = (0...60).map{"\($0)"}
+    
+    @Binding var hours: Int
+    @Binding var minutes: Int
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -323,7 +333,10 @@ struct TimeSelectorView: View {
                         .font(.system(size: 24))
                     
                     //Hour Selection
-                    Picker(selection: $activityToSave.hours, label: Text("Hours")) {
+//                    Picker("", selection: $hours, content: <#T##() -> View#>)
+//
+//
+                    Picker(selection: $hours, label: Text("")) {
                         ForEach(0 ..< self.hourArray.count, id: \.self) { number in
                             Text(self.hourArray[number]).tag(Float(number))
                         }
@@ -331,25 +344,25 @@ struct TimeSelectorView: View {
                     .frame(width: 100, height: 80, alignment: .center)
                     .clipped()
                     
-                    //hour signafier
+//                    hour signafier
                     Text("hours")
                         .font(.system(size: 16, weight: .semibold))
-                    
+
                     Spacer()
                     
                     //Minute Selection
-                    Picker(selection: $activityToSave.minutes, label: Text("Hours")) {
+                    Picker(selection: $minutes, label: Text("")) {
                         ForEach(0 ..< self.minutesArray.count, id: \.self) { number in
                             Text(self.minutesArray[number]).tag(Float(number))
                         }
                     }
                     .frame(width: 100, height: 80, alignment: .center)
                     .clipped()
-                    
+
                     //minute signafier
                     Text("minutes")
                         .font(.system(size: 16, weight: .semibold))
-                    
+
                     Spacer()
                 }
             }

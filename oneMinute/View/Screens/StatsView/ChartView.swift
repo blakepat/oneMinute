@@ -17,9 +17,11 @@ struct ChartView: View {
     private let startingDate: Date
     private let endingDate: Date
     private let timeframe: TimeFrame
+    var isHours: Bool
+    
     @State private var percentage: CGFloat = 0
     
-    init(activities: [Double], activeIndex: Int, timeframe: TimeFrame, dates: [Date]) {
+    init(activities: [Double], activeIndex: Int, timeframe: TimeFrame, dates: [Date], isHours: Bool) {
         data = activities
         self.dates = dates
         self.timeframe = timeframe
@@ -27,6 +29,7 @@ struct ChartView: View {
         minY = data.min() ?? 0
         startingDate = dates.first ?? Date()
         endingDate = dates.last ?? Date()
+        self.isHours = isHours
         
         if activeIndex == -1 {
             lineColor = .minutesYellow
@@ -123,12 +126,25 @@ extension ChartView {
     
     private var chartYAxis: some View {
         VStack {
-            Text("\(maxY == minY ? minY + 100 : maxY, specifier: "%.0f")")
-            Spacer()
-            let mid = maxY == minY ? minY + 50 : (maxY + minY) / 2
-            Text("\(mid, specifier: "%.0f")")
-            Spacer()
-            Text("\(minY, specifier: "%.0f")")
+            if isHours {
+                let hoursMaxY = timeConverter(time: Float(maxY), timeUnitIsHours: true)
+                let hoursMinY = timeConverter(time: Float(minY), timeUnitIsHours: true)
+                
+                Text("\(hoursMaxY == hoursMinY ? hoursMinY + 10 : hoursMaxY, specifier: "%.1f")")
+                Spacer()
+                let mid = hoursMaxY == hoursMinY ? hoursMinY + 5 : (hoursMaxY + hoursMinY) / 2
+                Text("\(mid, specifier: "%.1f")")
+                Spacer()
+                Text("\(hoursMinY, specifier: "%.1f")")
+                
+            } else {
+                Text("\(maxY == minY ? minY + 100 : maxY, specifier: "%.0f")")
+                Spacer()
+                let mid = maxY == minY ? minY + 50 : (maxY + minY) / 2
+                Text("\(mid, specifier: "%.0f")")
+                Spacer()
+                Text("\(minY, specifier: "%.0f")")
+            }
         }
     }
     

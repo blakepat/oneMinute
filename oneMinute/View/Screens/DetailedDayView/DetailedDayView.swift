@@ -62,7 +62,11 @@ struct DetailedDayView: View {
                         let dailyCategoryData = viewModel.getCategoryActivitiesForDate(date, allActivities: dailyData, index: index)
                         
                         if !dailyCategoryData.isEmpty {
-                            Section(header: Text("\(category) - \(Int(dailyCategoryData.reduce(0) {$0 + $1.duration})) \(isHours ? "Hours" : "Minutes")").font(.headline)
+                            
+                            let timeInMinutes = Float(dailyCategoryData.reduce(0) {$0 + $1.duration})
+                            let totalTime = Int(timeConverter(time: timeInMinutes, timeUnitIsHours: isHours))
+                            
+                            Section(header: Text("\(category) - \(totalTime) \(isHours ? "Hours" : "Minutes")").font(.headline)
                                 ) {
                                
                                 ForEach(dailyCategoryData, id: \.self) { data in

@@ -23,7 +23,7 @@ struct StatsView: View {
         self._date = date
         self._showActivitySelectorView = showActivitySelectorView
         self._activityToShow = activityToShow
-        print("💔 init called")
+
         UITableView.appearance().backgroundColor = UIColor(Color(#colorLiteral(red: 0.08235294118, green: 0.1058823529, blue: 0.1215686275, alpha: 1)))
         UITableView.appearance().separatorColor = .clear
     }
@@ -47,9 +47,7 @@ struct StatsView: View {
     @Binding var date: Date
     @Binding var showActivitySelectorView: Bool
     @ObservedObject var activityToShow: ActivityToSave
-    
-//    @State var sortedActivities: [AddedActivity]
-    
+
     //local variables
     @State private var activityName = "Select Category..."
     @State private var showingAllActivities = true
@@ -75,7 +73,7 @@ struct StatsView: View {
                         ChartView(activities: viewModel.getDataForLineChart(timeframe: timeFrame, activeIndex: activeIndex, activities: sortedActivities, date: date),
                                   activeIndex: activeIndex,
                                   timeframe: timeFrame,
-                                  dates: viewModel.getDatesForTimeFrame(timeFrame: timeFrame, date: date))
+                                  dates: viewModel.getDatesForTimeFrame(timeFrame: timeFrame, date: date), isHours: isHours)
                         .padding(.bottom, 4)
 
                         
