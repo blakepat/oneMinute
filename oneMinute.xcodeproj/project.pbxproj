@@ -37,6 +37,25 @@
 		342A2DA326B9E93D00F7FBD5 /* PieSliceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */; };
 		342A2DA826B9ECBF00F7FBD5 /* PieGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */; };
 		3431748425649FA80075F5C9 /* DetailedDayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3431748325649FA80075F5C9 /* DetailedDayView.swift */; };
+		34377B7D293FDB6900F05B34 /* WatchMinutesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34377B7C293FDB6900F05B34 /* WatchMinutesApp.swift */; };
+		34377B7F293FDB6900F05B34 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34377B7E293FDB6900F05B34 /* ContentView.swift */; };
+		34377B81293FDB6A00F05B34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34377B80293FDB6A00F05B34 /* Assets.xcassets */; };
+		34377B84293FDB6A00F05B34 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34377B83293FDB6A00F05B34 /* Preview Assets.xcassets */; };
+		34377B88293FDBE500F05B34 /* AddFavouriteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA2CCB255DD97B00FFE7FC /* AddFavouriteView.swift */; };
+		34377B89293FDBE500F05B34 /* Activity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */; };
+		34377B8A293FDBE500F05B34 /* Activity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349421F1280E0AFD00395276 /* Activity+CoreDataClass.swift */; };
+		34377B8B293FDBE500F05B34 /* ActivityToSave.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348F89EF255C856B00385B6B /* ActivityToSave.swift */; };
+		34377B8C293FDC0300F05B34 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 34A1AFAD2741F20500610888 /* Assets.xcassets */; };
+		34377B8D293FDC6800F05B34 /* AddFavouriteViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFF926DEDDF400887A7B /* AddFavouriteViewModel.swift */; };
+		34377B8E293FDC7200F05B34 /* SupportItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34031961261D8EFC0047CBAD /* SupportItems.swift */; };
+		34377B8F293FDC9500F05B34 /* oneMinute.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 34DF371C25534A2400232BCD /* oneMinute.xcdatamodeld */; };
+		34377B90293FDCFC00F05B34 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFC226D81B5100887A7B /* View+Ext.swift */; };
+		34377B91293FDCFC00F05B34 /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFBF26D819E800887A7B /* Date+Ext.swift */; };
+		34377B92293FDCFC00F05B34 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF382875270900CB0564 /* CoreDataManager.swift */; };
+		34377B93293FDCFC00F05B34 /* Color+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFC626D81C0B00887A7B /* Color+Ext.swift */; };
+		34377B94293FDCFC00F05B34 /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFC426D81B7200887A7B /* String+Ext.swift */; };
+		34377B95293FDCFC00F05B34 /* AlertItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3421FF3A287684EF00CB0564 /* AlertItem.swift */; };
+		34377B96293FDCFC00F05B34 /* DataManagementSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3414CFDA26D82C9C00887A7B /* DataManagementSupport.swift */; };
 		344F061A260C2B6200BFAECE /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F0619260C2B6200BFAECE /* ActivityHistoryView.swift */; };
 		347983B92554B32400823F39 /* FilteredList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983B82554B32400823F39 /* FilteredList.swift */; };
 		347983C22554B93800823F39 /* Activity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347983BE2554B93800823F39 /* Activity+CoreDataProperties.swift */; };
@@ -111,6 +130,11 @@
 		342A2DA226B9E93D00F7FBD5 /* PieSliceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieSliceView.swift; sourceTree = "<group>"; };
 		342A2DA726B9ECBF00F7FBD5 /* PieGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PieGraphView.swift; sourceTree = "<group>"; };
 		3431748325649FA80075F5C9 /* DetailedDayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailedDayView.swift; sourceTree = "<group>"; };
+		34377B7A293FDB6900F05B34 /* WatchMinutes Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchMinutes Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		34377B7C293FDB6900F05B34 /* WatchMinutesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchMinutesApp.swift; sourceTree = "<group>"; };
+		34377B7E293FDB6900F05B34 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		34377B80293FDB6A00F05B34 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		34377B83293FDB6A00F05B34 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		344F0619260C2B6200BFAECE /* ActivityHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryView.swift; sourceTree = "<group>"; };
 		347983B025546E9200823F39 /* PreloadedData.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = PreloadedData.plist; sourceTree = SOURCE_ROOT; };
 		347983B82554B32400823F39 /* FilteredList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilteredList.swift; sourceTree = "<group>"; };
@@ -144,6 +168,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		34377B77293FDB6900F05B34 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		34DF370B25534A2000232BCD /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -303,12 +334,32 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		34377B7B293FDB6900F05B34 /* WatchMinutes Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				34377B7C293FDB6900F05B34 /* WatchMinutesApp.swift */,
+				34377B7E293FDB6900F05B34 /* ContentView.swift */,
+				34377B80293FDB6A00F05B34 /* Assets.xcassets */,
+				34377B82293FDB6A00F05B34 /* Preview Content */,
+			);
+			path = "WatchMinutes Watch App";
+			sourceTree = "<group>";
+		};
+		34377B82293FDB6A00F05B34 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				34377B83293FDB6A00F05B34 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 		34DF370525534A2000232BCD = {
 			isa = PBXGroup;
 			children = (
 				34DF371025534A2000232BCD /* oneMinute */,
 				34DF372725534A2400232BCD /* oneMinuteTests */,
 				34DF373225534A2400232BCD /* oneMinuteUITests */,
+				34377B7B293FDB6900F05B34 /* WatchMinutes Watch App */,
 				34DF370F25534A2000232BCD /* Products */,
 				3421FF31286D3E7F00CB0564 /* Frameworks */,
 			);
@@ -320,6 +371,7 @@
 				34DF370E25534A2000232BCD /* oneMinute.app */,
 				34DF372425534A2400232BCD /* oneMinuteTests.xctest */,
 				34DF372F25534A2400232BCD /* oneMinuteUITests.xctest */,
+				34377B7A293FDB6900F05B34 /* WatchMinutes Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -397,6 +449,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		34377B79293FDB6900F05B34 /* WatchMinutes Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 34377B85293FDB6A00F05B34 /* Build configuration list for PBXNativeTarget "WatchMinutes Watch App" */;
+			buildPhases = (
+				34377B76293FDB6900F05B34 /* Sources */,
+				34377B77293FDB6900F05B34 /* Frameworks */,
+				34377B78293FDB6900F05B34 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WatchMinutes Watch App";
+			productName = "WatchMinutes Watch App";
+			productReference = 34377B7A293FDB6900F05B34 /* WatchMinutes Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
 		34DF370D25534A2000232BCD /* oneMinute */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 34DF373825534A2400232BCD /* Build configuration list for PBXNativeTarget "oneMinute" */;
@@ -458,9 +527,12 @@
 		34DF370625534A2000232BCD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1210;
+				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
+					34377B79293FDB6900F05B34 = {
+						CreatedOnToolsVersion = 14.1;
+					};
 					34DF370D25534A2000232BCD = {
 						CreatedOnToolsVersion = 12.1;
 					};
@@ -492,11 +564,22 @@
 				34DF370D25534A2000232BCD /* oneMinute */,
 				34DF372325534A2400232BCD /* oneMinuteTests */,
 				34DF372E25534A2400232BCD /* oneMinuteUITests */,
+				34377B79293FDB6900F05B34 /* WatchMinutes Watch App */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		34377B78293FDB6900F05B34 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34377B84293FDB6A00F05B34 /* Preview Assets.xcassets in Resources */,
+				34377B8C293FDC0300F05B34 /* Assets.xcassets in Resources */,
+				34377B81293FDB6A00F05B34 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		34DF370C25534A2000232BCD /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -524,6 +607,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		34377B76293FDB6900F05B34 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34377B89293FDBE500F05B34 /* Activity+CoreDataProperties.swift in Sources */,
+				34377B8D293FDC6800F05B34 /* AddFavouriteViewModel.swift in Sources */,
+				34377B90293FDCFC00F05B34 /* View+Ext.swift in Sources */,
+				34377B8A293FDBE500F05B34 /* Activity+CoreDataClass.swift in Sources */,
+				34377B93293FDCFC00F05B34 /* Color+Ext.swift in Sources */,
+				34377B8B293FDBE500F05B34 /* ActivityToSave.swift in Sources */,
+				34377B8F293FDC9500F05B34 /* oneMinute.xcdatamodeld in Sources */,
+				34377B92293FDCFC00F05B34 /* CoreDataManager.swift in Sources */,
+				34377B94293FDCFC00F05B34 /* String+Ext.swift in Sources */,
+				34377B91293FDCFC00F05B34 /* Date+Ext.swift in Sources */,
+				34377B96293FDCFC00F05B34 /* DataManagementSupport.swift in Sources */,
+				34377B8E293FDC7200F05B34 /* SupportItems.swift in Sources */,
+				34377B7F293FDB6900F05B34 /* ContentView.swift in Sources */,
+				34377B88293FDBE500F05B34 /* AddFavouriteView.swift in Sources */,
+				34377B95293FDCFC00F05B34 /* AlertItem.swift in Sources */,
+				34377B7D293FDB6900F05B34 /* WatchMinutesApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		34DF370A25534A2000232BCD /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -612,6 +718,70 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		34377B86293FDB6A00F05B34 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WatchMinutes Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5S28H6FD88;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchMinutes;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Debug;
+		};
+		34377B87293FDB6A00F05B34 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WatchMinutes Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 5S28H6FD88;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = WatchMinutes;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = "";
+				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = .watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+			};
+			name = Release;
+		};
 		34DF373625534A2400232BCD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -739,6 +909,7 @@
 				DEVELOPMENT_TEAM = 5S28H6FD88;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = oneMinute/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -763,6 +934,7 @@
 				DEVELOPMENT_TEAM = 5S28H6FD88;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = oneMinute/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -865,6 +1037,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		34377B85293FDB6A00F05B34 /* Build configuration list for PBXNativeTarget "WatchMinutes Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				34377B86293FDB6A00F05B34 /* Debug */,
+				34377B87293FDB6A00F05B34 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		34DF370925534A2000232BCD /* Build configuration list for PBXProject "oneMinute" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

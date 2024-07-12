@@ -71,7 +71,7 @@ struct AddFavouriteView: View {
                             .onDelete{ viewModel.deleteFavourite(at: $0, activities: activities, viewContext: viewContext) }
                 }
             }
-            .listStyle(GroupedListStyle())
+//            .listStyle(GroupedListStyle())
         }
         .onChange(of: save) { _ in
             viewModel.saveActivity(viewContext: viewContext)

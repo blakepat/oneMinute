@@ -105,7 +105,7 @@ final class StatsViewModel: ObservableObject {
     
     
     //Get totals for each category and put in Array
-    func eachCategoryTotalDuration(timeFrame: TimeFrame, activities: FetchedResults<AddedActivity>, date: Date) -> [Double] {
+    func eachCategoryTotalDuration(timeFrame: TimeFrame, activities: FetchedResults<AddedActivity>, date: Date) -> [Double]? {
         var totals = [Double]()
         
         for category in categories {

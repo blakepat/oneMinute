@@ -8,6 +8,9 @@
 import SwiftUI
 import CoreData
 
+
+let screen = UIScreen.main.bounds
+
 struct ContentView: View {
      
     @StateObject private var viewModel = ContentViewModel()

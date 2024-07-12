@@ -81,7 +81,7 @@ struct StatsView: View {
                             .padding(.bottom, 4)
                         
                         if let categoryTotals = viewModel.eachCategoryTotalDuration(timeFrame: timeFrame, activities: allData, date: date) {
-                            if categoryTotals.reduce(0) { $0 + $1 } > 0 {
+                            if categoryTotals.reduce(0, { $0 + $1 }) > 0 {
                                 VStack {
                                     Group {
                                         VStack {

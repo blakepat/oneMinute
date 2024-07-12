@@ -19,7 +19,7 @@ func getCalendarForCorrectWeekday() -> Calendar {
 }
 
 //Mark: - Universal Variables
-let screen = UIScreen.main.bounds
+
 
 let category1 = "category1"
 let category2 = "category2"
